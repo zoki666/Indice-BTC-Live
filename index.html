@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Índice BTC-Live</title>
+    <title>BTC-Live Index</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BTC-Live">
+    <!-- iOS -->
+    <link rel="apple-touch-icon" href="icon-180.png">
+    <!-- Android + Escritorio -->
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <link rel="manifest" href="manifest.json">
     <style>
         /* ============ VARIABLES Y TEMAS ============ */
@@ -101,24 +109,17 @@
         }
         .donate-tabs label:hover { background: var(--button-hover); color: var(--text); }
         #donate-btc:checked ~ .donate-tabs label[for="donate-btc"],
-        #donate-lightning:checked ~ .donate-tabs label[for="donate-lightning"],
-        #donate-silent:checked ~ .donate-tabs label[for="donate-silent"] {
+        #donate-lightning:checked ~ .donate-tabs label[for="donate-lightning"] {
             background: var(--accent-green); color: #fff; border-color: var(--accent-green);
         }
         .qr-container { text-align: center; }
         .qr-box { display: none; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         #donate-btc:checked ~ .qr-container .qr-btc,
-        #donate-lightning:checked ~ .qr-container .qr-lightning,
-        #donate-silent:checked ~ .qr-container .qr-silent { display: block; }
+        #donate-lightning:checked ~ .qr-container .qr-lightning { display: block; }
         .qr-box img {
-            width: 220px;
-            height: 220px;
-            border-radius: 0;
-            background: #ffffff;
-            padding: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 0 0 4px #ffffff;
+            width: 220px; height: 220px; border-radius: 0; background: #ffffff;
+            padding: 8px; margin-bottom: 10px; box-shadow: 0 0 0 4px #ffffff;
         }
         .qr-box code { font-size: 11px; word-break: break-all; color: var(--text-secondary); background: var(--input-bg); padding: 4px 8px; border-radius: 4px; }
         .panel-box {
@@ -158,8 +159,20 @@
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2;
         }
         .progress-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); margin-top: 6px; }
-        .timestamp { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 20px; }
+        .timestamp { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 10px; }
         .loading-indicator { font-size: 11px; color: #f5b041; margin-top: 12px; text-align: center; height: 18px; }
+
+        /* Mini panel de estado */
+        .mini-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .mini-card {
+            background: var(--bg-card); border-radius: 8px;
+            padding: 12px; text-align: center;
+            border: 1px solid var(--border);
+        }
+        .mini-card-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .mini-card-value { font-size: 20px; font-weight: 700; color: var(--text); }
+        .mini-card-sub { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+
         .components-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         @media (max-width: 900px) { .components-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 500px) { .components-grid { grid-template-columns: 1fr; } }
@@ -218,35 +231,26 @@
     <label for="theme-toggle" class="theme-toggle-label" title="Cambiar tema"></label>
     <label for="donate-modal-toggle" class="donate-btn-label" title="Donar BTC">₿</label>
 
-    <!-- Modal de donación -->
     <div class="donate-modal-overlay">
         <div class="donate-modal-content">
             <label for="donate-modal-toggle" class="modal-close">✕</label>
             <h3 style="margin-bottom:16px;text-align:center;">Apoya el proyecto</h3>
-            
-            <!-- Solo dos opciones: On-chain y Lightning -->
             <input type="radio" name="donate-type" id="donate-btc" checked hidden>
             <input type="radio" name="donate-type" id="donate-lightning" hidden>
-            
             <div class="donate-tabs">
                 <label for="donate-btc">On-chain</label>
                 <label for="donate-lightning">Lightning</label>
             </div>
-            
             <div class="qr-container">
-                <!-- On-chain -->
                 <div class="qr-box qr-btc">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=bitcoin:bc1qthc87aykdj2tjrxlqe7k9emz3txphrprm0scu6" alt="BTC QR">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=10&data=bitcoin:bc1qthc87aykdj2tjrxlqe7k9emz3txphrprm0scu6" alt="BTC QR">
                     <p><code>bc1qthc87aykdj2tjrxlqe7k9emz3txphrprm0scu6</code></p>
                 </div>
-                
-                <!-- Lightning -->
                 <div class="qr-box qr-lightning">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=lightning:ffg@cake.cash" alt="Lightning QR">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=10&data=lightning:ffg@cake.cash" alt="Lightning QR">
                     <p><code>ffg@cake.cash</code></p>
                 </div>
             </div>
-            
             <p style="font-size:11px;text-align:center;margin-top:12px;color:var(--text-secondary);">Escanea con tu wallet</p>
         </div>
     </div>
@@ -254,7 +258,8 @@
     <div class="wrapper">
         <div class="container" style="display:flex;flex-direction:column;gap:20px;">
             <div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;" class="main-layout">
-                <div class="panel-box">
+                <!-- Panel izquierdo con índice + mini cards -->
+                <div class="panel-box" style="display:flex;flex-direction:column;">
                     <div class="panel-title"><span>📊</span> Índice BTC-Live</div>
                     <div class="index-center">
                         <div class="index-value" id="main-index-value">--</div>
@@ -271,11 +276,34 @@
                             <div>0<br>Techo</div><div>25</div><div>50<br>Neutral</div><div>75</div><div>100<br>Suelo</div>
                         </div>
                     </div>
-                    <div class="timestamp" id="timestamp-text">Actualizado: Esperando datos...</div>
+
+                    <!-- Mini cards que rellenan el espacio -->
+                    <div class="mini-panel-grid">
+                        <div class="mini-card">
+                            <div class="mini-card-label">Indicadores</div>
+                            <div class="mini-card-value" id="active-indicators" style="color:var(--accent-green);">-</div>
+                            <div class="mini-card-sub">de 8 disponibles</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="mini-card-label">Próx. actualización</div>
+                            <div class="mini-card-value" id="countdown-timer">4:59</div>
+                            <div class="mini-card-sub">minutos</div>
+                        </div>
+                    </div>
+
+                    <!-- Frase del día -->
+                    <div class="mini-card" style="margin-top:10px;">
+                        <div class="mini-card-label" style="margin-bottom:6px;">💭 Reflexión</div>
+                        <p style="font-size:11px; color:var(--text); font-style:italic; line-height:1.5; margin:0;" id="daily-quote">"Sé codicioso cuando otros tengan miedo."</p>
+                        <p style="font-size:9px; color:var(--text-muted); margin-top:4px;" id="daily-author">— Warren Buffett</p>
+                    </div>
+
+                    <div class="timestamp" id="timestamp-text" style="margin-top:auto; padding-top:15px;">Actualizado: Esperando datos...</div>
                     <div class="loading-indicator" id="loading-status"></div>
-                    <div id="partial-warning" style="display:none; font-size:11px; color:var(--accent-orange); text-align:center; margin-top:10px;">⚠ Puntuación provisional (algunos indicadores no disponibles)</div>
+                    <div id="partial-warning" style="display:none; font-size:11px; color:var(--accent-orange); text-align:center; margin-top:6px;">⚠ Puntuación provisional</div>
                 </div>
 
+                <!-- Panel derecho: componentes -->
                 <div class="panel-box">
                     <div class="panel-title"><span>🧩</span> Componentes de análisis</div>
                     <div class="components-grid" id="components-grid">
@@ -339,11 +367,10 @@
                 </div>
             </div>
 
+            <!-- Guía de estrategia (sin cambios) -->
             <div class="panel-box">
                 <div class="panel-title"><span>💡</span> Guía de Estrategia Macro</div>
                 <div style="display:flex;flex-direction:column;gap:20px;font-size:14px;color:var(--text-secondary);line-height:1.7;">
-                    
-                    <!-- Principio fundamental -->
                     <div style="background:var(--bg-card);border:1px solid var(--border);padding:18px;border-radius:8px;">
                         <h4 style="color:var(--text);margin-bottom:10px;font-size:15px;">🧭 Cómo leer este índice</h4>
                         <p style="margin-bottom:10px;">El Índice BTC-Live va de <strong style="color:#e53935;">0 (techo de mercado)</strong> a <strong style="color:#00c087;">100 (suelo de mercado)</strong>. La regla es simple:</p>
@@ -354,48 +381,39 @@
                         </ul>
                         <p style="margin-top:12px;font-size:13px;color:var(--text-muted);">💡 Cada indicador individual (C, F, R, E, K, T, U, V) también sigue esta misma lógica de 0 a 10, y el índice final es un promedio ponderado que da más peso a los indicadores con mejor historial predictivo.</p>
                     </div>
-
-                    <!-- Cómo se usa en la práctica -->
                     <div style="background:var(--bg-card);border:1px solid var(--border);padding:18px;border-radius:8px;">
                         <h4 style="color:var(--text);margin-bottom:10px;font-size:15px;">📈 Cómo usar esta herramienta</h4>
                         <p style="margin-bottom:10px;">No es un sistema de trading intradía, sino una <strong>guía para ciclos largos</strong> (semanas o meses). La forma más efectiva de usarla:</p>
                         <ul style="padding-left:20px;display:flex;flex-direction:column;gap:6px;">
-                            <li>✅ Cuando el índice entra en <strong>zona verde (≥ 75)</strong>, programa <strong>compras periódicas (DCA)</strong> semanales o quincenales. No intentes adivinar el suelo exacto.</li>
-                            <li>⏸️ Cuando está en <strong>zona naranja (26-74)</strong>, mantén tu posición. Si estabas comprando, puedes continuar con cautela.</li>
-                            <li>⚠️ Cuando entra en <strong>zona roja (≤ 25)</strong>, deja de comprar. Considera vender una parte (25-50%) para asegurar ganancias y tener liquidez para la próxima caída.</li>
-                            <li>🔄 El ciclo se repite: <strong>acumulas en verde, esperas en naranja, vendes en rojo, y vuelves a acumular cuando baje a verde otra vez.</strong></li>
+                            <li>✅ Cuando el índice entra en <strong>zona verde (≥ 75)</strong>, programa <strong>compras periódicas (DCA)</strong> semanales o quincenales.</li>
+                            <li>⏸️ Cuando está en <strong>zona naranja (26-74)</strong>, mantén tu posición.</li>
+                            <li>⚠️ Cuando entra en <strong>zona roja (≤ 25)</strong>, deja de comprar y considera vender una parte (25-50%).</li>
+                            <li>🔄 El ciclo se repite: <strong>acumulas en verde, esperas en naranja, vendes en rojo.</strong></li>
                         </ul>
                     </div>
-
-                    <!-- Zona de acumulación -->
                     <div style="background:var(--bg-card);border-left:4px solid #00c087;padding:18px;border-radius:8px;">
                         <h4 style="color:#00c087;margin-bottom:10px;font-size:15px;">🟢 Zona de Acumulación DCA (Índice ≥ 75)</h4>
-                        <p style="color:var(--text);margin-bottom:10px;"><strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación. Aunque pueda seguir bajando a corto plazo, el riesgo asimétrico está a tu favor: el potencial de subida es mucho mayor que el de bajada.</p>
+                        <p style="color:var(--text);margin-bottom:10px;"><strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación.</p>
                         <ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;">
                             <li>✔️ Programa compras automáticas periódicas (DCA).</li>
                             <li>✔️ Aumenta ligeramente el tamaño de compra si el índice supera 85-90.</li>
-                            <li>✔️ Ignora el ruido mediático: las noticias serán negativas, pero es justo cuando se construyen las mejores posiciones.</li>
-                            <li>✔️ Piensa a 6-18 meses vista. No esperes resultados inmediatos.</li>
+                            <li>✔️ Ignora el ruido mediático: las noticias serán negativas.</li>
+                            <li>✔️ Piensa a 6-18 meses vista.</li>
                         </ul>
                     </div>
-
-                    <!-- Zona de distribución -->
                     <div style="background:var(--bg-card);border-left:4px solid #e53935;padding:18px;border-radius:8px;">
                         <h4 style="color:#e53935;margin-bottom:10px;font-size:15px;">🔴 Zona de Distribución / Venta (Índice ≤ 25)</h4>
-                        <p style="color:var(--text);margin-bottom:10px;"><strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración. Las noticias serán muy positivas y todo el mundo hablará de BTC, pero es justo cuando el riesgo de corrección es máximo.</p>
+                        <p style="color:var(--text);margin-bottom:10px;"><strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.</p>
                         <ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;">
-                            <li>⚠️ Deja de comprar inmediatamente. No hagas nuevas entradas.</li>
-                            <li>💰 Vende un 25-50% de tu posición para asegurar ganancias.</li>
-                            <li>🛑 Sube tus stop-loss para proteger el capital restante.</li>
-                            <li>🧊 Guarda liquidez (stablecoins o efectivo) para la próxima zona de acumulación.</li>
-                            <li>🧠 Controla la avaricia: "comprar en verde, vender en rojo" es difícil psicológicamente, pero es lo que funciona.</li>
+                            <li>⚠️ Deja de comprar inmediatamente.</li>
+                            <li>💰 Vende un 25-50% de tu posición.</li>
+                            <li>🛑 Sube tus stop-loss.</li>
+                            <li>🧊 Guarda liquidez para la próxima zona de acumulación.</li>
                         </ul>
                     </div>
-
-                    <!-- Aviso importante -->
                     <div style="background:var(--bg-card);border:1px solid var(--border);padding:14px;border-radius:8px;text-align:center;">
                         <p style="font-size:12px;color:var(--text-muted);margin:0;">
-                            ⚠️ <strong>Descargo de responsabilidad:</strong> Este índice es una herramienta educativa basada en datos históricos y no constituye asesoramiento financiero. El rendimiento pasado no garantiza resultados futuros. Invierte sólo lo que estés dispuesto a perder.
+                            ⚠️ <strong>Descargo de responsabilidad:</strong> Este índice es una herramienta educativa basada en datos históricos y no constituye asesoramiento financiero.
                         </p>
                     </div>
                 </div>
@@ -416,13 +434,22 @@
     </div>
 
     <script>
+        // ============ PERSISTENCIA DEL TEMA ============
+        (function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const savedTheme = localStorage.getItem('btc-live-theme');
+            if (savedTheme === 'light') themeToggle.checked = true;
+            themeToggle.addEventListener('change', function() {
+                localStorage.setItem('btc-live-theme', this.checked ? 'light' : 'dark');
+            });
+        })();
+
         // ============ ESTADO Y CONFIGURACIÓN ============
         const indicators = ['c','f','r','e','k','t','u','v'];
         const weights = { c: 20, f: 15, r: 15, e: 15, k: 10, t: 10, u: 10, v: 5 };
         const state = {};
         indicators.forEach(id => state[id] = { score: 5, available: false, desc: 'Cargando...' });
 
-        // ============ BASE DE AYUDA ============
         const helpDatabase = {
             c: { title: "C - Pi Cycle Top", desc: "Compara el precio actual con SMA(111) y SMA(350)*2. Históricamente, cuando el precio cruza la SMA(350)*2 se han producido techos de ciclo.", strat: "0 = precio cerca o por encima del cruce (techo probable).\n10 = precio muy por debajo del cruce (suelo, oportunidad de compra)." },
             f: { title: "F - Fear & Greed", desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", strat: "0 = codicia extrema (vender).\n10 = miedo extremo (comprar)." },
@@ -434,7 +461,6 @@
             v: { title: "V - Volatilidad", desc: "Volatilidad histórica a 30 días. Picos de volatilidad indican pánico (suelos), volatilidad muy baja indica complacencia (techos).", strat: "0 = volatilidad en mínimos (techo).\n10 = volatilidad en máximos (suelo)." }
         };
 
-        // ============ REFERENCIAS DOM ============
         const els = {
             mainIndex: document.getElementById('main-index-value'),
             statusText: document.getElementById('status-text'),
@@ -451,7 +477,6 @@
             els['card'+id.toUpperCase()] = document.querySelector(`.component-card[data-indicator="${id}"]`);
         });
 
-        // ============ FUNCIONES DE UI ============
         function getColorForScore(score) {
             if (score >= 8) return '#00c087';
             if (score >= 5) return '#ff9800';
@@ -467,6 +492,61 @@
             }
         }
         function closeHelp() { document.getElementById('help-modal').style.display = 'none'; }
+
+        // ============ MINI PANEL ============
+        function updateActiveIndicators() {
+            const count = indicators.filter(id => state[id].available).length;
+            const el = document.getElementById('active-indicators');
+            if (el) {
+                el.innerText = count + '/8';
+                el.style.color = count === 8 ? '#00c087' : count >= 5 ? '#ff9800' : '#e53935';
+            }
+        }
+
+        let countdownSeconds = 900;
+        function updateCountdown() {
+            const el = document.getElementById('countdown-timer');
+            if (!el) return;
+            const min = Math.floor(countdownSeconds / 60);
+            const sec = countdownSeconds % 60;
+            el.innerText = min + ':' + String(sec).padStart(2, '0');
+            countdownSeconds--;
+            if (countdownSeconds < 0) countdownSeconds = 900;
+        }
+        setInterval(updateCountdown, 1000);
+
+        const quotes = [
+            { text: '"Sé codicioso cuando otros tengan miedo, y temeroso cuando otros sean codiciosos."', author: 'Warren Buffett' },
+            { text: '"Bitcoin es una herramienta para liberar a la humanidad de los banqueros."', author: 'Satoshi Nakamoto' },
+            { text: '"El tiempo en el mercado es más importante que cronometrar el mercado."', author: 'Proverbio inversor' },
+            { text: '"Compra cuando haya sangre en las calles, incluso si la sangre es tuya."', author: 'Barón Rothschild' },
+            { text: '"La paciencia es la clave del éxito en Bitcoin."', author: 'Hal Finney' },
+            { text: '"Bitcoin es lo más valioso que puedes poseer en una era digital."', author: 'Michael Saylor' },
+            { text: '"No intentes cronometrar el mercado. Nadie puede predecir el suelo o el techo."', author: 'Peter Lynch' },
+            { text: '"El mejor momento para invertir fue ayer. El segundo mejor es hoy."', author: 'Proverbio financiero' },
+            { text: '"Si no puedes mantener tu inversión durante 10 años, no la tengas ni 10 minutos."', author: 'Warren Buffett' },
+            { text: '"Bitcoin arregla esto."', author: 'Comunidad Bitcoin' },
+            { text: '"El dinero que duerme en el banco pierde valor. El dinero que trabaja en Bitcoin lo multiplica."', author: 'Max Keiser' },
+            { text: '"No inviertas en Bitcoin porque quieras hacerte rico rápido. Invierte porque no quieres volverte pobre lentamente."', author: 'Robert Breedlove' },
+            { text: '"En un mundo de incertidumbre, Bitcoin es la certeza matemática."', author: 'Andreas Antonopoulos' },
+            { text: '"El riesgo no está en invertir en Bitcoin. El riesgo está en no hacerlo."', author: 'Greg Foss' },
+            { text: '"Cada vez que vendí Bitcoin por ganancias a corto plazo, me arrepentí. Cada vez que lo mantuve, me alegré."', author: 'Inversor anónimo' },
+            { text: '"Bitcoin no es una inversión. Es la salida del sistema."', author: 'Saifedean Ammous' },
+            { text: '"La volatilidad es el precio que pagas por la libertad financiera."', author: 'Preston Pysh' },
+            { text: '"El mercado es un dispositivo que transfiere dinero del impaciente al paciente."', author: 'Warren Buffett' },
+            { text: '"Bitcoin es la única cosa en el mundo que no puedes conseguir más por mucho que trabajes."', author: 'Gigi' },
+            { text: '"No se trata de ser inteligente. Se trata de ser disciplinado cuando todos pierden la cabeza."', author: 'Jack Bogle' }
+        ];
+        function rotateQuote() {
+            const el = document.getElementById('daily-quote');
+            const authorEl = document.getElementById('daily-author');
+            if (!el) return;
+            const q = quotes[Math.floor(Math.random() * quotes.length)];
+            el.innerText = q.text;
+            if (authorEl) authorEl.innerText = '— ' + q.author;
+        }
+        rotateQuote();
+        setInterval(rotateQuote, 60000);
 
         function updateDashboard() {
             let totalWeight = 0, weightedSum = 0, anyUnavailable = false;
@@ -510,6 +590,7 @@
                 }
             });
             els.partialWarning.style.display = anyUnavailable ? 'block' : 'none';
+            updateActiveIndicators();
         }
 
         function updateTimestamp() {
@@ -559,93 +640,33 @@
             throw new Error('Todos los proveedores fallaron');
         }
 
-        // Proveedores de klines (velas diarias)
         const klinesProviders = [
-            {
-                url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400',
-                parser: data => data.map(d => parseFloat(d[4]))
-            },
-            {
-                url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400',
-                parser: data => data.result.list.map(d => parseFloat(d[4])).reverse()
-            },
-            {
-                url: 'https://api.kucoin.com/api/v1/market/candles?type=1day&symbol=BTC-USDT&limit=400',
-                parser: data => data.data.map(d => parseFloat(d[2])).reverse()
-            }
+            { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400', parser: data => data.map(d => parseFloat(d[4])) },
+            { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400', parser: data => data.result.list.map(d => parseFloat(d[4])).reverse() },
+            { url: 'https://api.kucoin.com/api/v1/market/candles?type=1day&symbol=BTC-USDT&limit=400', parser: data => data.data.map(d => parseFloat(d[2])).reverse() }
         ];
 
-        // Proveedores de Fear & Greed
         const fngProviders = [
-            {
-                url: 'https://api.alternative.me/fng/?limit=1',
-                parser: data => parseInt(data.data[0].value)
-            }
+            { url: 'https://api.alternative.me/fng/?limit=1', parser: data => parseInt(data.data[0].value) }
         ];
 
-        // Proveedores de Funding Rate
         const fundingProviders = [
-            {
-                url: 'https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1',
-                parser: data => parseFloat(data[0].fundingRate) * 100
-            },
-            {
-                url: 'https://api.bybit.com/v5/market/funding/history?category=linear&symbol=BTCUSDT&limit=1',
-                parser: data => parseFloat(data.result.list[0].fundingRate) * 100
-            }
+            { url: 'https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1', parser: data => parseFloat(data[0].fundingRate) * 100 },
+            { url: 'https://api.bybit.com/v5/market/funding/history?category=linear&symbol=BTCUSDT&limit=1', parser: data => parseFloat(data.result.list[0].fundingRate) * 100 }
         ];
 
-        // Proveedores de dominancias (CoinGecko + CoinCap)
-        const dominanceProviders = [
-            {
-                url: 'https://api.coingecko.com/api/v3/global',
-                parser: data => ({
-                    btcDom: data.data.market_cap_percentage.btc,
-                    usdtDom: data.data.market_cap_percentage.usdt || 0
-                })
-            },
-            {
-                // CoinCap requiere 2 llamadas, las hacemos secuenciales
-                url: 'coincap', // marcador especial
-                parser: async () => {
-                    const [btcResp, globalResp] = await Promise.all([
-                        fetch('https://api.coincap.io/v2/assets/bitcoin'),
-                        fetch('https://api.coincap.io/v2/global')
-                    ]);
-                    if (!btcResp.ok || !globalResp.ok) throw new Error('CoinCap error');
-                    const btcData = await btcResp.json();
-                    const globalData = await globalResp.json();
-                    const btcDom = (parseFloat(btcData.data.marketCapUsd) / parseFloat(globalData.data.marketCapUsd)) * 100;
-                    // CoinCap no da USDT.D directamente, lo calculamos con el market cap de USDT
-                    const usdtResp = await fetch('https://api.coincap.io/v2/assets/tether');
-                    if (!usdtResp.ok) return { btcDom, usdtDom: 0 };
-                    const usdtData = await usdtResp.json();
-                    const usdtDom = (parseFloat(usdtData.data.marketCapUsd) / parseFloat(globalData.data.marketCapUsd)) * 100;
-                    return { btcDom, usdtDom };
-                }
-            }
-        ];
-
-        // ============ ACTUALIZACIÓN DE INDICADORES ============
-        async function fetchKlines() {
-            return await fetchWithFallback(klinesProviders);
-        }
+        async function fetchKlines() { return await fetchWithFallback(klinesProviders); }
 
         async function updateIndicatorsFromKlines(closes) {
-            // C - Pi Cycle Top
             const sma = (arr, n) => arr.slice(-n).reduce((a,b) => a+b, 0) / n;
             const sma350x2 = sma(closes, 350) * 2;
             const current = closes[closes.length-1];
             const ratio = current / sma350x2;
             state.c.score = Math.max(0, Math.min(10, Math.round(10 - (ratio - 0.5) * 20)));
             state.c.desc = `Ratio: ${ratio.toFixed(2)}`;
-
-            // R - RSI
             const rsi = calcRSI(closes);
             state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi - 20) / 6)));
             state.r.desc = `RSI: ${rsi.toFixed(1)}`;
-
-            // E - EMA 200
             const ema200 = calcEMA(closes, 200);
             const distRatio = current / ema200;
             let scoreE;
@@ -654,36 +675,31 @@
             else scoreE = Math.round(10 - (distRatio - 0.5) * (10 / 1.5));
             state.e.score = Math.max(0, Math.min(10, scoreE));
             state.e.desc = `Dist. EMA: ${((distRatio-1)*100).toFixed(0)}%`;
-
-            // V - Volatilidad
             const vol = calcVolatility(closes);
             state.v.score = Math.max(0, Math.min(10, Math.round((vol - 15) / 8.5)));
             state.v.desc = `Vol 30d: ${vol.toFixed(0)}%`;
         }
 
         async function updateIndicatorF() {
-            // Fear & Greed con localStorage como respaldo
             const STORAGE_KEY = 'btc_live_last_fng';
-            const MAX_AGE_MS = 6 * 60 * 60 * 1000; // 6 horas
+            const MAX_AGE_MS = 6 * 60 * 60 * 1000;
             try {
                 const fngValue = await fetchWithFallback(fngProviders);
                 const score = Math.max(0, Math.min(10, 10 - Math.round(fngValue / 10)));
                 state.f.score = score;
                 state.f.desc = `FG: ${fngValue}`;
-                // Guardar en localStorage
                 localStorage.setItem(STORAGE_KEY, JSON.stringify({ value: fngValue, score, timestamp: Date.now() }));
             } catch (e) {
-                // Intentar usar valor almacenado
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     const { value, score, timestamp } = JSON.parse(stored);
                     if (Date.now() - timestamp < MAX_AGE_MS) {
                         state.f.score = score;
                         state.f.desc = `FG: ${value} (cache)`;
-                        return; // éxito con caché
+                        return;
                     }
                 }
-                throw e; // no hay caché válida
+                throw e;
             }
         }
 
@@ -698,9 +714,7 @@
         }
 
         async function updateIndicatorsTU() {
-            // Necesitamos manejar CoinCap de forma especial porque usa múltiples fetch
             let btcDom, usdtDom;
-            // Intentar CoinGecko primero
             try {
                 const resp = await fetch('https://api.coingecko.com/api/v3/global');
                 if (resp.ok) {
@@ -709,7 +723,6 @@
                     usdtDom = data.data.market_cap_percentage.usdt || 0;
                 } else throw new Error('CoinGecko fail');
             } catch (e) {
-                // Fallback a CoinCap
                 try {
                     const [btcResp, globalResp, usdtResp] = await Promise.all([
                         fetch('https://api.coincap.io/v2/assets/bitcoin'),
@@ -724,12 +737,8 @@
                     if (usdtResp.ok) {
                         const usdtData = await usdtResp.json();
                         usdtDom = (parseFloat(usdtData.data.marketCapUsd) / totalCap) * 100;
-                    } else {
-                        usdtDom = 0;
-                    }
-                } catch (e2) {
-                    throw new Error('Todos los proveedores de dominancia fallaron');
-                }
+                    } else usdtDom = 0;
+                } catch (e2) { throw new Error('Todos los proveedores de dominancia fallaron'); }
             }
             state.t.score = Math.max(0, Math.min(10, Math.round((btcDom - 40) / 1.5)));
             state.t.desc = `BTC.D: ${btcDom.toFixed(1)}%`;
@@ -737,48 +746,32 @@
             state.u.desc = `USDT.D: ${usdtDom.toFixed(1)}%`;
         }
 
-        // ============ ORQUESTADOR PRINCIPAL ============
         async function fetchAllData() {
             els.loadingMsg.innerText = "Sincronizando datos...";
             indicators.forEach(id => state[id].available = false);
-
             const promises = [];
-
-            // Klines (afecta a C, R, E, V)
             promises.push((async () => {
-                try {
-                    const closes = await fetchKlines();
-                    await updateIndicatorsFromKlines(closes);
-                    state.c.available = state.r.available = state.e.available = state.v.available = true;
-                } catch (e) { console.warn('Klines falló todos los proveedores', e); }
+                try { const closes = await fetchKlines(); await updateIndicatorsFromKlines(closes); state.c.available = state.r.available = state.e.available = state.v.available = true; }
+                catch (e) { console.warn('Klines falló', e); }
             })());
-
-            // Fear & Greed
             promises.push((async () => {
-                try { await updateIndicatorF(); state.f.available = true; }
-                catch (e) { console.warn('F&G falló', e); }
+                try { await updateIndicatorF(); state.f.available = true; } catch (e) { console.warn('F&G falló', e); }
             })());
-
-            // Funding Rate
             promises.push((async () => {
-                try { await updateIndicatorK(); state.k.available = true; }
-                catch (e) { console.warn('Funding falló', e); }
+                try { await updateIndicatorK(); state.k.available = true; } catch (e) { console.warn('Funding falló', e); }
             })());
-
-            // Dominancias
             promises.push((async () => {
-                try { await updateIndicatorsTU(); state.t.available = state.u.available = true; }
-                catch (e) { console.warn('Dominancias fallaron', e); }
+                try { await updateIndicatorsTU(); state.t.available = state.u.available = true; } catch (e) { console.warn('Dominancias fallaron', e); }
             })());
-
             await Promise.allSettled(promises);
             updateDashboard();
             updateTimestamp();
+            countdownSeconds = 900;
             els.loadingMsg.innerText = "";
         }
 
         fetchAllData();
-        setInterval(fetchAllData, 1500000);
+        setInterval(fetchAllData, 900000);
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
