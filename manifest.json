@@ -1,0 +1,17 @@
+{
+  "name": "BTC-Live Index",
+  "short_name": "BTC-Live",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0e12",
+  "theme_color": "#0d0e12",
+  "description": "Índice macro y on-chain de Bitcoin para acumulación DCA",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2965/2965879.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
