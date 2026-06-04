@@ -2,6 +2,8 @@
 
 **Índice macro de Bitcoin para acumulación y distribución a largo plazo.**
 
+Índice BTC-Live publicado en Github Pages: https://zoki666.github.io/Indice-BTC-Live/
+
 El Índice BTC-Live combina **8 indicadores clave** (sentimiento, análisis técnico, on-chain y macro) en una puntuación única de 0 a 100.  
 Cada indicador se mide de 0 a 10 con la misma lógica:
 
