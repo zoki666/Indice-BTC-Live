@@ -233,7 +233,6 @@
             border-radius: 3px;
             box-shadow: 0 0 8px rgba(0,0,0,0.4);
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
             z-index: 2;
         }
         .progress-labels { 
@@ -324,6 +323,7 @@
             text-align: center;
             box-shadow: var(--shadow);
             transition: transform 0.2s, background 0.3s, border 0.3s;
+            cursor: pointer;
         }
         .component-card:hover { 
             transform: translateY(-2px); 
@@ -336,33 +336,28 @@
         .component-card.unavailable .comp-score { 
             color: var(--text-muted) !important; 
         }
-        .component-card.unavailable {
-            cursor: pointer;
-            position: relative;
+        .component-card.unavailable:hover { 
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-1px);
         }
-        .component-card.unavailable::after {
+        .component-card.retrying {
+            opacity: 0.6;
+            filter: grayscale(0.6);
+            pointer-events: none;
+        }
+        .component-card.retrying::after {
             content: '↻';
             position: absolute;
             bottom: 6px;
             right: 8px;
             font-size: 13px;
-            color: var(--text-muted);
-            opacity: 0.7;
-        }
-        .component-card.retrying {
-            opacity: 0.4;
-            filter: grayscale(0.8);
-            pointer-events: none;
-        }
-        .component-card.retrying::after {
-            content: '⏳';
-            position: absolute;
-            bottom: 6px;
-            right: 8px;
-            font-size: 11px;
+            color: var(--accent-orange);
             animation: spin 1s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         .card-header-row { 
             display: flex; 
             justify-content: space-between; 
@@ -384,6 +379,8 @@
             align-items: center;
             justify-content: center;
             transition: background 0.2s, color 0.2s;
+            z-index: 2;
+            pointer-events: auto;
         }
         .help-btn:hover { 
             background: var(--button-hover); 
@@ -598,7 +595,6 @@
                             <div class="mini-card-sub" id="minutes-label" data-i18n="minutes">minutos</div>
                         </div>
                     </div>
-                    <!-- La cita se ha movido al panel derecho -->
                     <div class="timestamp" id="timestamp-text" style="margin-top:auto; padding-top:15px;" data-i18n="waiting">Esperando datos...</div>
                     <div class="loading-indicator" id="loading-status"></div>
                     <div id="partial-warning" style="display:none; font-size:11px; color:var(--accent-orange); text-align:center; margin-top:6px;" data-i18n="partialWarning">⚠ Puntuación provisional</div>
@@ -664,7 +660,7 @@
                             <div class="comp-desc" id="desc-s">Cargando...</div>
                         </div>
                         <!-- Precio BTC (tarjeta especial) -->
-                        <div class="component-card" style="background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,152,0,0.15) 100%);">
+                        <div class="component-card" style="background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,152,0,0.15) 100%); cursor: default;">
                             <div class="card-header-row">
                                 <div class="comp-letter" style="color: var(--accent-orange);">💰</div>
                             </div>
@@ -674,7 +670,6 @@
                             <div class="comp-desc" id="btc-change-card">--</div>
                         </div>
                     </div>
-                    <!-- Cita movida aquí -->
                     <div class="quote-right">
                         <p id="daily-quote">"Sé codicioso cuando otros tengan miedo."</p>
                         <div class="author" id="daily-author">— Warren Buffett</div>
@@ -865,12 +860,27 @@
         
         function updateTimestamp() { const now = new Date(), pad = n => String(n).padStart(2,'0'); els.timestamp.innerText = t('updated') + ': ' + pad(now.getDate()) + '/' + pad(now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()); }
         
-        async function fetchWithTimeout(url, timeout=10000) { const controller = new AbortController(); const id = setTimeout(() => controller.abort(), timeout); try { const res = await fetch(url, { signal: controller.signal }); clearTimeout(id); return res; } catch(e) { clearTimeout(id); throw e; } }
+        async function fetchWithTimeout(url, timeout=15000, retries=2) {
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeout);
+                try {
+                    const res = await fetch(url, { signal: controller.signal });
+                    clearTimeout(id);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res;
+                } catch(e) {
+                    clearTimeout(id);
+                    if (attempt === retries) throw e;
+                    await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+                }
+            }
+            throw new Error('All attempts failed');
+        }
         
         async function updateIndicatorF() {
             try {
-                const res = await fetch('https://api.alternative.me/fng/?limit=10');
-                if (!res.ok) throw new Error();
+                const res = await fetchWithTimeout('https://api.alternative.me/fng/?limit=10');
                 const data = await res.json();
                 const values = data.data.map(d => parseInt(d.value));
                 let sma7 = values.slice(0,7).reduce((a,b)=>a+b,0)/7;
@@ -883,13 +893,15 @@
         
         async function getMVRVScore() {
             try {
-                const [priceRes, coinRes] = await Promise.all([fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'), fetch('https://api.coingecko.com/api/v3/coins/bitcoin')]);
-                if (!priceRes.ok || !coinRes.ok) throw new Error();
+                const [priceRes, coinRes] = await Promise.all([
+                    fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'),
+                    fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin')
+                ]);
                 const priceData = await priceRes.json();
                 const coinData = await coinRes.json();
                 const marketCap = coinData.market_data.market_cap.usd;
                 const supply = coinData.market_data.circulating_supply;
-                const histRes = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365');
+                const histRes = await fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365', 20000);
                 const histData = await histRes.json();
                 const prices = histData.prices.map(p => p[1]);
                 const avgPrice = prices.reduce((a,b)=>a+b,0)/prices.length;
@@ -898,55 +910,70 @@
                 let score = mvrv >= 3.5 ? 1 : mvrv <= 0.8 ? 9 : Math.round(5 - (mvrv - 1.5) * 2);
                 score = Math.max(0, Math.min(10, score));
                 return { score, desc: `MVRV: ${mvrv.toFixed(2)}`, available: true };
-            } catch(e) { return { score: 5, desc: 'Calculando...', available: false }; }
+            } catch(e) { console.warn('MVRV error:', e); return { score: 5, desc: 'Calculando...', available: false }; }
         }
         
         async function updateStablecoinDominance() {
-            try {
-                const res = await fetch('https://api.coingecko.com/api/v3/global');
-                if (!res.ok) throw new Error();
-                const d = await res.json();
-                let usdtDom = d.data.market_cap_percentage.usdt || 0;
-                let usdcDom = d.data.market_cap_percentage.usdc || 0;
-                let totalDom = usdtDom + usdcDom;
-                
-                let score = 5;
-                let desc = `${totalDom.toFixed(1)}% (USDT+USDC)`;
-                if (totalDom >= 12) { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
-                else if (totalDom >= 10) { score = 9; desc += ' MUCHO MIEDO'; }
-                else if (totalDom >= 8.5) { score = 8; desc += ' MIEDO MODERADO'; }
-                else if (totalDom >= 7) { score = 7; desc += ' TENDENCIA A MIEDO'; }
-                else if (totalDom >= 6) { score = 6; desc += ' LIGERO MIEDO'; }
-                else if (totalDom >= 5) { score = 5; desc += ' NEUTRAL'; }
-                else if (totalDom >= 4) { score = 4; desc += ' LIGERA EUFORIA'; }
-                else if (totalDom >= 3) { score = 3; desc += ' EUFORIA MODERADA'; }
-                else if (totalDom >= 2) { score = 2; desc += ' EUFORIA ALTA'; }
-                else { score = 1; desc += ' EUFORIA EXTREMA (TECHO)'; }
-                
-                state.s.score = score;
-                state.s.desc = desc;
-                state.s.available = true;
-            } catch(e) { console.warn('Stablecoin error:', e); state.s.available = false; }
+            const providers = [
+                async () => {
+                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/global');
+                    const d = await res.json();
+                    let usdtDom = d.data.market_cap_percentage.usdt || 0;
+                    let usdcDom = d.data.market_cap_percentage.usdc || 0;
+                    return usdtDom + usdcDom;
+                },
+                async () => {
+                    const res = await fetchWithTimeout('https://api.coincap.io/v2/markets');
+                    const data = await res.json();
+                    const usdt = data.data.find(m => m.symbol === 'USDT' && m.baseSymbol === 'USDT') || { volumeUsd24Hr: 0 };
+                    const usdc = data.data.find(m => m.symbol === 'USDC' && m.baseSymbol === 'USDC') || { volumeUsd24Hr: 0 };
+                    return (usdt.volumeUsd24Hr + usdc.volumeUsd24Hr) / 1e9;
+                }
+            ];
+            
+            let totalDom = null;
+            for (const prov of providers) {
+                try {
+                    totalDom = await prov();
+                    if (totalDom > 0) break;
+                } catch(e) { continue; }
+            }
+            if (totalDom === null) throw new Error('All stablecoin providers failed');
+            
+            let score = 5;
+            let desc = `${totalDom.toFixed(1)}% (USDT+USDC)`;
+            if (totalDom >= 12) { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
+            else if (totalDom >= 10) { score = 9; desc += ' MUCHO MIEDO'; }
+            else if (totalDom >= 8.5) { score = 8; desc += ' MIEDO MODERADO'; }
+            else if (totalDom >= 7) { score = 7; desc += ' TENDENCIA A MIEDO'; }
+            else if (totalDom >= 6) { score = 6; desc += ' LIGERO MIEDO'; }
+            else if (totalDom >= 5) { score = 5; desc += ' NEUTRAL'; }
+            else if (totalDom >= 4) { score = 4; desc += ' LIGERA EUFORIA'; }
+            else if (totalDom >= 3) { score = 3; desc += ' EUFORIA MODERADA'; }
+            else if (totalDom >= 2) { score = 2; desc += ' EUFORIA ALTA'; }
+            else { score = 1; desc += ' EUFORIA EXTREMA (TECHO)'; }
+            
+            state.s.score = score;
+            state.s.desc = desc;
+            state.s.available = true;
         }
         
-        // ================= FUNCIONES TÉCNICAS CON TEMPORALIDAD SEPARADA =================
-        // Proveedores de velas DIARIAS (para Pi Cycle, RSI, Volatilidad)
+        // ================= FUNCIONES TÉCNICAS =================
         const klinesProvidersDaily = [
             { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400', parser: d => d.map(x => parseFloat(x[4])) },
             { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
             { url: 'https://api.kucoin.com/api/v1/market/candles?type=1day&symbol=BTC-USDT&limit=400', parser: d => d.data.map(x => parseFloat(x[2])).reverse() }
         ];
-        // Proveedores de velas SEMANALES (para EMA 200)
         const klinesProvidersWeekly = [
             { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=200', parser: d => d.map(x => parseFloat(x[4])) },
             { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=W&limit=200', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
             { url: 'https://api.kucoin.com/api/v1/market/candles?type=1week&symbol=BTC-USDT&limit=200', parser: d => d.data.map(x => parseFloat(x[2])).reverse() }
         ];
         
-        async function fetchWithFallback(providers) { 
+        async function fetchKlinesWithFallback(providers) { 
             for (const p of providers) { 
                 try { 
-                    const r = await fetch(p.url); 
+                    const r = await fetchWithTimeout(p.url, 15000); 
                     if (!r.ok) continue; 
                     return p.parser(await r.json()); 
                 } catch(e) { continue; } 
@@ -981,29 +1008,24 @@
             for (let i=c.length-p+1; i<c.length; i++) r.push(Math.log(c[i]/c[i-1]));
             let m = r.reduce((a,b)=>a+b,0)/r.length;
             let v = r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1);
-            let volDecimal = Math.sqrt(v * 365);
-            return volDecimal * 100;   // devuelve porcentaje (ej. 35.2)
+            return Math.sqrt(v * 365) * 100;
         }
         
         async function updateIndicatorsFromKlinesDaily() {
             try {
-                const closes = await fetchWithFallback(klinesProvidersDaily);
+                const closes = await fetchKlinesWithFallback(klinesProvidersDaily);
                 const c = closes[closes.length - 1];
-                
-                // Pi Cycle Top (C)
                 const sma350 = closes.slice(-350).reduce((a,b)=>a+b,0)/350;
                 const ratio = c / (sma350 * 2);
                 state.c.score = Math.max(0, Math.min(10, Math.round(10 - (ratio-0.5)*20)));
                 state.c.desc = `Ratio: ${ratio.toFixed(2)}`;
                 state.c.available = true;
                 
-                // RSI 14 (R)
                 const rsi = calcRSI(closes);
                 state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi-20)/6)));
                 state.r.desc = `RSI: ${rsi.toFixed(1)}`;
                 state.r.available = true;
                 
-                // Volatilidad (V)
                 const vol = calcVolatility(closes);
                 state.v.score = Math.max(0, Math.min(10, Math.round((vol - 15) / 8.5)));
                 state.v.desc = `Vol 30d: ${vol.toFixed(0)}%`;
@@ -1018,7 +1040,7 @@
         
         async function updateEMA200Weekly() {
             try {
-                const closes = await fetchWithFallback(klinesProvidersWeekly);
+                const closes = await fetchKlinesWithFallback(klinesProvidersWeekly);
                 const c = closes[closes.length - 1];
                 const ema = calcEMA(closes, 200);
                 const dr = c / ema;
@@ -1041,14 +1063,13 @@
                 updateEMA200Weekly(),
                 updateIndicatorF(),
                 (async () => { try { const mvrv = await getMVRVScore(); state.m.score = mvrv.score; state.m.desc = mvrv.desc; state.m.available = true; } catch(e) { console.warn('MVRV error:', e); } })(),
-                (async () => { await updateStablecoinDominance(); })()
+                (async () => { try { await updateStablecoinDominance(); } catch(e) { console.warn('Stablecoin error:', e); state.s.available = false; } })()
             ]);
             updateDashboard();
             updateTimestamp();
             if (els.loadingMsg) els.loadingMsg.innerText = '';
         }
-
-        // Mapa de cada indicador a su función de actualización
+        
         const indicatorFetchMap = {
             c: async () => { await updateIndicatorsFromKlinesDaily(); },
             r: async () => { await updateIndicatorsFromKlinesDaily(); },
@@ -1058,7 +1079,7 @@
             m: async () => { const mvrv = await getMVRVScore(); state.m.score = mvrv.score; state.m.desc = mvrv.desc; state.m.available = mvrv.available; },
             s: async () => { await updateStablecoinDominance(); }
         };
-
+        
         async function retryIndicator(id) {
             const cardEl = els['card' + id.toUpperCase()];
             if (!cardEl || !cardEl.classList.contains('unavailable')) return;
@@ -1074,13 +1095,11 @@
             cardEl.classList.remove('retrying');
             updateDashboard();
         }
-
-        // Añadir listener de click a todas las tarjetas de indicadores para retry
+        
         indicators.forEach(id => {
             const cardEl = document.querySelector(`.component-card[data-indicator="${id}"]`);
             if (cardEl) {
                 cardEl.addEventListener('click', function(e) {
-                    // Solo actuar si está unavailable y no se ha pulsado el botón de ayuda
                     if (e.target.classList.contains('help-btn') || e.target.closest('.help-btn')) return;
                     if (cardEl.classList.contains('unavailable')) {
                         retryIndicator(id);
@@ -1090,20 +1109,41 @@
         });
         
         async function fetchBTCPrice() {
-            try { 
-                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true'); 
-                if(!res.ok) throw new Error(); 
-                const data = await res.json(); 
-                const price = data.bitcoin.usd; 
-                const change = data.bitcoin.usd_24h_change; 
-                const priceFormatted = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                const changeFormatted = change.toFixed(2) + '%';
-                const changeSymbol = change >= 0 ? '▲ ' : '▼ ';
-                document.getElementById('btc-price-card').innerText = priceFormatted;
-                document.getElementById('btc-change-card').innerHTML = changeSymbol + changeFormatted;
-                document.getElementById('btc-change-card').style.color = change >= 0 ? '#00c087' : '#e53935';
-            } catch(e) { console.warn(e); } 
+            const providers = [
+                async () => {
+                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                    const data = await res.json();
+                    return { price: data.bitcoin.usd, change: data.bitcoin.usd_24h_change };
+                },
+                async () => {
+                    const res = await fetchWithTimeout('https://api.coincap.io/v2/assets/bitcoin');
+                    const data = await res.json();
+                    return { price: parseFloat(data.data.priceUsd), change: parseFloat(data.data.changePercent24Hr) };
+                },
+                async () => {
+                    const res = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                    const data = await res.json();
+                    return { price: parseFloat(data.lastPrice), change: parseFloat(data.priceChangePercent) };
+                }
+            ];
+            
+            for (const prov of providers) {
+                try {
+                    const result = await prov();
+                    const priceFormatted = '$' + result.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                    const changeFormatted = result.change.toFixed(2) + '%';
+                    const changeSymbol = result.change >= 0 ? '▲ ' : '▼ ';
+                    document.getElementById('btc-price-card').innerText = priceFormatted;
+                    document.getElementById('btc-change-card').innerHTML = changeSymbol + changeFormatted;
+                    document.getElementById('btc-change-card').style.color = result.change >= 0 ? '#00c087' : '#e53935';
+                    return;
+                } catch(e) { continue; }
+            }
+            console.warn('All price providers failed');
+            document.getElementById('btc-price-card').innerText = '--';
+            document.getElementById('btc-change-card').innerHTML = '--';
         }
+        
         function startBTCPriceUpdates() { fetchBTCPrice(); setInterval(fetchBTCPrice, 60000); }
         
         function loadHtml2Canvas() {
@@ -1145,47 +1185,39 @@
                 const indexValue = window._btcIndexValue || 0;
                 let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
                 const siteUrl = 'https://zoki666.github.io/Indice-BTC-Live/';
-                const tweetText = encodeURIComponent(`\uD83D\uDCCA BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n\uD83D\uDD17 ${siteUrl}`);
-                // Download image
+                const tweetText = encodeURIComponent(`📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n🔗 ${siteUrl}`);
                 const link = document.createElement('a');
                 link.download = `btc-index-${indexValue}.png`;
                 const objectUrl = URL.createObjectURL(blob);
                 link.href = objectUrl;
                 link.click();
                 setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
-                // Show helper modal
-                showShareModal(indexValue, tweetText);
+                
+                const modal = document.createElement('div');
+                modal.id = 'share-helper-modal';
+                modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;';
+                modal.innerHTML = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;max-width:360px;width:100%;padding:24px;text-align:center;box-shadow:var(--shadow);animation:fadeInScale 0.3s ease;">'
+                    + '<div style="font-size:36px;margin-bottom:12px;">📸</div>'
+                    + '<div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text);">' + (currentLang === 'es' ? 'Imagen descargada' : 'Image downloaded') + '</div>'
+                    + '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">'
+                    + (currentLang === 'es' ? 'La imagen del índice se ha guardado en tu dispositivo.<br><strong style="color:var(--text)">Pulsa "Tweetear"</strong> y adjúntala al tweet.' : 'The index image has been saved to your device.<br><strong style="color:var(--text)">Click "Tweet"</strong> and attach it to the post.')
+                    + '</div>'
+                    + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
+                    + '<button id="do-tweet-btn" style="background:#000;color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">'
+                    + '𝕏 ' + (currentLang === 'es' ? 'Tweetear' : 'Tweet') + '</button>'
+                    + '<button id="close-share-modal-btn" style="background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border);border-radius:20px;padding:10px 18px;font-size:13px;cursor:pointer;">'
+                    + (currentLang === 'es' ? 'Cerrar' : 'Close') + '</button>'
+                    + '</div></div>';
+                modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+                document.body.appendChild(modal);
+                document.getElementById('do-tweet-btn').addEventListener('click', function() {
+                    window.open('https://twitter.com/intent/tweet?text=' + tweetText, '_blank', 'width=550,height=420');
+                    modal.remove();
+                });
+                document.getElementById('close-share-modal-btn').addEventListener('click', function() { modal.remove(); });
             } catch (error) { shareTextOnly(); }
             btn.innerHTML = originalContent;
             btn.style.opacity = '1';
-        }
-
-        function showShareModal(indexValue, tweetText) {
-            const existing = document.getElementById('share-helper-modal');
-            if (existing) existing.remove();
-            const isEs = currentLang === 'es';
-            const modal = document.createElement('div');
-            modal.id = 'share-helper-modal';
-            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;';
-            modal.innerHTML = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;max-width:360px;width:100%;padding:24px;text-align:center;box-shadow:var(--shadow);animation:fadeInScale 0.3s ease;">'
-                + '<div style="font-size:36px;margin-bottom:12px;">\uD83D\uDCF8</div>'
-                + '<div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text);">' + (isEs ? 'Imagen descargada' : 'Image downloaded') + '</div>'
-                + '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">'
-                + (isEs ? 'La imagen del índice se ha guardado en tu dispositivo.<br><strong style="color:var(--text)">Pulsa \u201CTweetear\u201D</strong> y adjúntala al tweet.' : 'The index image has been saved to your device.<br><strong style="color:var(--text)">Click \u201CTweet\u201D</strong> and attach it to the post.')
-                + '</div>'
-                + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
-                + '<button id="do-tweet-btn" style="background:#000;color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">'
-                + '\uD835\uDD4F ' + (isEs ? 'Tweetear' : 'Tweet') + '</button>'
-                + '<button id="close-share-modal-btn" style="background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border);border-radius:20px;padding:10px 18px;font-size:13px;cursor:pointer;">'
-                + (isEs ? 'Cerrar' : 'Close') + '</button>'
-                + '</div></div>';
-            modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-            document.body.appendChild(modal);
-            document.getElementById('do-tweet-btn').addEventListener('click', function() {
-                window.open('https://twitter.com/intent/tweet?text=' + tweetText, '_blank', 'width=550,height=420');
-                modal.remove();
-            });
-            document.getElementById('close-share-modal-btn').addEventListener('click', function() { modal.remove(); });
         }
         
         window.shareOnTwitterWithImage = shareOnTwitterWithImage;
