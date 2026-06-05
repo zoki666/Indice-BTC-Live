@@ -1178,44 +1178,69 @@
             const originalContent = btn.innerHTML;
             btn.innerHTML = '⏳';
             btn.style.opacity = '0.7';
+
             try {
                 const html2canvas = await loadHtml2Canvas();
                 const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: '#0d0e12', logging: false, useCORS: true });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
                 const indexValue = window._btcIndexValue || 0;
-                let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
+                const isEs = currentLang === 'es';
+                let emojiLabel = indexValue >= 75 ? (isEs ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (isEs ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
                 const siteUrl = 'https://zoki666.github.io/Indice-BTC-Live/';
-                const tweetText = encodeURIComponent(`📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n🔗 ${siteUrl}`);
-                const link = document.createElement('a');
-                link.download = `btc-index-${indexValue}.png`;
-                const objectUrl = URL.createObjectURL(blob);
-                link.href = objectUrl;
-                link.click();
-                setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
-                
-                const modal = document.createElement('div');
-                modal.id = 'share-helper-modal';
-                modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;';
-                modal.innerHTML = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;max-width:360px;width:100%;padding:24px;text-align:center;box-shadow:var(--shadow);animation:fadeInScale 0.3s ease;">'
-                    + '<div style="font-size:36px;margin-bottom:12px;">📸</div>'
-                    + '<div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text);">' + (currentLang === 'es' ? 'Imagen descargada' : 'Image downloaded') + '</div>'
-                    + '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">'
-                    + (currentLang === 'es' ? 'La imagen del índice se ha guardado en tu dispositivo.<br><strong style="color:var(--text)">Pulsa "Tweetear"</strong> y adjúntala al tweet.' : 'The index image has been saved to your device.<br><strong style="color:var(--text)">Click "Tweet"</strong> and attach it to the post.')
-                    + '</div>'
-                    + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
-                    + '<button id="do-tweet-btn" style="background:#000;color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">'
-                    + '𝕏 ' + (currentLang === 'es' ? 'Tweetear' : 'Tweet') + '</button>'
-                    + '<button id="close-share-modal-btn" style="background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border);border-radius:20px;padding:10px 18px;font-size:13px;cursor:pointer;">'
-                    + (currentLang === 'es' ? 'Cerrar' : 'Close') + '</button>'
-                    + '</div></div>';
-                modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
-                document.body.appendChild(modal);
-                document.getElementById('do-tweet-btn').addEventListener('click', function() {
-                    window.open('https://twitter.com/intent/tweet?text=' + tweetText, '_blank', 'width=550,height=420');
-                    modal.remove();
-                });
-                document.getElementById('close-share-modal-btn').addEventListener('click', function() { modal.remove(); });
-            } catch (error) { shareTextOnly(); }
+                const shareText = `📊 BTC-Live Index: ${indexValue}/100 - ${emojiLabel}\n\n🔗 ${siteUrl}`;
+
+                // Móvil: Web Share API — abre el selector nativo (WhatsApp, Twitter, etc.) con imagen lista
+                if (navigator.share && navigator.canShare) {
+                    const file = new File([blob], `btc-index-${indexValue}.png`, { type: 'image/png' });
+                    if (navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({ files: [file], text: shareText });
+                            btn.innerHTML = originalContent;
+                            btn.style.opacity = '1';
+                            return;
+                        } catch(e) {
+                            // Usuario canceló o falló — caemos al flujo desktop
+                        }
+                    }
+                }
+
+                // Desktop: la imagen NO se puede adjuntar a twitter/intent por diseño de X.
+                // Lo mejor posible: copiar imagen al portapapeles + abrir tweet directamente.
+                let copiedToClipboard = false;
+                if (navigator.clipboard && window.ClipboardItem) {
+                    try {
+                        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                        copiedToClipboard = true;
+                    } catch(e) { /* permisos denegados */ }
+                }
+
+                const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
+                window.open(tweetUrl, '_blank', 'width=550,height=500');
+
+                // Toast informativo según si se pudo copiar al clipboard
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(20,22,30,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 20px;font-size:12px;color:#fff;z-index:400;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);max-width:300px;line-height:1.5;animation:fadeInScale 0.2s ease;';
+                toast.innerHTML = copiedToClipboard
+                    ? (isEs ? '🖼️ Imagen copiada al portapapeles.<br>Pégala en el tweet con <strong>Ctrl+V</strong>' : '🖼️ Image copied to clipboard.<br>Paste it in the tweet with <strong>Ctrl+V</strong>')
+                    : (isEs ? '⬇️ Imagen guardada en Descargas.<br>Adjúntala al tweet manualmente.' : '⬇️ Image saved to Downloads.<br>Attach it to the tweet manually.');
+                document.body.appendChild(toast);
+
+                // Si no se copió al clipboard, descargar la imagen
+                if (!copiedToClipboard) {
+                    const link = document.createElement('a');
+                    link.download = `btc-index-${indexValue}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    setTimeout(() => URL.revokeObjectURL(link.href), 2000);
+                }
+
+                setTimeout(() => toast.remove(), 4000);
+
+            } catch (error) {
+                console.warn('Share error:', error);
+                shareTextOnly();
+            }
+
             btn.innerHTML = originalContent;
             btn.style.opacity = '1';
         }
