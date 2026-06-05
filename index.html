@@ -8,9 +8,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BTC-Live">
     <link rel="manifest" href="manifest.json">
-    <!-- Meta etiquetas para compartir en Twitter -->
     <meta property="og:title" content="BTC-Live Index - Suelos y techos de Bitcoin">
-    <meta property="og:description" content="Índice macro en tiempo real basado en 10 indicadores. Compra en verde (>75), vende en rojo (<25).">
+    <meta property="og:description" content="Índice macro en tiempo real basado en 7 indicadores. Compra en verde (>75), vende en rojo (<25).">
     <meta property="og:image" content="https://i.imgur.com/btc-index-preview.png">
     <meta name="twitter:card" content="summary_large_image">
     <style>
@@ -63,7 +62,6 @@
         @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; }
         
-        /* Botones fijos */
         .theme-toggle-label {
             position: fixed; top: 15px; right: 15px; z-index: 100;
             width: 36px; height: 36px; border-radius: 50%;
@@ -101,7 +99,6 @@
         }
         .share-x-btn:hover { transform: scale(1.05); background: #1DA1F2; box-shadow: 0 6px 20px rgba(29,161,242,0.4); }
         
-        /* Modales */
         #donate-modal-toggle { display: none; }
         .donate-modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -144,7 +141,6 @@
         }
         .qr-box code { font-size: 11px; word-break: break-all; color: var(--text-secondary); background: var(--input-bg); padding: 4px 8px; border-radius: 4px; }
         
-        /* Layout principal */
         .main-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -302,11 +298,11 @@
             margin-top: 2px; 
         }
         
-        /* Grid de indicadores */
         .components-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
+            margin-bottom: 20px;
         }
         @media (max-width: 900px) { 
             .components-grid { grid-template-columns: repeat(2, 1fr); } 
@@ -371,15 +367,12 @@
             margin-bottom: 2px; 
         }
         .letter-c { color: #f39c12; }
-        .letter-f { color: #2196f3; }
         .letter-r { color: #ff9800; }
         .letter-e { color: #03a9f4; }
-        .letter-k { color: #9b59b6; }
-        .letter-t { color: #00cc99; }
-        .letter-u { color: #e91e63; }
+        .letter-f { color: #2196f3; }
         .letter-v { color: #ff5252; }
-        .letter-h { color: #2ecc71; }
-        .letter-a { color: #e67e22; }
+        .letter-m { color: #9b59b6; }
+        .letter-s { color: #e91e63; }
         .comp-name { 
             font-size: 8px; 
             font-weight: 700; 
@@ -418,35 +411,23 @@
             line-height: 1.2; 
         }
         
-        /* Módulo precio BTC */
-        .btc-price-module {
+        /* Cita en el panel derecho */
+        .quote-right {
             background: var(--bg-card);
-            border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px;
-            text-align: center;
+            padding: 12px;
             margin-top: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
         }
-        .btc-price {
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin: 6px 0;
+        .quote-right p {
+            font-size: 11px;
+            font-style: italic;
+            line-height: 1.4;
+            color: var(--text);
         }
-        .btc-change {
-            font-size: 13px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            background: rgba(0,0,0,0.2);
-        }
-        .btc-change.positive { color: #00c087; }
-        .btc-change.negative { color: #e53935; }
-        .btc-update-time {
-            font-size: 8px;
+        .quote-right .author {
+            font-size: 9px;
             color: var(--text-muted);
             margin-top: 6px;
         }
@@ -475,12 +456,15 @@
             backdrop-filter: var(--blur);
         }
         
-        /* Panel para captura */
         #panel-captura {
             border-radius: 24px;
         }
         
-        /* Responsive adicional para móvil */
+        /* Ocultar el módulo de precio que estaba abajo (ya no se necesita) */
+        #btc-price-desktop {
+            display: none;
+        }
+        
         @media (max-width: 600px) {
             .panel-box {
                 padding: 16px;
@@ -501,9 +485,6 @@
             .mini-card-value {
                 font-size: 18px;
             }
-            .btc-price {
-                font-size: 22px;
-            }
             .comp-letter {
                 font-size: 18px;
             }
@@ -519,10 +500,10 @@
 <body>
     <input type="checkbox" id="theme-toggle" hidden>
     <input type="checkbox" id="donate-modal-toggle" hidden>
-    <label for="theme-toggle" class="theme-toggle-label" title="Cambiar tema"></label>
-    <label class="lang-toggle-label" onclick="switchLanguage()" title="Cambiar idioma" id="lang-flag">🇪🇸</label>
+    <label for="theme-toggle" class="theme-toggle-label"></label>
+    <label class="lang-toggle-label" onclick="switchLanguage()" id="lang-flag">🇪🇸</label>
     <label for="donate-modal-toggle" class="donate-btn-label" title="Donar BTC">₿</label>
-    <button class="share-x-btn" onclick="shareOnTwitterWithImage()" title="Compartir en X">𝕏</button>
+    <button class="share-x-btn" onclick="shareOnTwitterWithImage()">𝕏</button>
 
     <div class="donate-modal-overlay">
         <div class="donate-modal-content">
@@ -551,7 +532,6 @@
     <div class="wrapper">
         <div class="container" style="display:flex;flex-direction:column;gap:20px;">
             <div class="main-layout">
-                <!-- PANEL IZQUIERDO (para captura) -->
                 <div class="panel-box" id="panel-captura" style="display:flex;flex-direction:column;">
                     <div class="panel-title" data-i18n="mainTitle">📊 Índice BTC-Live</div>
                     <div id="captura-content">
@@ -574,17 +554,15 @@
                                 <div>100<br><span class="label-suelo" data-i18n="suelo">Suelo</span></div>
                             </div>
                         </div>
-                        <!-- URL para la captura -->
                         <div id="captura-url" style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted);">
                             🔗 https://zoki666.github.io/Indice-BTC-Live/
                         </div>
                     </div>
-                    <!-- El resto del contenido (NO se incluye en la captura) -->
                     <div class="mini-panel-grid">
                         <div class="mini-card">
                             <div class="mini-card-label" data-i18n="indicatorsLabel">Indicadores</div>
                             <div class="mini-card-value" id="active-indicators">-</div>
-                            <div class="mini-card-sub" data-i18n="ofAvailable">de 10 disponibles</div>
+                            <div class="mini-card-sub" data-i18n="ofAvailable">de 7 disponibles</div>
                         </div>
                         <div class="mini-card">
                             <div class="mini-card-label" data-i18n="nextUpdate">Próx. actualización</div>
@@ -592,143 +570,91 @@
                             <div class="mini-card-sub" id="minutes-label" data-i18n="minutes">minutos</div>
                         </div>
                     </div>
-                    <div class="mini-card" style="margin-top:10px;">
-                        <div class="mini-card-label" style="margin-bottom:6px;" data-i18n="reflection">💭 Reflexión</div>
-                        <p style="font-size:11px; color:var(--text); font-style:italic; line-height:1.5; margin:0;" id="daily-quote">"Sé codicioso cuando otros tengan miedo."</p>
-                        <p style="font-size:9px; color:var(--text-muted); margin-top:4px;" id="daily-author">— Warren Buffett</p>
-                    </div>
-                    <div id="btc-price-mobile-container"></div>
+                    <!-- La cita se ha movido al panel derecho -->
                     <div class="timestamp" id="timestamp-text" style="margin-top:auto; padding-top:15px;" data-i18n="waiting">Esperando datos...</div>
                     <div class="loading-indicator" id="loading-status"></div>
                     <div id="partial-warning" style="display:none; font-size:11px; color:var(--accent-orange); text-align:center; margin-top:6px;" data-i18n="partialWarning">⚠ Puntuación provisional</div>
                 </div>
 
-                <!-- PANEL DERECHO (indicadores) -->
                 <div class="panel-box">
                     <div class="panel-title" data-i18n="indicatorsTitle">🧩 Componentes de análisis</div>
-                        <div class="components-grid" id="components-grid">
-                            <!-- C - Pi Cycle Top (20%) -->
-                            <div class="component-card" data-indicator="c">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-c">C</div>
-                                    <button class="help-btn" onclick="openHelp('c')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameC">Pi Cycle Top</div>
-                                <div class="comp-score" id="score-c">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-c"></div></div>
-                                <div class="comp-desc" id="desc-c" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- R - RSI 14 Diario (15%) -->
-                            <div class="component-card" data-indicator="r">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-r">R</div>
-                                    <button class="help-btn" onclick="openHelp('r')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameR">RSI 14 Diario</div>
-                                <div class="comp-score" id="score-r">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-r"></div></div>
-                                <div class="comp-desc" id="desc-r" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- E - EMA 200 Diaria (15%) -->
-                            <div class="component-card" data-indicator="e">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-e">E</div>
-                                    <button class="help-btn" onclick="openHelp('e')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameE">EMA 200 Diaria</div>
-                                <div class="comp-score" id="score-e">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-e"></div></div>
-                                <div class="comp-desc" id="desc-e" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- F - Fear & Greed (SMA7) (10%) -->
-                            <div class="component-card" data-indicator="f">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-f">F</div>
-                                    <button class="help-btn" onclick="openHelp('f')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameF">Fear & Greed</div>
-                                <div class="comp-score" id="score-f">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-f"></div></div>
-                                <div class="comp-desc" id="desc-f" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- N - Reserve Risk (10%) -->
-                            <div class="component-card" data-indicator="n">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-n" style="color: #9b59b6;">N</div>
-                                    <button class="help-btn" onclick="openHelp('n')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameN">Reserve Risk</div>
-                                <div class="comp-score" id="score-n">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-n"></div></div>
-                                <div class="comp-desc" id="desc-n" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- V - Volatilidad (10%) -->
-                            <div class="component-card" data-indicator="v">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-v">V</div>
-                                    <button class="help-btn" onclick="openHelp('v')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameV">Volatilidad</div>
-                                <div class="comp-score" id="score-v">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-v"></div></div>
-                                <div class="comp-desc" id="desc-v" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- H - Hash Ribbon (10%) -->
-                            <div class="component-card" data-indicator="h">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-h">H</div>
-                                    <button class="help-btn" onclick="openHelp('h')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameH">Hash Ribbon</div>
-                                <div class="comp-score" id="score-h">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-h"></div></div>
-                                <div class="comp-desc" id="desc-h" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- A - Active Addresses (10%) -->
-                            <div class="component-card" data-indicator="a">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-a">A</div>
-                                    <button class="help-btn" onclick="openHelp('a')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameA">Active Addresses</div>
-                                <div class="comp-score" id="score-a">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-a"></div></div>
-                                <div class="comp-desc" id="desc-a" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- T - BTC Dominance (5%) -->
-                            <div class="component-card" data-indicator="t">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-t">T</div>
-                                    <button class="help-btn" onclick="openHelp('t')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameT">BTC Dominance</div>
-                                <div class="comp-score" id="score-t">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-t"></div></div>
-                                <div class="comp-desc" id="desc-t" data-i18n="loadingCard">Cargando...</div>
-                            </div>
-                            <!-- U - USDT Dominance (5%) -->
-                            <div class="component-card" data-indicator="u">
-                                <div class="card-header-row">
-                                    <div class="comp-letter letter-u">U</div>
-                                    <button class="help-btn" onclick="openHelp('u')">?</button>
-                                </div>
-                                <div class="comp-name" id="compNameU">USDT Dominance</div>
-                                <div class="comp-score" id="score-u">-</div>
-                                <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-u"></div></div>
-                                <div class="comp-desc" id="desc-u" data-i18n="loadingCard">Cargando...</div>
-                            </div>
+                    <div class="components-grid" id="components-grid">
+                        <!-- C - Pi Cycle Top (22%) -->
+                        <div class="component-card" data-indicator="c">
+                            <div class="card-header-row"><div class="comp-letter letter-c">C</div><button class="help-btn" onclick="openHelp('c')">?</button></div>
+                            <div class="comp-name" id="compNameC">Pi Cycle Top</div>
+                            <div class="comp-score" id="score-c">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-c"></div></div>
+                            <div class="comp-desc" id="desc-c">Cargando...</div>
                         </div>
-                    <!-- Módulo precio BTC (desktop) -->
-                    <div id="btc-price-desktop" class="btc-price-module">
-                        <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);" data-i18n="btcPriceTitle">💰 Precio Bitcoin</div>
-                        <div class="btc-price" id="btc-usd-price">--</div>
-                        <div><span class="btc-change" id="btc-change-24h">--</span></div>
-                        <div class="btc-update-time" id="btc-update-time"></div>
+                        <!-- R - RSI 14 (16%) -->
+                        <div class="component-card" data-indicator="r">
+                            <div class="card-header-row"><div class="comp-letter letter-r">R</div><button class="help-btn" onclick="openHelp('r')">?</button></div>
+                            <div class="comp-name" id="compNameR">RSI 14 Diario</div>
+                            <div class="comp-score" id="score-r">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-r"></div></div>
+                            <div class="comp-desc" id="desc-r">Cargando...</div>
+                        </div>
+                        <!-- E - EMA 200 Semanal (16%) -->
+                        <div class="component-card" data-indicator="e">
+                            <div class="card-header-row"><div class="comp-letter letter-e">E</div><button class="help-btn" onclick="openHelp('e')">?</button></div>
+                            <div class="comp-name" id="compNameE">EMA 200 Semanal</div>
+                            <div class="comp-score" id="score-e">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-e"></div></div>
+                            <div class="comp-desc" id="desc-e">Cargando...</div>
+                        </div>
+                        <!-- F - Fear & Greed (14%) -->
+                        <div class="component-card" data-indicator="f">
+                            <div class="card-header-row"><div class="comp-letter letter-f">F</div><button class="help-btn" onclick="openHelp('f')">?</button></div>
+                            <div class="comp-name" id="compNameF">Fear & Greed</div>
+                            <div class="comp-score" id="score-f">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-f"></div></div>
+                            <div class="comp-desc" id="desc-f">Cargando...</div>
+                        </div>
+                        <!-- V - Volatilidad (14%) -->
+                        <div class="component-card" data-indicator="v">
+                            <div class="card-header-row"><div class="comp-letter letter-v">V</div><button class="help-btn" onclick="openHelp('v')">?</button></div>
+                            <div class="comp-name" id="compNameV">Volatilidad</div>
+                            <div class="comp-score" id="score-v">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-v"></div></div>
+                            <div class="comp-desc" id="desc-v">Cargando...</div>
+                        </div>
+                        <!-- M - MVRV Z-Score (14%) -->
+                        <div class="component-card" data-indicator="m">
+                            <div class="card-header-row"><div class="comp-letter letter-m" style="color: #9b59b6;">M</div><button class="help-btn" onclick="openHelp('m')">?</button></div>
+                            <div class="comp-name" id="compNameM">MVRV Z-Score</div>
+                            <div class="comp-score" id="score-m">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-m"></div></div>
+                            <div class="comp-desc" id="desc-m">Cargando...</div>
+                        </div>
+                        <!-- S - Stablecoin Dom (4%) -->
+                        <div class="component-card" data-indicator="s">
+                            <div class="card-header-row"><div class="comp-letter letter-s" style="color: #e91e63;">S</div><button class="help-btn" onclick="openHelp('s')">?</button></div>
+                            <div class="comp-name" id="compNameS">Stablecoin Dom</div>
+                            <div class="comp-score" id="score-s">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-s"></div></div>
+                            <div class="comp-desc" id="desc-s">Cargando...</div>
+                        </div>
+                        <!-- Precio BTC (tarjeta especial) -->
+                        <div class="component-card" style="background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,152,0,0.15) 100%);">
+                            <div class="card-header-row">
+                                <div class="comp-letter" style="color: var(--accent-orange);">💰</div>
+                            </div>
+                            <div class="comp-name" data-i18n="btcPriceShort">PRECIO BTC</div>
+                            <div class="comp-score" id="btc-price-card">--</div>
+                            <div class="comp-bar-bg" style="background: transparent;"><div class="comp-bar-fill" style="width: 100%; background: var(--accent-orange); opacity: 0.3;"></div></div>
+                            <div class="comp-desc" id="btc-change-card">--</div>
+                        </div>
                     </div>
+                    <!-- Cita movida aquí -->
+                    <div class="quote-right">
+                        <p id="daily-quote">"Sé codicioso cuando otros tengan miedo."</p>
+                        <div class="author" id="daily-author">— Warren Buffett</div>
+                    </div>
+                    <div id="btc-price-desktop"></div>
                 </div>
             </div>
             
-            <!-- Guía inferior -->
             <div class="panel-box">
                 <div class="panel-title" data-i18n="guide">💡 Guía de Estrategia Macro</div>
                 <div style="display:flex;flex-direction:column;gap:20px;font-size:14px;color:var(--text-secondary);line-height:1.7;">
@@ -740,7 +666,7 @@
                             <li id="ruleSell"><strong style="color:#e53935;">▼ Cuanto más bajo (0-25) → zona de VENTA.</strong><br>El mercado está caro, hay euforia, codicia o sobrevaloración. Es el momento de tomar ganancias o proteger el capital.</li>
                             <li id="ruleNeutral"><strong style="color:#ff9800;">● Zona media (26-74) → NEUTRAL.</strong><br>No hay señales extremas en ninguna dirección. Se puede mantener la estrategia actual sin cambios drásticos.</li>
                         </ul>
-                        <p style="margin-top:12px;font-size:13px;color:var(--text-muted);" id="indicatorsNote">💡 Cada indicador individual (C, F, R, E, K, T, U, V, H, A) también sigue esta misma lógica de 0 a 10, y el índice final es un promedio ponderado que da más peso a los indicadores con mejor historial predictivo.</p>
+                        <p style="margin-top:12px;font-size:13px;color:var(--text-muted);" id="indicatorsNote">💡 Cada indicador individual (C, R, E, F, V, M, S) sigue la lógica 0-10, y el índice final es un promedio ponderado.</p>
                     </div>
                     <div style="background:var(--bg-card);border-left:4px solid #00c087;padding:18px;border-radius:8px;"><h4 style="color:#00c087;margin-bottom:10px;font-size:15px;" id="accumTitle">🟢 Zona de Acumulación DCA (Índice ≥ 75)</h4><p style="color:var(--text);margin-bottom:10px;" id="accumDesc"><strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación.</p><ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;"><li id="accumLi1">✔️ Programa compras automáticas periódicas (DCA).</li><li id="accumLi2">✔️ Aumenta ligeramente el tamaño de compra si el índice supera 85-90.</li><li id="accumLi3">✔️ Ignora el ruido mediático: las noticias serán negativas.</li><li id="accumLi4">✔️ Piensa a 6-18 meses vista.</li></ul></div>
                     <div style="background:var(--bg-card);border-left:4px solid #e53935;padding:18px;border-radius:8px;"><h4 style="color:#e53935;margin-bottom:10px;font-size:15px;" id="sellTitle">🔴 Zona de Distribución / Venta (Índice ≤ 25)</h4><p style="color:var(--text);margin-bottom:10px;" id="sellDesc"><strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.</p><ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;"><li id="sellLi1">⚠️ Deja de comprar inmediatamente.</li><li id="sellLi2">💰 Vende un 25-50% de tu posición.</li><li id="sellLi3">🛑 Sube tus stop-loss.</li><li id="sellLi4">🧊 Guarda liquidez para la próxima zona de acumulación.</li></ul></div>
@@ -762,71 +688,64 @@
     </div>
 
     <script>
-        // ==================== TRADUCCIONES ====================
         const translations = {
             es: {
                 title: "BTC-Live Index", mainTitle: "📊 Índice BTC-Live", loading: "Calculando...", noData: "Sin datos",
                 strongBuy: "Acumulación Fuerte (DCA)", neutral: "Neutral", sell: "Distribución / Riesgo (Vender)",
-                indicatorsTitle: "🧩 Componentes de análisis", indicatorsLabel: "Indicadores", ofAvailable: "de 10 disponibles",
+                indicatorsTitle: "🧩 Componentes de análisis", indicatorsLabel: "Indicadores", ofAvailable: "de 7 disponibles",
                 nextUpdate: "Próx. actualización", minutes: "minutos", reflection: "💭 Reflexión", updated: "Actualizado",
                 waiting: "Esperando datos...", sync: "Sincronizando datos...", partialWarning: "⚠ Puntuación provisional (algunos indicadores no disponibles)",
                 donate: "Donar BTC", support: "Apoya el proyecto", onchain: "On-chain", lightning: "Lightning", scan: "Escanea con tu wallet",
                 guide: "💡 Guía de Estrategia Macro", interpretation: "Interpretación (0‑10)", unavailable: "No disponible", loadingCard: "Cargando...",
-                techo: "Techo", suelo: "Suelo", neutralLabel: "Neutral", btcPriceTitle: "💰 Precio Bitcoin",
+                techo: "Techo", suelo: "Suelo", neutralLabel: "Neutral", btcPriceTitle: "💰 Precio Bitcoin", btcPriceShort: "PRECIO BTC",
                 howToReadTitle: "🧭 Cómo leer este índice", howToReadDesc: "El Índice BTC-Live va de <strong style=\"color:#e53935;\">0 (techo de mercado)</strong> a <strong style=\"color:#00c087;\">100 (suelo de mercado)</strong>. La regla es simple:",
                 ruleBuy: "<strong style=\"color:#00c087;\">▲ Cuanto más alto (75-100) → zona de COMPRA.</strong><br>El mercado está barato, hay miedo, capitulación o infravaloración. Es el momento de acumular BTC con visión a largo plazo.",
                 ruleSell: "<strong style=\"color:#e53935;\">▼ Cuanto más bajo (0-25) → zona de VENTA.</strong><br>El mercado está caro, hay euforia, codicia o sobrevaloración. Es el momento de tomar ganancias o proteger el capital.",
                 ruleNeutral: "<strong style=\"color:#ff9800;\">● Zona media (26-74) → NEUTRAL.</strong><br>No hay señales extremas en ninguna dirección. Se puede mantener la estrategia actual sin cambios drásticos.",
-                indicatorsNote: "💡 Cada indicador individual (C, F, R, E, N, T, U, V, H, A) también sigue esta misma lógica de 0 a 10, y el índice final es un promedio ponderado que da más peso a los indicadores con mejor historial predictivo.",
+                indicatorsNote: "💡 Cada indicador individual (C, R, E, F, V, M, S) sigue la lógica 0-10, y el índice final es un promedio ponderado.",
                 accumTitle: "🟢 Zona de Acumulación DCA (Índice ≥ 75)", accumDesc: "<strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación.",
                 accumLi1: "✔️ Programa compras automáticas periódicas (DCA).", accumLi2: "✔️ Aumenta ligeramente el tamaño de compra si el índice supera 85-90.", accumLi3: "✔️ Ignora el ruido mediático: las noticias serán negativas.", accumLi4: "✔️ Piensa a 6-18 meses vista.",
                 sellTitle: "🔴 Zona de Distribución / Venta (Índice ≤ 25)", sellDesc: "<strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.",
                 sellLi1: "⚠️ Deja de comprar inmediatamente.", sellLi2: "💰 Vende un 25-50% de tu posición.", sellLi3: "🛑 Sube tus stop-loss.", sellLi4: "🧊 Guarda liquidez para la próxima zona de acumulación.",
                 disclaimer: "⚠️ <strong>Descargo de responsabilidad:</strong> Este índice es una herramienta educativa basada en datos históricos y no constituye asesoramiento financiero.",
-                compNameC: "Pi Cycle Top", compNameF: "Fear & Greed", compNameR: "RSI 14 Diario", compNameE: "EMA 200 Diaria", compNameN: "Reserve Risk", compNameT: "BTC Dominance", compNameU: "USDT Dominance", compNameV: "Volatilidad", compNameH: "Hash Ribbon", compNameA: "Active Addresses",
-                helpC_title: "C - Pi Cycle Top", helpC_desc: "Compara el precio actual con SMA(111) y SMA(350)*2. Históricamente, cuando el precio cruza la SMA(350)*2 se han producido techos de ciclo.", helpC_strat: "0 = precio cerca o por encima del cruce (techo probable).\n10 = precio muy por debajo del cruce (suelo, oportunidad de compra).",
+                compNameC: "Pi Cycle Top", compNameR: "RSI 14 Diario", compNameE: "EMA 200 Semanal", compNameF: "Fear & Greed", compNameV: "Volatilidad", compNameM: "MVRV Z-Score", compNameS: "Stablecoin Dom",
+                helpC_title: "C - Pi Cycle Top", helpC_desc: "Compara el precio actual con SMA(111) y SMA(350)*2. Históricamente, cuando el precio cruza la SMA(350)*2 se han producido techos de ciclo.", helpC_strat: "0 = precio cerca o por encima del cruce (techo probable).\n10 = precio muy por debajo del cruce (suelo).",
+                helpR_title: "R - RSI 14 Diario", helpR_desc: "Índice de Fuerza Relativa de 14 días. Sobre 70 = sobrecompra, bajo 30 = sobreventa.", helpR_strat: "0 = RSI > 80 (techo).\n10 = RSI < 20 (suelo).",
+                helpE_title: "E - EMA 200 Semanal", helpE_desc: "Distancia del precio a la media móvil exponencial de 200 semanas. Señal de largo plazo.", helpE_strat: "0 = precio > 2x EMA (techo).\n10 = precio < 0.5x EMA (suelo).",
                 helpF_title: "F - Fear & Greed", helpF_desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", helpF_strat: "0 = codicia extrema (vender).\n10 = miedo extremo (comprar).",
-                helpR_title: "R - RSI 14 Diario", helpR_desc: "Índice de Fuerza Relativa de 14 días. Sobre 70 = sobrecompra, bajo 30 = sobreventa.", helpR_strat: "0 = RSI > 80 (sobrecompra, vender).\n10 = RSI < 20 (sobreventa, comprar).",
-                helpE_title: "E - EMA 200 Diaria", helpE_desc: "Distancia del precio a la media móvil exponencial de 200 días. Precio por debajo = descuento, precio muy por encima = sobre-extensión.", helpE_strat: "0 = precio > 2x EMA (extremo alcista, vender).\n10 = precio < 0.5x EMA (suelo, comprar).",
-                helpN_title: "N - Reserve Risk", helpN_desc: "Mide la relación entre el 'HODL Bank' (monedas no movidas) y el precio. Valores muy bajos indican que el riesgo de comprar es mínimo (suelo). Valores altos indican euforia (techo).", helpN_strat: "0 = Reserve Risk > 0.008 (techo).\n10 = Reserve Risk < 0.002 (suelo).",
-                helpT_title: "T - BTC Dominance", helpT_desc: "Porcentaje de capitalización de Bitcoin respecto al total del mercado cripto. Alta = acumulación y fin de altseason. Baja = euforia en altcoins.", helpT_strat: "0 = dominancia en mínimos (techo).\n10 = dominancia en máximos (suelo).",
-                helpU_title: "U - USDT Dominance", helpU_desc: "Porcentaje de capitalización de USDT. Alta = dinero refugiado en stablecoins (miedo). Baja = dinero desplegado en cripto (optimismo).", helpU_strat: "0 = USDT.D en mínimos (techo).\n10 = USDT.D en máximos (suelo).",
                 helpV_title: "V - Volatilidad", helpV_desc: "Volatilidad histórica a 30 días. Picos de volatilidad indican pánico (suelos), volatilidad muy baja indica complacencia (techos).", helpV_strat: "0 = volatilidad en mínimos (techo).\n10 = volatilidad en máximos (suelo).",
-                helpH_title: "H - Hash Ribbon", helpH_desc: "Mide la capitulación de los mineros. Cuando la SMA30 del hash rate cruza por encima de la SMA60 tras un periodo de caída, suele marcar suelos de mercado.", helpH_strat: "0 = hash rate en máximos (techo).\n10 = cruce alcista del hash ribbon (suelo).",
-                helpA_title: "A - Active Addresses", helpA_desc: "Número de direcciones únicas activas por día. Picos extremos indican euforia (techo); mínimos indican desinterés (suelo).", helpA_strat: "0 = actividad récord (techo).\n10 = actividad en mínimos de 2 años (suelo).",
-                quotes: [{ text: '"Sé codicioso cuando otros tengan miedo."', author: 'Warren Buffett' }, { text: '"Bitcoin es una herramienta para liberar a la humanidad."', author: 'Satoshi Nakamoto' }, { text: '"El tiempo en el mercado es más importante que cronometrarlo."', author: 'Proverbio' }]
+                helpM_title: "M - MVRV Z-Score", helpM_desc: "Compara el valor de mercado con el valor realizado. Muy alto (>3.5) = techo. Muy bajo (<0.8) = suelo.", helpM_strat: "0 = MVRV > 3.5 (techo).\n10 = MVRV < 0.8 (suelo).",
+                helpS_title: "S - Stablecoin Dominance", helpS_desc: "Porcentaje de capitalización combinado de USDT y USDC. Alto = miedo extremo (suelo). Bajo = euforia (techo).", helpS_strat: "0 = dominancia < 3% (techo).\n10 = dominancia > 12% (suelo).",
+                quotes: [{ text: '"Sé codicioso cuando otros tengan miedo."', author: 'Warren Buffett' }]
             },
             en: {
                 title: "BTC-Live Index", mainTitle: "📊 BTC-Live Index", loading: "Calculating...", noData: "No data",
                 strongBuy: "Strong Accumulation (DCA)", neutral: "Neutral", sell: "Distribution / Risk (Sell)",
-                indicatorsTitle: "🧩 Analysis Components", indicatorsLabel: "Indicators", ofAvailable: "of 10 available",
+                indicatorsTitle: "🧩 Analysis Components", indicatorsLabel: "Indicators", ofAvailable: "of 7 available",
                 nextUpdate: "Next update", minutes: "minutes", reflection: "💭 Reflection", updated: "Updated",
-                waiting: "Waiting for data...", sync: "Syncing market data...", partialWarning: "⚠ Provisional score (some indicators unavailable)",
+                waiting: "Waiting for data...", sync: "Syncing market data...", partialWarning: "⚠ Provisional score",
                 donate: "Donate BTC", support: "Support the project", onchain: "On-chain", lightning: "Lightning", scan: "Scan with your wallet",
                 guide: "💡 Macro Strategy Guide", interpretation: "Interpretation (0‑10)", unavailable: "Unavailable", loadingCard: "Loading...",
-                techo: "Top", suelo: "Bottom", neutralLabel: "Neutral", btcPriceTitle: "💰 Bitcoin Price",
-                howToReadTitle: "🧭 How to read this index", howToReadDesc: "The BTC-Live Index goes from <strong style=\"color:#e53935;\">0 (market top)</strong> to <strong style=\"color:#00c087;\">100 (market bottom)</strong>. The rule is simple:",
-                ruleBuy: "<strong style=\"color:#00c087;\">▲ Higher (75-100) → BUY zone.</strong><br>The market is cheap, fear, capitulation or undervaluation. Time to accumulate BTC with a long-term view.",
-                ruleSell: "<strong style=\"color:#e53935;\">▼ Lower (0-25) → SELL zone.</strong><br>The market is expensive, euphoria, greed or overvaluation. Time to take profits or protect capital.",
-                ruleNeutral: "<strong style=\"color:#ff9800;\">● Middle zone (26-74) → NEUTRAL.</strong><br>No extreme signals in either direction. Maintain current strategy without drastic changes.",
-                indicatorsNote: "💡 Each individual indicator (C, F, R, E, N, T, U, V, H, A) also follows the same 0-10 logic, and the final index is a weighted average giving more weight to indicators with better predictive track record.",
-                accumTitle: "🟢 DCA Accumulation Zone (Index ≥ 75)", accumDesc: "<strong>This is the ideal time to buy.</strong> The market is in a phase of fear, undervaluation or capitulation.",
+                techo: "Top", suelo: "Bottom", neutralLabel: "Neutral", btcPriceTitle: "💰 Bitcoin Price", btcPriceShort: "BTC PRICE",
+                howToReadTitle: "🧭 How to read this index", howToReadDesc: "The BTC-Live Index goes from <strong style=\"color:#e53935;\">0 (market top)</strong> to <strong style=\"color:#00c087;\">100 (market bottom)</strong>.",
+                ruleBuy: "<strong style=\"color:#00c087;\">▲ Higher (75-100) → BUY zone.</strong><br>The market is cheap, fear, capitulation. Time to accumulate BTC.",
+                ruleSell: "<strong style=\"color:#e53935;\">▼ Lower (0-25) → SELL zone.</strong><br>The market is expensive, euphoria, greed. Time to take profits.",
+                ruleNeutral: "<strong style=\"color:#ff9800;\">● Middle zone (26-74) → NEUTRAL.</strong><br>No extreme signals. Maintain current strategy.",
+                indicatorsNote: "💡 Each indicator (C, R, E, F, V, M, S) follows 0-10 logic, final index weighted average.",
+                accumTitle: "🟢 DCA Accumulation Zone (Index ≥ 75)", accumDesc: "<strong>Ideal time to buy.</strong> Market fear, undervaluation or capitulation.",
                 accumLi1: "✔️ Schedule periodic automatic purchases (DCA).", accumLi2: "✔️ Slightly increase purchase size if index exceeds 85-90.", accumLi3: "✔️ Ignore media noise: news will be negative.", accumLi4: "✔️ Think 6-18 months ahead.",
-                sellTitle: "🔴 Distribution / Selling Zone (Index ≤ 25)", sellDesc: "<strong>Time to secure profits.</strong> The market is in a phase of euphoria, greed or overvaluation.",
+                sellTitle: "🔴 Distribution / Selling Zone (Index ≤ 25)", sellDesc: "<strong>Time to secure profits.</strong> Market euphoria, greed or overvaluation.",
                 sellLi1: "⚠️ Stop buying immediately.", sellLi2: "💰 Sell 25-50% of your position.", sellLi3: "🛑 Raise your stop-losses.", sellLi4: "🧊 Keep liquidity for the next accumulation zone.",
                 disclaimer: "⚠️ <strong>Disclaimer:</strong> This index is an educational tool based on historical data and does not constitute financial advice.",
-                compNameC: "Pi Cycle Top", compNameF: "Fear & Greed", compNameR: "RSI 14 Daily", compNameE: "EMA 200 Daily", compNameN: "Reserve Risk", compNameT: "BTC Dominance", compNameU: "USDT Dominance", compNameV: "Volatility", compNameH: "Hash Ribbon", compNameA: "Active Addresses",
-                helpC_title: "C - Pi Cycle Top", helpC_desc: "Compares current price with SMA(111) and SMA(350)*2. Historically, when price crosses SMA(350)*2, cycle tops have occurred.", helpC_strat: "0 = price near or above the cross (likely top).\n10 = price well below the cross (bottom, buying opportunity).",
-                helpF_title: "F - Fear & Greed", helpF_desc: "Measures market sentiment. Low values indicate extreme fear (opportunity), high values indicate extreme greed (risk).", helpF_strat: "0 = extreme greed (sell).\n10 = extreme fear (buy).",
-                helpR_title: "R - RSI 14 Daily", helpR_desc: "Relative Strength Index over 14 days. Above 70 = overbought, below 30 = oversold.", helpR_strat: "0 = RSI > 80 (overbought, sell).\n10 = RSI < 20 (oversold, buy).",
-                helpE_title: "E - EMA 200 Daily", helpE_desc: "Price distance to the 200-day exponential moving average. Below = discount, far above = overextension.", helpE_strat: "0 = price > 2x EMA (extreme bullish, sell).\n10 = price < 0.5x EMA (bottom, buy).",
-                helpN_title: "N - Reserve Risk", helpN_desc: "Measures the ratio between 'HODL Bank' (coins not moved) and price. Very low values indicate minimal buying risk (bottom). High values indicate euphoria (top).", helpN_strat: "0 = Reserve Risk > 0.008 (top).\n10 = Reserve Risk < 0.002 (bottom).",
-                helpT_title: "T - BTC Dominance", helpT_desc: "Bitcoin market cap percentage of total crypto market. High = accumulation and end of altseason. Low = euphoria in altcoins.", helpT_strat: "0 = dominance at lows (top).\n10 = dominance at highs (accumulation).",
-                helpU_title: "U - USDT Dominance", helpU_desc: "USDT market cap percentage. High = money sheltered in stablecoins (fear). Low = money deployed in crypto (optimism).", helpU_strat: "0 = USDT.D at lows (top).\n10 = USDT.D at highs (bottom).",
-                helpV_title: "V - Volatility", helpV_desc: "30-day historical volatility. Volatility spikes indicate panic (bottoms), very low volatility indicates complacency (tops).", helpV_strat: "0 = volatility at lows (top).\n10 = volatility at highs (bottom).",
-                helpH_title: "H - Hash Ribbon", helpH_desc: "Measures miner capitulation. When the 30-day SMA of hash rate crosses above the 60-day SMA after a period of decline, it often marks market bottoms.", helpH_strat: "0 = hash rate at highs (top).\n10 = hash ribbon bullish cross (bottom).",
-                helpA_title: "A - Active Addresses", helpA_desc: "Number of unique active addresses per day. Extreme peaks indicate euphoria (top); lows indicate disinterest (bottom).", helpA_strat: "0 = record activity (top).\n10 = 2-year low activity (bottom).",
-                quotes: [{ text: '"Be fearful when others are greedy."', author: 'Warren Buffett' }, { text: '"Bitcoin is a tool to free humanity."', author: 'Satoshi Nakamoto' }, { text: '"Time in the market beats timing the market."', author: 'Proverb' }]
+                compNameC: "Pi Cycle Top", compNameR: "RSI 14 Daily", compNameE: "EMA 200 Weekly", compNameF: "Fear & Greed", compNameV: "Volatility", compNameM: "MVRV Z-Score", compNameS: "Stablecoin Dom",
+                helpC_title: "C - Pi Cycle Top", helpC_desc: "Compares current price with SMA(111) and SMA(350)*2.", helpC_strat: "0 = near or above cross (top).\n10 = well below cross (bottom).",
+                helpR_title: "R - RSI 14 Daily", helpR_desc: "Relative Strength Index over 14 days.", helpR_strat: "0 = RSI > 80 (top).\n10 = RSI < 20 (bottom).",
+                helpE_title: "E - EMA 200 Weekly", helpE_desc: "Price distance to 200-week exponential moving average.", helpE_strat: "0 = price > 2x EMA (top).\n10 = price < 0.5x EMA (bottom).",
+                helpF_title: "F - Fear & Greed", helpF_desc: "Market sentiment. Low = extreme fear (opportunity), high = extreme greed (risk).", helpF_strat: "0 = extreme greed (sell).\n10 = extreme fear (buy).",
+                helpV_title: "V - Volatility", helpV_desc: "30-day historical volatility.", helpV_strat: "0 = low volatility (top).\n10 = high volatility (bottom).",
+                helpM_title: "M - MVRV Z-Score", helpM_desc: "Compares market value with realized value.", helpM_strat: "0 = MVRV > 3.5 (top).\n10 = MVRV < 0.8 (bottom).",
+                helpS_title: "S - Stablecoin Dominance", helpS_desc: "Combined USDT+USDC market cap percentage. High = extreme fear (bottom).", helpS_strat: "0 = dominance < 3% (top).\n10 = dominance > 12% (bottom).",
+                quotes: [{ text: '"Be fearful when others are greedy."', author: 'Warren Buffett' }]
             }
         };
         
@@ -844,11 +763,11 @@
         }
         
         function updateAllTexts() {
-            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (key) el.innerText = t(key); });
+            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (key && translations[currentLang][key]) el.innerText = t(key); });
             document.querySelectorAll('.label-techo, .label-neutral, .label-suelo').forEach(el => { const key = el.getAttribute('data-i18n'); if (key) el.innerText = t(key); });
             const htmlIds = ['howToReadTitle','howToReadDesc','ruleBuy','ruleSell','ruleNeutral','indicatorsNote','accumTitle','accumDesc','accumLi1','accumLi2','accumLi3','accumLi4','sellTitle','sellDesc','sellLi1','sellLi2','sellLi3','sellLi4','disclaimer'];
             htmlIds.forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = t(id); });
-            const comps = ['c','f','r','e','n','t','u','v','h','a'];
+            const comps = ['c','r','e','f','v','m','s'];
             comps.forEach(l => { const el = document.getElementById(`compName${l.toUpperCase()}`); if(el) el.innerText = t(`compName${l.toUpperCase()}`); });
             document.title = t('title');
             document.getElementById('minutes-label') && (document.getElementById('minutes-label').innerText = t('minutes'));
@@ -868,31 +787,10 @@
             }, 60000);
         }
         
-        // Tema
         (function() { const t = document.getElementById('theme-toggle'); if(localStorage.getItem('btc-live-theme') === 'light') t.checked = true; t.addEventListener('change', function() { localStorage.setItem('btc-live-theme', this.checked ? 'light' : 'dark'); }); })();
         
-        // Mover precio en móvil
-        function repositionBTCPrice() {
-            const isMobile = window.innerWidth <= 768;
-            const desktop = document.getElementById('btc-price-desktop');
-            const mobileContainer = document.getElementById('btc-price-mobile-container');
-            if(isMobile && desktop && mobileContainer && !mobileContainer.contains(desktop)) {
-                mobileContainer.appendChild(desktop);
-                desktop.style.marginTop = '20px';
-            } else if(!isMobile && desktop) {
-                const rightPanel = document.querySelector('.main-layout > .panel-box:last-child');
-                if(rightPanel && !rightPanel.contains(desktop) && desktop.parentElement !== rightPanel) {
-                    rightPanel.appendChild(desktop);
-                    desktop.style.marginTop = '24px';
-                }
-            }
-        }
-        window.addEventListener('resize', repositionBTCPrice);
-        
-        // ==================== LÓGICA DE INDICADORES ====================
-        // 10 indicadores: C, F, R, E, N, T, U, V, H, A
-        const indicators = ['c','f','r','e','n','t','u','v','h','a'];
-        const weights = { c: 20, f: 10, r: 15, e: 15, n: 10, t: 5, u: 5, v: 10, h: 10, a: 10 };
+        const indicators = ['c','r','e','f','v','m','s'];
+        const weights = { c: 22, r: 16, e: 16, f: 14, v: 14, m: 14, s: 4 };
         const state = {};
         indicators.forEach(id => state[id] = { score: 5, available: false, desc: t('loadingCard') });
         
@@ -909,7 +807,7 @@
         function openHelp(key) { const data = getHelpDatabase()[key]; if(data) { document.getElementById('modal-title').innerText = data.title; document.getElementById('modal-desc').innerText = data.desc; document.getElementById('modal-strat').innerText = data.strat; document.getElementById('help-modal').style.display = 'flex'; } }
         function closeHelp() { document.getElementById('help-modal').style.display = 'none'; }
         
-        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/10'; el.style.color = count === 10 ? '#00c087' : count >= 7 ? '#ff9800' : '#e53935'; } }
+        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/7'; el.style.color = count === 7 ? '#00c087' : count >= 5 ? '#ff9800' : '#e53935'; } }
         
         let countdownSeconds = 900;
         setInterval(() => { const el = document.getElementById('countdown-timer'); if(el) { el.innerText = Math.floor(countdownSeconds/60) + ':' + String(countdownSeconds%60).padStart(2,'0'); countdownSeconds = countdownSeconds <= 0 ? 900 : countdownSeconds - 1; } }, 1000);
@@ -939,240 +837,210 @@
         
         function updateTimestamp() { const now = new Date(), pad = n => String(n).padStart(2,'0'); els.timestamp.innerText = t('updated') + ': ' + pad(now.getDate()) + '/' + pad(now.getMonth()+1) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds()); }
         
-        // ========== FUNCIONES AUXILIARES ==========
         async function fetchWithTimeout(url, timeout=10000) { const controller = new AbortController(); const id = setTimeout(() => controller.abort(), timeout); try { const res = await fetch(url, { signal: controller.signal }); clearTimeout(id); return res; } catch(e) { clearTimeout(id); throw e; } }
         
-        // ========== NUEVO: RESERVE RISK ==========
-        async function getReserveRiskScore() {
-            const providers = [
-                async () => {
-                    const res = await fetchWithTimeout('https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=HODLBank,PriceUSD&frequency=1d&limit=1');
-                    if (!res.ok) throw new Error();
-                    const data = await res.json();
-                    const hodlBank = parseFloat(data.data[0].HODLBank);
-                    const price = parseFloat(data.data[0].PriceUSD);
-                    return hodlBank / price;
-                }
-            ];
-            for (const prov of providers) {
-                try {
-                    const risk = await prov();
-                    // Reserve Risk: típicamente entre 0.0005 y 0.02
-                    // < 0.002 = suelo (score 10); > 0.008 = techo (score 0)
-                    let score = 0;
-                    if (risk >= 0.008) score = 0;
-                    else if (risk <= 0.002) score = 10;
-                    else score = Math.round(10 - ((risk - 0.002) / 0.006) * 10);
-                    score = Math.max(0, Math.min(10, score));
-                    return { score, desc: `RR: ${(risk * 1000).toFixed(2)}k` };
-                } catch (e) { continue; }
-            }
-            return { score: 5, desc: 'N/D' };
-        }
-        
-        // ========== FEAR & GREED CON SMA7 ==========
-        let fngHistory = [];
         async function updateIndicatorF() {
             try {
                 const res = await fetch('https://api.alternative.me/fng/?limit=10');
                 if (!res.ok) throw new Error();
                 const data = await res.json();
                 const values = data.data.map(d => parseInt(d.value));
-                fngHistory = values;
-                let sma7 = 50;
-                if (values.length >= 7) {
-                    const last7 = values.slice(0, 7);
-                    sma7 = last7.reduce((a, b) => a + b, 0) / 7;
-                } else {
-                    sma7 = values[0] || 50;
-                }
+                let sma7 = values.slice(0,7).reduce((a,b)=>a+b,0)/7;
                 let score = Math.max(0, Math.min(10, 10 - Math.round(sma7 / 10)));
                 state.f.score = score;
                 state.f.desc = `FG: ${Math.round(sma7)} (SMA7)`;
                 state.f.available = true;
-            } catch (e) {
-                console.warn('F&G error:', e);
-                state.f.available = false;
-            }
+            } catch (e) { console.warn('F&G error:', e); state.f.available = false; }
         }
         
-        // ========== HASH RIBBON CORREGIDO (cruce de medias) ==========
-        let hashHistory = [];
-        async function getHashRateScore() {
-            const providers = [
-                async () => {
-                    const res = await fetchWithTimeout('https://blockchain.info/q/hashrate');
-                    return parseFloat(await res.text()) / 1e6;
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://min-api.cryptocompare.com/data/mining/hashrate?fsym=BTC');
-                    const data = await res.json();
-                    return data.Data[0].hashrate / 1e18;
-                }
-            ];
-            let currentHash = null;
-            for (const prov of providers) {
-                try {
-                    currentHash = await prov();
-                    break;
-                } catch (e) { continue; }
-            }
-            if (!currentHash) return { score: 5, desc: 'N/D' };
-            
-            hashHistory.push(currentHash);
-            if (hashHistory.length > 90) hashHistory.shift();
-            
-            if (hashHistory.length < 60) {
-                return { score: 5, desc: `${currentHash.toFixed(1)} EH/s (histórico insuficiente)` };
-            }
-            
-            const sma30 = hashHistory.slice(-30).reduce((a, b) => a + b, 0) / 30;
-            const sma60 = hashHistory.slice(-60).reduce((a, b) => a + b, 0) / 60;
-            
-            const wasBelow = hashHistory.length > 61 && 
-                             hashHistory.slice(-61, -31).reduce((a, b) => a + b, 0) / 30 < 
-                             hashHistory.slice(-61, -1).reduce((a, b) => a + b, 0) / 60;
-            
-            let score = 5;
-            let desc = `${currentHash.toFixed(1)} EH/s | SMA30: ${sma30.toFixed(1)} | SMA60: ${sma60.toFixed(1)}`;
-            
-            if (sma30 > sma60 && wasBelow) {
-                score = 10;
-                desc += ' ✅ CRUCE ALCISTA (SUELO)';
-            } else if (sma30 < sma60) {
-                score = 3;
-                desc += ' ⚠️ CAPITULACIÓN ACTIVA';
-            } else {
-                score = 6;
-            }
-            return { score, desc };
+        async function getMVRVScore() {
+            try {
+                const [priceRes, coinRes] = await Promise.all([fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'), fetch('https://api.coingecko.com/api/v3/coins/bitcoin')]);
+                if (!priceRes.ok || !coinRes.ok) throw new Error();
+                const priceData = await priceRes.json();
+                const coinData = await coinRes.json();
+                const marketCap = coinData.market_data.market_cap.usd;
+                const supply = coinData.market_data.circulating_supply;
+                const histRes = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365');
+                const histData = await histRes.json();
+                const prices = histData.prices.map(p => p[1]);
+                const avgPrice = prices.reduce((a,b)=>a+b,0)/prices.length;
+                const realizedCap = avgPrice * supply;
+                const mvrv = marketCap / realizedCap;
+                let score = mvrv >= 3.5 ? 1 : mvrv <= 0.8 ? 9 : Math.round(5 - (mvrv - 1.5) * 2);
+                score = Math.max(0, Math.min(10, score));
+                return { score, desc: `MVRV: ${mvrv.toFixed(2)}`, available: true };
+            } catch(e) { return { score: 5, desc: 'Calculando...', available: false }; }
         }
         
-        // ========== ACTIVE ADDRESSES (percentil) ==========
-        async function getActiveAddressesScore() {
-            const providers = [
-                async () => {
-                    const res = await fetchWithTimeout('https://blockchain.info/charts/n-active-addresses?format=json&timespan=2years');
-                    const data = await res.json();
-                    return data.values.map(v => v.y);
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://api.blockchain.info/charts/active-addresses?format=json&timespan=2years');
-                    const data = await res.json();
-                    return data.values.map(v => v.y);
-                }
-            ];
-            for (const prov of providers) {
-                try {
-                    const values = await prov();
-                    if (!values.length) continue;
-                    const current = values[values.length - 1];
-                    const sorted = [...values].sort((a, b) => a - b);
-                    const percentile = sorted.findIndex(v => v >= current) / sorted.length;
-                    let score = Math.max(0, Math.min(10, Math.round((0.8 - percentile) * 12.5)));
-                    return { score, desc: `${current.toLocaleString()} direcciones (percentil ${Math.round(percentile * 100)}%)` };
-                } catch (e) { continue; }
-            }
-            return { score: 5, desc: 'N/D' };
-        }
-        
-        // ========== BTC y USDT DOMINANCE con PERCENTIL ==========
-        let btcDomHistory = [], usdtDomHistory = [];
-        async function updateIndicatorsTU() {
+        async function updateStablecoinDominance() {
             try {
                 const res = await fetch('https://api.coingecko.com/api/v3/global');
                 if (!res.ok) throw new Error();
                 const d = await res.json();
-                let btcDom = d.data.market_cap_percentage.btc;
-                let usdtDom = d.data.market_cap_percentage.usdt || 5;
+                let usdtDom = d.data.market_cap_percentage.usdt || 0;
+                let usdcDom = d.data.market_cap_percentage.usdc || 0;
+                let totalDom = usdtDom + usdcDom;
                 
-                btcDomHistory.push(btcDom);
-                usdtDomHistory.push(usdtDom);
-                if (btcDomHistory.length > 100) btcDomHistory.shift();
-                if (usdtDomHistory.length > 100) usdtDomHistory.shift();
+                let score = 5;
+                let desc = `${totalDom.toFixed(1)}% (USDT+USDC)`;
+                if (totalDom >= 12) { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
+                else if (totalDom >= 10) { score = 9; desc += ' MUCHO MIEDO'; }
+                else if (totalDom >= 8.5) { score = 8; desc += ' MIEDO MODERADO'; }
+                else if (totalDom >= 7) { score = 7; desc += ' TENDENCIA A MIEDO'; }
+                else if (totalDom >= 6) { score = 6; desc += ' LIGERO MIEDO'; }
+                else if (totalDom >= 5) { score = 5; desc += ' NEUTRAL'; }
+                else if (totalDom >= 4) { score = 4; desc += ' LIGERA EUFORIA'; }
+                else if (totalDom >= 3) { score = 3; desc += ' EUFORIA MODERADA'; }
+                else if (totalDom >= 2) { score = 2; desc += ' EUFORIA ALTA'; }
+                else { score = 1; desc += ' EUFORIA EXTREMA (TECHO)'; }
                 
-                let btcPercentil = 0.5;
-                if (btcDomHistory.length > 10) {
-                    const sorted = [...btcDomHistory].sort((a, b) => a - b);
-                    const idx = sorted.findIndex(v => v >= btcDom);
-                    btcPercentil = idx / sorted.length;
-                }
-                let btcScore = Math.max(0, Math.min(10, Math.round((btcPercentil - 0.2) * 12.5)));
+                state.s.score = score;
+                state.s.desc = desc;
+                state.s.available = true;
+            } catch(e) { console.warn('Stablecoin error:', e); state.s.available = false; }
+        }
+        
+        // ================= FUNCIONES TÉCNICAS CON TEMPORALIDAD SEPARADA =================
+        // Proveedores de velas DIARIAS (para Pi Cycle, RSI, Volatilidad)
+        const klinesProvidersDaily = [
+            { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400', parser: d => d.map(x => parseFloat(x[4])) },
+            { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
+            { url: 'https://api.kucoin.com/api/v1/market/candles?type=1day&symbol=BTC-USDT&limit=400', parser: d => d.data.map(x => parseFloat(x[2])).reverse() }
+        ];
+        // Proveedores de velas SEMANALES (para EMA 200)
+        const klinesProvidersWeekly = [
+            { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=200', parser: d => d.map(x => parseFloat(x[4])) },
+            { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=W&limit=200', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
+            { url: 'https://api.kucoin.com/api/v1/market/candles?type=1week&symbol=BTC-USDT&limit=200', parser: d => d.data.map(x => parseFloat(x[2])).reverse() }
+        ];
+        
+        async function fetchWithFallback(providers) { 
+            for (const p of providers) { 
+                try { 
+                    const r = await fetch(p.url); 
+                    if (!r.ok) continue; 
+                    return p.parser(await r.json()); 
+                } catch(e) { continue; } 
+            } 
+            throw new Error('All providers failed'); 
+        }
+        
+        function calcRSI(c, p=14) {
+            if (c.length < p+1) return 50;
+            let g=0, l=0;
+            for (let i=c.length-p; i<c.length; i++) {
+                let d = c[i] - c[i-1];
+                if (d >= 0) g += d;
+                else l -= d;
+            }
+            let ag = g/p, al = l/p;
+            if (al === 0) return 100;
+            return 100 - (100/(1+ag/al));
+        }
+        
+        function calcEMA(d, p) {
+            if (d.length < p) return d[d.length-1];
+            let k = 2/(p+1);
+            let e = d.slice(0,p).reduce((a,b)=>a+b,0)/p;
+            for (let i=p; i<d.length; i++) e = d[i]*k + e*(1-k);
+            return e;
+        }
+        
+        function calcVolatility(c, p=30) {
+            if (c.length < p) return 0;
+            let r = [];
+            for (let i=c.length-p+1; i<c.length; i++) r.push(Math.log(c[i]/c[i-1]));
+            let m = r.reduce((a,b)=>a+b,0)/r.length;
+            let v = r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1);
+            let volDecimal = Math.sqrt(v * 365);
+            return volDecimal * 100;   // devuelve porcentaje (ej. 35.2)
+        }
+        
+        async function updateIndicatorsFromKlinesDaily() {
+            try {
+                const closes = await fetchWithFallback(klinesProvidersDaily);
+                const c = closes[closes.length - 1];
                 
-                let usdtPercentil = 0.5;
-                if (usdtDomHistory.length > 10) {
-                    const sorted = [...usdtDomHistory].sort((a, b) => a - b);
-                    const idx = sorted.findIndex(v => v >= usdtDom);
-                    usdtPercentil = idx / sorted.length;
-                }
-                let usdtScore = Math.max(0, Math.min(10, Math.round((usdtPercentil - 0.2) * 12.5)));
+                // Pi Cycle Top (C)
+                const sma350 = closes.slice(-350).reduce((a,b)=>a+b,0)/350;
+                const ratio = c / (sma350 * 2);
+                state.c.score = Math.max(0, Math.min(10, Math.round(10 - (ratio-0.5)*20)));
+                state.c.desc = `Ratio: ${ratio.toFixed(2)}`;
+                state.c.available = true;
                 
-                state.t.score = btcScore;
-                state.t.desc = `BTC.D: ${btcDom.toFixed(1)}% (percentil ${Math.round(btcPercentil * 100)}%)`;
-                state.t.available = true;
+                // RSI 14 (R)
+                const rsi = calcRSI(closes);
+                state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi-20)/6)));
+                state.r.desc = `RSI: ${rsi.toFixed(1)}`;
+                state.r.available = true;
                 
-                state.u.score = usdtScore;
-                state.u.desc = `USDT.D: ${usdtDom.toFixed(1)}% (percentil ${Math.round(usdtPercentil * 100)}%)`;
-                state.u.available = true;
-            } catch (e) {
-                console.warn('Dominance error:', e);
-                state.t.available = false;
-                state.u.available = false;
+                // Volatilidad (V)
+                const vol = calcVolatility(closes);
+                state.v.score = Math.max(0, Math.min(10, Math.round((vol - 15) / 8.5)));
+                state.v.desc = `Vol 30d: ${vol.toFixed(0)}%`;
+                state.v.available = true;
+            } catch (error) {
+                console.warn('Error en indicadores diarios:', error);
+                state.c.available = false;
+                state.r.available = false;
+                state.v.available = false;
             }
         }
         
-        // ========== INDICADORES TÉCNICOS ==========
-        function calcRSI(c,p=14){if(c.length<p+1)return 50;let g=0,l=0;for(let i=c.length-p;i<c.length;i++){let d=c[i]-c[i-1];if(d>=0)g+=d;else l-=d;}let ag=g/p,al=l/p;if(al===0)return 100;return 100-(100/(1+ag/al));}
-        function calcEMA(d,p){if(d.length<p)return d[d.length-1];let k=2/(p+1),e=d.slice(0,p).reduce((a,b)=>a+b,0)/p;for(let i=p;i<d.length;i++)e=d[i]*k+e*(1-k);return e;}
-        function calcVolatility(c,p=30){if(c.length<p)return 0;let r=[];for(let i=c.length-p+1;i<c.length;i++)r.push(Math.log(c[i]/c[i-1]));let m=r.reduce((a,b)=>a+b,0)/r.length;let v=r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1);return Math.sqrt(v*365)*100;}
-        
-        async function fetchWithFallback(providers) { for(const p of providers) { try { const r = await fetch(p.url); if(!r.ok) continue; return p.parser(await r.json()); } catch(e) { continue; } } throw new Error('All providers failed'); }
-        const klinesProviders = [{ url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400', parser: d => d.map(x => parseFloat(x[4])) }, { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() }, { url: 'https://api.kucoin.com/api/v1/market/candles?type=1day&symbol=BTC-USDT&limit=400', parser: d => d.data.map(x => parseFloat(x[2])).reverse() }];
-        
-        async function updateIndicatorsFromKlines(closes) {
-            const sma = (a,n) => a.slice(-n).reduce((x,y)=>x+y,0)/n;
-            const c = closes[closes.length-1], r = c / (sma(closes,350)*2);
-            state.c.score = Math.max(0,Math.min(10,Math.round(10-(r-0.5)*20))); state.c.desc = `Ratio: ${r.toFixed(2)}`;
-            const rsi = calcRSI(closes); state.r.score = Math.max(0,Math.min(10,Math.round(10-(rsi-20)/6))); state.r.desc = `RSI: ${rsi.toFixed(1)}`;
-            const ema = calcEMA(closes,200), dr = c/ema; let se = dr<=0.5?10:dr>=2?0:Math.round(10-(dr-0.5)*(10/1.5)); state.e.score = Math.max(0,Math.min(10,se)); state.e.desc = `Dist. EMA: ${((dr-1)*100).toFixed(0)}%`;
-            const vol = calcVolatility(closes); state.v.score = Math.max(0,Math.min(10,Math.round((vol-15)/8.5))); state.v.desc = `Vol 30d: ${vol.toFixed(0)}%`;
-            state.c.available = state.r.available = state.e.available = state.v.available = true;
+        async function updateEMA200Weekly() {
+            try {
+                const closes = await fetchWithFallback(klinesProvidersWeekly);
+                const c = closes[closes.length - 1];
+                const ema = calcEMA(closes, 200);
+                const dr = c / ema;
+                let score = dr <= 0.5 ? 10 : dr >= 2 ? 0 : Math.round(10 - (dr-0.5)*(10/1.5));
+                state.e.score = Math.max(0, Math.min(10, score));
+                state.e.desc = `Dist. EMA: ${((dr-1)*100).toFixed(0)}%`;
+                state.e.available = true;
+            } catch (error) {
+                console.warn('Error en EMA 200 semanal:', error);
+                state.e.available = false;
+            }
         }
         
-        // ========== ACTUALIZAR TODOS LOS INDICADORES ==========
         async function fetchAllData() {
             if (els.loadingMsg) els.loadingMsg.innerText = t('sync');
             indicators.forEach(id => { if(state[id]) state[id].available = false; else state[id] = { score: 5, available: false, desc: t('loadingCard') }; });
             
-            const promises = [
-                (async () => { try { const closes = await fetchWithFallback(klinesProviders); await updateIndicatorsFromKlines(closes); } catch(e) { console.warn('Klines error:', e); } })(),
-                (async () => { await updateIndicatorF(); })(),
-                (async () => { try { const reserveRisk = await getReserveRiskScore(); state.n.score = reserveRisk.score; state.n.desc = reserveRisk.desc; state.n.available = true; } catch(e) { console.warn('Reserve Risk error:', e); } })(),
-                (async () => { await updateIndicatorsTU(); })(),
-                (async () => { try { const hash = await getHashRateScore(); state.h.score = hash.score; state.h.desc = hash.desc; state.h.available = true; } catch(e) { console.warn('Hash error:', e); } })(),
-                (async () => { try { const addr = await getActiveAddressesScore(); state.a.score = addr.score; state.a.desc = addr.desc; state.a.available = true; } catch(e) { console.warn('Addresses error:', e); } })()
-            ];
-            
-            await Promise.allSettled(promises);
+            await Promise.allSettled([
+                updateIndicatorsFromKlinesDaily(),
+                updateEMA200Weekly(),
+                updateIndicatorF(),
+                (async () => { try { const mvrv = await getMVRVScore(); state.m.score = mvrv.score; state.m.desc = mvrv.desc; state.m.available = true; } catch(e) { console.warn('MVRV error:', e); } })(),
+                (async () => { await updateStablecoinDominance(); })()
+            ]);
             updateDashboard();
             updateTimestamp();
             if (els.loadingMsg) els.loadingMsg.innerText = '';
         }
         
-        // Precio BTC
         async function fetchBTCPrice() {
-            try { const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true'); if(!res.ok) throw new Error(); const data = await res.json(); const price = data.bitcoin.usd; const change = data.bitcoin.usd_24h_change; document.getElementById('btc-usd-price').innerText = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const chEl = document.getElementById('btc-change-24h'); const chForm = change.toFixed(2) + '%'; chEl.innerText = (change >= 0 ? '▲ ' : '▼ ') + chForm; chEl.className = 'btc-change ' + (change >= 0 ? 'positive' : 'negative'); document.getElementById('btc-update-time').innerText = t('updated') + ': ' + new Date().toLocaleTimeString(); } catch(e) { console.warn(e); } }
-        function startBTCPriceUpdates() { fetchBTCPrice(); setInterval(fetchBTCPrice, 300000); }
+            try { 
+                const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true'); 
+                if(!res.ok) throw new Error(); 
+                const data = await res.json(); 
+                const price = data.bitcoin.usd; 
+                const change = data.bitcoin.usd_24h_change; 
+                const priceFormatted = '$' + price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                const changeFormatted = change.toFixed(2) + '%';
+                const changeSymbol = change >= 0 ? '▲ ' : '▼ ';
+                document.getElementById('btc-price-card').innerText = priceFormatted;
+                document.getElementById('btc-change-card').innerHTML = changeSymbol + changeFormatted;
+                document.getElementById('btc-change-card').style.color = change >= 0 ? '#00c087' : '#e53935';
+            } catch(e) { console.warn(e); } 
+        }
+        function startBTCPriceUpdates() { fetchBTCPrice(); setInterval(fetchBTCPrice, 60000); }
         
-        // ========== COMPARTIR EN TWITTER CON IMAGEN ==========
         function loadHtml2Canvas() {
             return new Promise((resolve, reject) => {
                 if (window.html2canvas) { resolve(window.html2canvas); return; }
-                const cdnList = [
-                    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-                    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
-                    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
-                ];
+                const cdnList = ['https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'];
                 let current = 0;
                 function tryLoad() {
                     if (current >= cdnList.length) { reject(new Error('No se pudo cargar html2canvas')); return; }
@@ -1189,13 +1057,9 @@
         function shareTextOnly() {
             const indexValue = window._btcIndexValue || 0;
             const statusText = window._btcIndexStatus || t('neutral');
-            let emoji = '';
-            if (indexValue >= 75) emoji = currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)';
-            else if (indexValue <= 25) emoji = currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)';
-            else emoji = currentLang === 'es' ? '🟠 NEUTRAL' : '🟠 NEUTRAL';
+            let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
             const text = `📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n${statusText}.\n${currentLang === 'es' ? '¿Suelo o techo? Macro visión en tiempo real.' : 'Bottom or top? Real-time macro view.'}`;
-            const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
-            window.open(tweetUrl, '_blank', 'width=550,height=420');
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank', 'width=550,height=420');
         }
         
         async function shareOnTwitterWithImage() {
@@ -1207,34 +1071,22 @@
             btn.style.opacity = '0.7';
             try {
                 const html2canvas = await loadHtml2Canvas();
-                const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: null, logging: false, useCORS: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight });
+                const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: null, logging: false, useCORS: true });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
-                const file = new File([blob], 'btc-live-index.png', { type: 'image/png' });
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ title: 'BTC-Live Index', text: `Índice: ${window._btcIndexValue || 0}/100 - ${window._btcIndexStatus || 'Neutral'}\nhttps://zoki666.github.io/Indice-BTC-Live/`, files: [file] });
-                } else {
-                    const indexValue = window._btcIndexValue || 0;
-                    let emoji = '';
-                    if (indexValue >= 75) emoji = currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)';
-                    else if (indexValue <= 25) emoji = currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)';
-                    else emoji = currentLang === 'es' ? '🟠 NEUTRAL' : '🟠 NEUTRAL';
-                    const tweetText = encodeURIComponent(`📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n🔗 https://zoki666.github.io/Indice-BTC-Live/`);
-                    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank', 'width=550,height=420');
-                    const link = document.createElement('a');
-                    link.download = `btc-index-${indexValue}.png`;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                    setTimeout(() => URL.revokeObjectURL(link.href), 100);
-                }
-            } catch (error) {
-                console.error('Error en captura:', error);
-                shareTextOnly();
-            }
+                const indexValue = window._btcIndexValue || 0;
+                let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
+                const tweetText = encodeURIComponent(`📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n🔗 https://zoki666.github.io/Indice-BTC-Live/`);
+                window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank', 'width=550,height=420');
+                const link = document.createElement('a');
+                link.download = `btc-index-${indexValue}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(link.href), 100);
+            } catch (error) { shareTextOnly(); }
             btn.innerHTML = originalContent;
             btn.style.opacity = '1';
         }
         
-        // Inicialización
         window.shareOnTwitterWithImage = shareOnTwitterWithImage;
         window.openHelp = openHelp;
         window.closeHelp = closeHelp;
@@ -1245,8 +1097,6 @@
         setInterval(fetchAllData, 900000);
         startBTCPriceUpdates();
         rotateQuote();
-        repositionBTCPrice();
-        if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(e => console.log('SW error',e)));
     </script>
 </body>
 </html>
