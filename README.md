@@ -29,15 +29,15 @@ El índice final es un promedio ponderado que da más peso a los indicadores con
 | Letra | Indicador | Peso | Rango 0 (Techo / Vender) | Rango 5 (Neutral) | Rango 10 (Suelo / Comprar) |
 |-------|-----------|------|---------------------------|--------------------|----------------------------|
 | **C** | Pi Cycle Top | 20% | Ratio > 1.0 (precio cruza o supera SMA350×2) | Ratio ≈ 0.75 | Ratio < 0.5 (precio muy por debajo del cruce) |
-| **F** | Fear & Greed | 15% | Valor 90-100 (Codicia extrema) | Valor 40-60 | Valor 0-10 (Miedo extremo) |
 | **R** | RSI 14 diario | 15% | RSI > 80 (sobrecompra extrema) | RSI ≈ 50 | RSI < 20 (sobreventa extrema) |
 | **E** | EMA 200 diaria | 15% | Precio > 2.0 × EMA (extremo alcista) | Precio ≈ EMA | Precio < 0.5 × EMA (extremo bajista) |
-| **K** | Funding Rate | 10% | > 0.10% (máximo optimismo, largos caros) | ≈ 0.01% | < -0.05% (miedo, cortos pagan) |
-| **T** | BTC Dominance | 10% | < 40% (mínimos históricos, euforia en alts) | ≈ 50% | > 60% (dominancia alta, acumulación) |
-| **U** | USDT Dominance | 10% | < 3% (mínimos, todo desplegado en riesgo) | ≈ 5-6% | > 8% (refugio, miedo extremo) |
-| **V** | Volatilidad (30d) | 5% | < 25% (complacencia, techos) | ≈ 40-50% | > 70% (pánico, suelos) |
-| **H** | Hash Ribbon | 5% | > 600 EH/s (máximos históricos) | ≈ 300-400 EH/s | < 150 EH/s (capitulación minera) |
-| **A** | Active Addresses | 5% | > 1.2M (récord de actividad, euforia) | ≈ 600-800k | < 400k (mínimos de 2 años, desinterés) |
+| **F** | Fear & Greed (SMA7) | 10% | SMA7 > 80 (codicia sostenida) | SMA7 ≈ 40-60 | SMA7 < 20 (miedo sostenido) |
+| **N** | Reserve Risk | 10% | > 0.008 (riesgo muy alto, euforia) | ≈ 0.004-0.006 | < 0.002 (riesgo mínimo, capitulación) |
+| **V** | Volatilidad (30d) | 10% | < 25% (complacencia, techos) | ≈ 40-50% | > 70% (pánico, suelos) |
+| **H** | Hash Ribbon | 10% | Hash rate en máximos, sin capitulación | SMA30 ≈ SMA60 | Cruce alcista tras capitulación (suelo) |
+| **A** | Active Addresses | 10% | Percentil > 80% (récord actividad) | Percentil ≈ 40-60% | Percentil < 20% (mínimos 2 años) |
+| **T** | BTC Dominance | 5% | Percentil < 20% (mínimos históricos) | Percentil ≈ 40-60% | Percentil > 80% (dominancia alta) |
+| **U** | USDT Dominance | 5% | Percentil < 20% (mínimos, riesgo) | Percentil ≈ 40-60% | Percentil > 80% (refugio, miedo) |
 
 Cada indicador se calcula en tiempo real desde APIs públicas (Binance, Bybit, KuCoin, CoinGecko, CoinCap, Alternative.me) con **proveedores de respaldo** automáticos si el principal falla.
 
