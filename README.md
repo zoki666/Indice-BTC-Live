@@ -26,20 +26,33 @@ El índice final es un promedio ponderado que da más peso a los indicadores con
 
 ## 🧩 Indicadores incluidos
 
-| Letra | Indicador | Peso | Rango 0 (Techo / Vender) | Rango 5 (Neutral) | Rango 10 (Suelo / Comprar) |
-|-------|-----------|------|---------------------------|--------------------|----------------------------|
-| **C** | Pi Cycle Top | 20% | Ratio > 1.0 (precio cruza o supera SMA350×2) | Ratio ≈ 0.75 | Ratio < 0.5 (precio muy por debajo del cruce) |
-| **R** | RSI 14 diario | 15% | RSI > 80 (sobrecompra extrema) | RSI ≈ 50 | RSI < 20 (sobreventa extrema) |
-| **E** | EMA 200 diaria | 15% | Precio > 2.0 × EMA (extremo alcista) | Precio ≈ EMA | Precio < 0.5 × EMA (extremo bajista) |
-| **F** | Fear & Greed (SMA7) | 10% | SMA7 > 80 (codicia sostenida) | SMA7 ≈ 40-60 | SMA7 < 20 (miedo sostenido) |
-| **N** | Reserve Risk | 10% | > 0.008 (riesgo muy alto, euforia) | ≈ 0.004-0.006 | < 0.002 (riesgo mínimo, capitulación) |
-| **V** | Volatilidad (30d) | 10% | < 25% (complacencia, techos) | ≈ 40-50% | > 70% (pánico, suelos) |
-| **H** | Hash Ribbon | 10% | Hash rate en máximos, sin capitulación | SMA30 ≈ SMA60 | Cruce alcista tras capitulación (suelo) |
-| **A** | Active Addresses | 10% | Percentil > 80% (récord actividad) | Percentil ≈ 40-60% | Percentil < 20% (mínimos 2 años) |
-| **T** | BTC Dominance | 5% | Percentil < 20% (mínimos históricos) | Percentil ≈ 40-60% | Percentil > 80% (dominancia alta) |
-| **U** | USDT Dominance | 5% | Percentil < 20% (mínimos, riesgo) | Percentil ≈ 40-60% | Percentil > 80% (refugio, miedo) |
+| Letra | Indicador | Peso | Rango 0 (Techo / Vender) | Rango 5 (Neutral) | Rango 10 (Suelo / Comprar) | Proveedor principal / cálculo |
+|-------|-----------|------|---------------------------|--------------------|----------------------------|-------------------------------|
+| **C** | Pi Cycle Top | 22% | Ratio > 1.0 (precio cruza o supera SMA350×2) | Ratio ≈ 0.75 | Ratio < 0.5 (precio muy por debajo del cruce) | Binance / Bybit / KuCoin (velas diarias) |
+| **R** | RSI 14 diario | 16% | RSI > 80 (sobrecompra extrema) | RSI ≈ 50 | RSI < 20 (sobreventa extrema) | Binance / Bybit / KuCoin (velas diarias) |
+| **E** | EMA 200 semanal | 16% | Precio > 2.0 × EMA (extremo alcista) | Precio ≈ EMA | Precio < 0.5 × EMA (extremo bajista) | Binance / Bybit / KuCoin (velas semanales) |
+| **F** | Fear & Greed (SMA7) | 14% | SMA7 > 80 (codicia sostenida) | SMA7 ≈ 40-60 | SMA7 < 20 (miedo sostenido) | Alternative.me (media móvil 7 días) |
+| **V** | Volatilidad 30d | 14% | < 25% (complacencia, techos) | ≈ 40-50% | > 70% (pánico, suelos) | Binance / Bybit / KuCoin (velas diarias) |
+| **M** | MVRV Z‑Score | 14% | MVRV > 3.5 (sobrevalorado, euforia) | ≈ 1.5-2.5 | MVRV < 0.8 (infravalorado, capitulación) | CoinMetrics (principal) + CoinGecko (respaldo) |
+| **S** | Stablecoin Dom | 4% | Percentil < 20% (euforia, riesgo alto) | Percentil ≈ 40-60% | Percentil > 80% (miedo extremo, refugio) | CoinGecko (principal) + CoinCap (respaldo) |
+| 💰 | Precio BTC | (no ponderado) | — | — | — | CoinGecko + CoinCap + Binance (respaldo) |
 
-Cada indicador se calcula en tiempo real desde APIs públicas (Binance, Bybit, KuCoin, CoinGecko, CoinCap, Alternative.me) con **proveedores de respaldo** automáticos si el principal falla.
+Cada indicador se calcula en tiempo real desde APIs públicas (Binance, Bybit, KuCoin, CoinGecko, CoinCap, Alternative.me, CoinMetrics) con **proveedores de respaldo** automáticos si el principal falla:
+
+- **Pi Cycle Top (C)**: velas diarias de Binance → Bybit → KuCoin
+- **RSI 14 diario (R)**: velas diarias de Binance → Bybit → KuCoin
+- **EMA 200 semanal (E)**: velas semanales de Binance → Bybit → KuCoin
+- **Fear & Greed (F)**: Alternative.me (SMA7 de 10 días)
+- **Volatilidad 30d (V)**: velas diarias de Binance → Bybit → KuCoin
+- **MVRV Z‑Score (M)**: CoinMetrics (principal) → CoinGecko (respaldo)
+- **Stablecoin Dominance (S)**: CoinGecko (principal) → CoinCap (respaldo)
+- **Precio BTC (💰)**: CoinGecko → CoinCap → Binance (solo visual, sin peso en el índice)
+
+**Mecanismos de fiabilidad:**
+- Timeout de 15 segundos con reintentos automáticos (2 reintentos por fallo)
+- Si un indicador falla completamente, se muestra en gris y no participa en el índice
+- El usuario puede hacer clic en cualquier indicador gris para reintentarlo manualmente
+- El índice muestra un aviso "⚠ Puntuación provisional" si faltan datos de algún componente
 
 ---
 
@@ -86,8 +99,16 @@ El botón `₿` en la esquina inferior derecha abre un modal con QR y direccione
 
 ## 🔄 Actualización de datos
 
-Los datos se refrescan automáticamente cada **15 minutos**.  
+Los datos se refrescan automáticamente cada **15 minutos**, el precio cada **5 minutos**.
 Los indicadores basados en velas diarias cambian una vez al día, pero la consulta frecuente permite detectar caídas de proveedores y usar los respaldos.
+Si algún indicador tardara en cargar, la puntuación sería provisional hasta que se actualice.
+Se puede actualizar la página entera o pinchar en el indicador oscurecido para refrescarlo.
+
+---
+
+## 📤 Compartir por X
+
+Hay un botón flotante para compartir la puntuación por X y dar la noticia u opinión a tus seguidores.
 
 ---
 

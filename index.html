@@ -62,335 +62,80 @@
         @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .wrapper { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 20px; }
         
-        .theme-toggle-label {
-            position: fixed; top: 15px; right: 15px; z-index: 100;
-            width: 36px; height: 36px; border-radius: 50%;
-            background: var(--bg-panel); backdrop-filter: var(--blur);
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: var(--shadow); user-select: none;
-        }
+        /* Botones fijos (sin cambios) */
+        .theme-toggle-label { position: fixed; top: 15px; right: 15px; z-index: 100; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-panel); backdrop-filter: var(--blur); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow); user-select: none; }
         .theme-toggle-label::before { content: '🌙'; font-size: 18px; }
         #theme-toggle:checked ~ .theme-toggle-label::before { content: '☀️'; }
-        .lang-toggle-label {
-            position: fixed; top: 60px; right: 15px; z-index: 100;
-            width: 36px; height: 36px; border-radius: 50%;
-            background: var(--bg-panel); backdrop-filter: var(--blur);
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: var(--shadow); user-select: none;
-            font-size: 18px;
-        }
-        .donate-btn-label {
-            position: fixed; bottom: 20px; right: 20px; z-index: 100;
-            width: 44px; height: 44px; border-radius: 50%;
-            background: var(--accent-orange); color: #fff; font-size: 20px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,0,0.4);
-            transition: transform 0.2s, box-shadow 0.2s; user-select: none;
-        }
+        .lang-toggle-label { position: fixed; top: 60px; right: 15px; z-index: 100; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-panel); backdrop-filter: var(--blur); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow); user-select: none; font-size: 18px; }
+        .donate-btn-label { position: fixed; bottom: 20px; right: 20px; z-index: 100; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-orange); color: #fff; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,0,0.4); transition: transform 0.2s, box-shadow 0.2s; user-select: none; }
         .donate-btn-label:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255,152,0,0.6); }
-        .share-x-btn {
-            position: fixed; bottom: 20px; left: 20px; z-index: 100;
-            width: 44px; height: 44px; border-radius: 50%;
-            background: #000000; color: white; font-size: 20px; font-weight: bold;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s, box-shadow 0.2s; user-select: none;
-            border: none;
-        }
+        .share-x-btn { position: fixed; bottom: 20px; left: 20px; z-index: 100; width: 44px; height: 44px; border-radius: 50%; background: #000000; color: white; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s; user-select: none; border: none; }
         .share-x-btn:hover { transform: scale(1.05); background: #1DA1F2; box-shadow: 0 6px 20px rgba(29,161,242,0.4); }
         
+        /* Modales (sin cambios) */
         #donate-modal-toggle { display: none; }
-        .donate-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
-        }
+        .donate-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
         #donate-modal-toggle:checked ~ .donate-modal-overlay { display: flex; }
-        .donate-modal-content {
-            background: var(--donate-bg); border: 1px solid var(--border);
-            border-radius: 12px; max-width: 380px; width: 100%; padding: 24px;
-            position: relative; box-shadow: var(--shadow); backdrop-filter: var(--blur);
-            animation: fadeInScale 0.3s ease;
-        }
+        .donate-modal-content { background: var(--donate-bg); border: 1px solid var(--border); border-radius: 12px; max-width: 380px; width: 100%; padding: 24px; position: relative; box-shadow: var(--shadow); backdrop-filter: var(--blur); animation: fadeInScale 0.3s ease; }
         @keyframes fadeInScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        .modal-close {
-            position: absolute; top: 12px; right: 12px; background: transparent; border: none;
-            color: var(--text-secondary); font-size: 18px; cursor: pointer;
-            width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
+        .modal-close { position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .modal-close:hover { background: var(--button-hover); color: var(--text); }
         .donate-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .donate-tabs label {
-            padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;
-            cursor: pointer; background: var(--input-bg); border: 1px solid var(--border);
-            color: var(--text-secondary); transition: all 0.2s;
-        }
+        .donate-tabs label { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-secondary); transition: all 0.2s; }
         .donate-tabs label:hover { background: var(--button-hover); color: var(--text); }
         #donate-btc:checked ~ .donate-tabs label[for="donate-btc"],
-        #donate-lightning:checked ~ .donate-tabs label[for="donate-lightning"] {
-            background: var(--accent-green); color: #fff; border-color: var(--accent-green);
-        }
+        #donate-lightning:checked ~ .donate-tabs label[for="donate-lightning"] { background: var(--accent-green); color: #fff; border-color: var(--accent-green); }
         .qr-container { text-align: center; }
         .qr-box { display: none; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         #donate-btc:checked ~ .qr-container .qr-btc,
         #donate-lightning:checked ~ .qr-container .qr-lightning { display: block; }
-        .qr-box img {
-            width: 220px; height: 220px; border-radius: 0; background: #ffffff;
-            padding: 8px; margin-bottom: 10px; box-shadow: 0 0 0 4px #ffffff;
-        }
+        .qr-box img { width: 220px; height: 220px; border-radius: 0; background: #ffffff; padding: 8px; margin-bottom: 10px; box-shadow: 0 0 0 4px #ffffff; }
         .qr-box code { font-size: 11px; word-break: break-all; color: var(--text-secondary); background: var(--input-bg); padding: 4px 8px; border-radius: 4px; }
         
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 20px;
-        }
-        @media (max-width: 768px) {
-            .main-layout { grid-template-columns: 1fr; gap: 20px; }
-        }
+        /* Layout principal */
+        .main-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        @media (max-width: 768px) { .main-layout { grid-template-columns: 1fr; gap: 20px; } }
         
-        .panel-box {
-            background: var(--bg-panel); backdrop-filter: var(--blur);
-            border: 1px solid var(--border); border-radius: 16px;
-            padding: 24px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s;
-        }
-        .panel-title {
-            font-size: 11px; text-transform: uppercase; letter-spacing: 2px;
-            color: var(--text-secondary); margin-bottom: 24px;
-            display: flex; align-items: center; gap: 10px; font-weight: 600;
-        }
-        .index-center { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 10px 0; 
-            width: 100%;
-        }
-        .index-value {
-            font-size: 80px;
-            font-weight: 800;
-            line-height: 1;
-            transition: color 0.4s;
-            letter-spacing: -2px;
-            text-shadow: 0 0 30px currentColor;
-            margin: 5px 0;
-        }
-        .index-max {
-            font-size: 16px;
-            color: var(--text-muted);
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-        .status-badge { 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-size: 18px; 
-            font-weight: 700; 
-            margin: 10px 0 25px 0; 
-        }
-        .status-dot {
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            box-shadow: 0 0 14px currentColor;
-            transition: background-color 0.4s, box-shadow 0.4s;
-        }
-        .progress-wrapper { 
-            width: 100%; 
-            position: relative; 
-            margin: 5px 0 8px 0;
-        }
-        .progress-bar-macro {
-            height: 12px;
-            border-radius: 6px;
-            background: var(--gradient-bar);
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress-bar-macro::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -30%;
-            width: 30%;
-            height: 100%;
-            background: rgba(255,255,255,0.3);
-            transform: skewX(-20deg);
-            animation: shimmer 2.5s infinite;
-        }
-        @keyframes shimmer {
-            0% { left: -30%; }
-            100% { left: 130%; }
-        }
-        .progress-marker {
-            position: absolute;
-            top: -6px;
-            width: 6px;
-            height: 24px;
-            background: #fff;
-            border-radius: 3px;
-            box-shadow: 0 0 8px rgba(0,0,0,0.4);
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
-        }
-        .progress-labels { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 10px; 
-            color: var(--text-secondary); 
-            margin-top: 8px;
-            width: 100%;
-        }
-        .progress-labels > div {
-            text-align: center;
-            line-height: 1.3;
-            flex: 1;
-        }
-        .progress-labels > div span {
-            display: block;
-            font-size: 8px;
-            margin-top: 2px;
-            opacity: 0.8;
-        }
-        .timestamp { 
-            text-align: center; 
-            font-size: 11px; 
-            color: var(--text-muted); 
-            margin-top: 15px; 
-        }
-        .loading-indicator { 
-            font-size: 11px; 
-            color: #f5b041; 
-            margin-top: 8px; 
-            text-align: center; 
-            height: 18px; 
-        }
-        .mini-panel-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin: 20px 0 0 0;
-        }
-        .mini-card {
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 10px 8px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-        .mini-card-label { 
-            font-size: 9px; 
-            color: var(--text-muted); 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            margin-bottom: 4px; 
-        }
-        .mini-card-value { 
-            font-size: 22px; 
-            font-weight: 700; 
-            color: var(--text); 
-        }
-        .mini-card-sub { 
-            font-size: 8px; 
-            color: var(--text-muted); 
-            margin-top: 2px; 
-        }
+        .panel-box { background: var(--bg-panel); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); transition: background 0.3s, border 0.3s; }
+        .panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-secondary); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; font-weight: 600; }
+        .index-center { display: flex; flex-direction: column; align-items: center; padding: 10px 0; width: 100%; }
+        .index-value { font-size: 80px; font-weight: 800; line-height: 1; transition: color 0.4s; letter-spacing: -2px; text-shadow: 0 0 30px currentColor; margin: 5px 0; }
+        .index-max { font-size: 16px; color: var(--text-muted); margin-top: 0; margin-bottom: 15px; }
+        .status-badge { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; margin: 10px 0 25px 0; }
+        .status-dot { width: 14px; height: 14px; border-radius: 50%; box-shadow: 0 0 14px currentColor; transition: background-color 0.4s, box-shadow 0.4s; }
+        .progress-wrapper { width: 100%; position: relative; margin: 5px 0 8px 0; }
+        .progress-bar-macro { height: 12px; border-radius: 6px; background: var(--gradient-bar); width: 100%; overflow: hidden; position: relative; }
+        .progress-bar-macro::after { content: ''; position: absolute; top: 0; left: -30%; width: 30%; height: 100%; background: rgba(255,255,255,0.3); transform: skewX(-20deg); animation: shimmer 2.5s infinite; }
+        @keyframes shimmer { 0% { left: -30%; } 100% { left: 130%; } }
+        .progress-marker { position: absolute; top: -6px; width: 6px; height: 24px; background: #fff; border-radius: 3px; box-shadow: 0 0 8px rgba(0,0,0,0.4); transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2; }
+        .progress-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-secondary); margin-top: 8px; width: 100%; }
+        .progress-labels > div { text-align: center; line-height: 1.3; flex: 1; }
+        .progress-labels > div span { display: block; font-size: 8px; margin-top: 2px; opacity: 0.8; }
+        .timestamp { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 15px; }
+        .loading-indicator { font-size: 11px; color: #f5b041; margin-top: 8px; text-align: center; height: 18px; }
+        .mini-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0 0 0; }
+        .mini-card { background: var(--bg-card); border-radius: 8px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
+        .mini-card-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .mini-card-value { font-size: 22px; font-weight: 700; color: var(--text); }
+        .mini-card-sub { font-size: 8px; color: var(--text-muted); margin-top: 2px; }
         
-        .components-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 900px) { 
-            .components-grid { grid-template-columns: repeat(2, 1fr); } 
-        }
-        @media (max-width: 500px) { 
-            .components-grid { grid-template-columns: 1fr; } 
-        }
+        .components-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        @media (max-width: 900px) { .components-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 500px) { .components-grid { grid-template-columns: 1fr; } }
         
-        .component-card {
-            background: var(--bg-card);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.2s, background 0.3s, border 0.3s;
-            cursor: pointer;
-        }
-        .component-card:hover { 
-            transform: translateY(-2px); 
-            background: rgba(255,255,255,0.08); 
-        }
-        .component-card.unavailable { 
-            opacity: 0.5; 
-            filter: grayscale(0.5); 
-        }
-        .component-card.unavailable .comp-score { 
-            color: var(--text-muted) !important; 
-        }
-        .component-card.unavailable:hover { 
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-1px);
-        }
-        .component-card.retrying {
-            opacity: 0.6;
-            filter: grayscale(0.6);
-            pointer-events: none;
-        }
-        .component-card.retrying::after {
-            content: '↻';
-            position: absolute;
-            bottom: 6px;
-            right: 8px;
-            font-size: 13px;
-            color: var(--accent-orange);
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .card-header-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            width: 100%; 
-            margin-bottom: 4px; 
-        }
-        .help-btn {
-            background: var(--input-bg);
-            border: none;
-            color: var(--text-secondary);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s, color 0.2s;
-            z-index: 2;
-            pointer-events: auto;
-        }
-        .help-btn:hover { 
-            background: var(--button-hover); 
-            color: var(--text); 
-        }
-        .comp-letter { 
-            font-size: 22px; 
-            font-weight: 800; 
-            margin-bottom: 2px; 
-        }
+        .component-card { background: var(--bg-card); backdrop-filter: var(--blur); border: 1px solid var(--border); border-radius: 12px; padding: 10px 6px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: var(--shadow); transition: transform 0.2s, background 0.3s, border 0.3s; cursor: pointer; }
+        .component-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
+        .component-card.unavailable { opacity: 0.5; filter: grayscale(0.5); }
+        .component-card.unavailable .comp-score { color: var(--text-muted) !important; }
+        .component-card.unavailable:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+        .component-card.retrying { opacity: 0.6; filter: grayscale(0.6); pointer-events: none; }
+        .component-card.retrying::after { content: '↻'; position: absolute; bottom: 6px; right: 8px; font-size: 13px; color: var(--accent-orange); animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 4px; }
+        .help-btn { background: var(--input-bg); border: none; color: var(--text-secondary); border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; z-index: 2; pointer-events: auto; }
+        .help-btn:hover { background: var(--button-hover); color: var(--text); }
+        .comp-letter { font-size: 22px; font-weight: 800; margin-bottom: 2px; }
         .letter-c { color: #f39c12; }
         .letter-r { color: #ff9800; }
         .letter-e { color: #03a9f4; }
@@ -398,127 +143,33 @@
         .letter-v { color: #ff5252; }
         .letter-m { color: #9b59b6; }
         .letter-s { color: #e91e63; }
-        .comp-name { 
-            font-size: 8px; 
-            font-weight: 700; 
-            color: var(--text-secondary); 
-            letter-spacing: 0.5px; 
-            text-transform: uppercase; 
-            margin-bottom: 6px;
-            white-space: normal;
-            line-height: 1.2;
-        }
-        .comp-score { 
-            font-size: 14px; 
-            font-weight: 700; 
-            margin-bottom: 6px; 
-        }
-        .comp-bar-bg { 
-            width: 100%; 
-            height: 4px; 
-            background: rgba(255,255,255,0.1); 
-            border-radius: 2px; 
-            margin-bottom: 6px; 
-            overflow: hidden; 
-        }
-        .comp-bar-fill { 
-            height: 100%; 
-            width: 0%; 
-            border-radius: 2px; 
-            transition: width 0.5s ease, background-color 0.5s ease; 
-        }
-        .comp-desc { 
-            font-size: 8px; 
-            color: var(--text-muted); 
-            white-space: normal; 
-            word-break: break-word; 
-            width: 100%; 
-            line-height: 1.2; 
-        }
+        .comp-name { font-size: 8px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; white-space: normal; line-height: 1.2; }
+        .comp-score { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .comp-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-bottom: 6px; overflow: hidden; }
+        .comp-bar-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 0.5s ease, background-color 0.5s ease; }
+        .comp-desc { font-size: 8px; color: var(--text-muted); white-space: normal; word-break: break-word; width: 100%; line-height: 1.2; }
         
         /* Cita en el panel derecho */
-        .quote-right {
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 12px;
-            margin-top: 20px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-        .quote-right p {
-            font-size: 11px;
-            font-style: italic;
-            line-height: 1.4;
-            color: var(--text);
-        }
-        .quote-right .author {
-            font-size: 9px;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
+        .quote-right { background: var(--bg-card); border-radius: 12px; padding: 12px; margin-top: 20px; text-align: center; border: 1px solid var(--border); }
+        .quote-right p { font-size: 11px; font-style: italic; line-height: 1.4; color: var(--text); }
+        .quote-right .author { font-size: 9px; color: var(--text-muted); margin-top: 6px; }
         
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 20px;
-        }
-        .modal-content {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            max-width: 500px;
-            width: 100%;
-            padding: 24px;
-            position: relative;
-            backdrop-filter: var(--blur);
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 150; padding: 20px; }
+        .modal-content { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; max-width: 500px; width: 100%; padding: 24px; position: relative; backdrop-filter: var(--blur); }
         
-        #panel-captura {
-            border-radius: 24px;
-        }
-        
-        /* Ocultar el módulo de precio que estaba abajo (ya no se necesita) */
-        #btc-price-desktop {
-            display: none;
-        }
+        #panel-captura { border-radius: 24px; }
+        #btc-price-desktop { display: none; }
         
         @media (max-width: 600px) {
-            .panel-box {
-                padding: 16px;
-            }
-            .index-value {
-                font-size: 60px;
-            }
-            .status-badge {
-                font-size: 14px;
-                margin: 5px 0 20px 0;
-            }
-            .progress-labels {
-                font-size: 8px;
-            }
-            .progress-labels > div {
-                min-width: 0;
-            }
-            .mini-card-value {
-                font-size: 18px;
-            }
-            .comp-letter {
-                font-size: 18px;
-            }
-            .comp-name {
-                font-size: 7px;
-            }
-            .comp-score {
-                font-size: 12px;
-            }
+            .panel-box { padding: 16px; }
+            .index-value { font-size: 60px; }
+            .status-badge { font-size: 14px; margin: 5px 0 20px 0; }
+            .progress-labels { font-size: 8px; }
+            .progress-labels > div { min-width: 0; }
+            .mini-card-value { font-size: 18px; }
+            .comp-letter { font-size: 18px; }
+            .comp-name { font-size: 7px; }
+            .comp-score { font-size: 12px; }
         }
     </style>
 </head>
@@ -530,6 +181,7 @@
     <label for="donate-modal-toggle" class="donate-btn-label" title="Donar BTC">₿</label>
     <button class="share-x-btn" onclick="shareOnTwitterWithImage()">𝕏</button>
 
+    <!-- Modal Donación (sin cambios) -->
     <div class="donate-modal-overlay">
         <div class="donate-modal-content">
             <label for="donate-modal-toggle" class="modal-close">✕</label>
@@ -557,6 +209,7 @@
     <div class="wrapper">
         <div class="container" style="display:flex;flex-direction:column;gap:20px;">
             <div class="main-layout">
+                <!-- PANEL IZQUIERDO (captura) -->
                 <div class="panel-box" id="panel-captura" style="display:flex;flex-direction:column;">
                     <div class="panel-title" data-i18n="mainTitle">📊 Índice BTC-Live</div>
                     <div id="captura-content">
@@ -598,10 +251,11 @@
                     <div id="partial-warning" style="display:none; font-size:11px; color:var(--accent-orange); text-align:center; margin-top:6px;" data-i18n="partialWarning">⚠ Puntuación provisional</div>
                 </div>
 
+                <!-- PANEL DERECHO (indicadores) -->
                 <div class="panel-box">
                     <div class="panel-title" data-i18n="indicatorsTitle">🧩 Componentes de análisis</div>
                     <div class="components-grid" id="components-grid">
-                        <!-- C - Pi Cycle Top (22%) -->
+                        <!-- C - Pi Cycle Top -->
                         <div class="component-card" data-indicator="c">
                             <div class="card-header-row"><div class="comp-letter letter-c">C</div><button class="help-btn" onclick="openHelp('c')">?</button></div>
                             <div class="comp-name" id="compNameC">Pi Cycle Top</div>
@@ -609,7 +263,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-c"></div></div>
                             <div class="comp-desc" id="desc-c">Cargando...</div>
                         </div>
-                        <!-- R - RSI 14 (16%) -->
+                        <!-- R - RSI 14 -->
                         <div class="component-card" data-indicator="r">
                             <div class="card-header-row"><div class="comp-letter letter-r">R</div><button class="help-btn" onclick="openHelp('r')">?</button></div>
                             <div class="comp-name" id="compNameR">RSI 14 Diario</div>
@@ -617,7 +271,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-r"></div></div>
                             <div class="comp-desc" id="desc-r">Cargando...</div>
                         </div>
-                        <!-- E - EMA 200 Semanal (16%) -->
+                        <!-- E - EMA 200 Semanal -->
                         <div class="component-card" data-indicator="e">
                             <div class="card-header-row"><div class="comp-letter letter-e">E</div><button class="help-btn" onclick="openHelp('e')">?</button></div>
                             <div class="comp-name" id="compNameE">EMA 200 Semanal</div>
@@ -625,7 +279,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-e"></div></div>
                             <div class="comp-desc" id="desc-e">Cargando...</div>
                         </div>
-                        <!-- F - Fear & Greed (14%) -->
+                        <!-- F - Fear & Greed -->
                         <div class="component-card" data-indicator="f">
                             <div class="card-header-row"><div class="comp-letter letter-f">F</div><button class="help-btn" onclick="openHelp('f')">?</button></div>
                             <div class="comp-name" id="compNameF">Fear & Greed</div>
@@ -633,7 +287,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-f"></div></div>
                             <div class="comp-desc" id="desc-f">Cargando...</div>
                         </div>
-                        <!-- V - Volatilidad (14%) -->
+                        <!-- V - Volatilidad -->
                         <div class="component-card" data-indicator="v">
                             <div class="card-header-row"><div class="comp-letter letter-v">V</div><button class="help-btn" onclick="openHelp('v')">?</button></div>
                             <div class="comp-name" id="compNameV">Volatilidad</div>
@@ -641,7 +295,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-v"></div></div>
                             <div class="comp-desc" id="desc-v">Cargando...</div>
                         </div>
-                        <!-- M - MVRV Z-Score (14%) -->
+                        <!-- M - MVRV Z-Score (MEJORADO con CoinMetrics) -->
                         <div class="component-card" data-indicator="m">
                             <div class="card-header-row"><div class="comp-letter letter-m" style="color: #9b59b6;">M</div><button class="help-btn" onclick="openHelp('m')">?</button></div>
                             <div class="comp-name" id="compNameM">MVRV Z-Score</div>
@@ -649,7 +303,7 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-m"></div></div>
                             <div class="comp-desc" id="desc-m">Cargando...</div>
                         </div>
-                        <!-- S - Stablecoin Dom (4%) -->
+                        <!-- S - Stablecoin Dom -->
                         <div class="component-card" data-indicator="s">
                             <div class="card-header-row"><div class="comp-letter letter-s" style="color: #e91e63;">S</div><button class="help-btn" onclick="openHelp('s')">?</button></div>
                             <div class="comp-name" id="compNameS">Stablecoin Dom</div>
@@ -657,11 +311,9 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-s"></div></div>
                             <div class="comp-desc" id="desc-s">Cargando...</div>
                         </div>
-                        <!-- Precio BTC (tarjeta especial) -->
+                        <!-- Precio BTC -->
                         <div class="component-card" style="background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,152,0,0.15) 100%); cursor: default;">
-                            <div class="card-header-row">
-                                <div class="comp-letter" style="color: var(--accent-orange);">💰</div>
-                            </div>
+                            <div class="card-header-row"><div class="comp-letter" style="color: var(--accent-orange);">💰</div></div>
                             <div class="comp-name" data-i18n="btcPriceShort">PRECIO BTC</div>
                             <div class="comp-score" id="btc-price-card">--</div>
                             <div class="comp-bar-bg" style="background: transparent;"><div class="comp-bar-fill" style="width: 100%; background: var(--accent-orange); opacity: 0.3;"></div></div>
@@ -676,6 +328,7 @@
                 </div>
             </div>
             
+            <!-- Guía inferior (sin cambios) -->
             <div class="panel-box">
                 <div class="panel-title" data-i18n="guide">💡 Guía de Estrategia Macro</div>
                 <div style="display:flex;flex-direction:column;gap:20px;font-size:14px;color:var(--text-secondary);line-height:1.7;">
@@ -876,6 +529,64 @@
             throw new Error('All attempts failed');
         }
         
+        // ================= NUEVA FUNCIÓN MVRV CON COINMETRICS (PRINCIPAL) =================
+        async function getMVRVScore() {
+            try {
+                // Un único endpoint de CoinMetrics: MVRV Cur USD
+                const url = 'https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets=btc&metrics=MVRVCurUSD&frequency=1d&limit_per_asset=1';
+                const response = await fetchWithTimeout(url, 10000);
+                const data = await response.json();
+                
+                if (data && data.data && data.data[0] && data.data[0].MVRVCurUSD !== undefined) {
+                    const mvrvValue = parseFloat(data.data[0].MVRVCurUSD);
+                    let score = 5;
+                    let mvrvStatus = "";
+                    
+                    if (mvrvValue >= 4.0) { score = 0; mvrvStatus = "🔴 Techo extremo (Euforia)"; }
+                    else if (mvrvValue >= 3.5) { score = 1; mvrvStatus = "🔴 Sobrevalorado (Peligro de techo)"; }
+                    else if (mvrvValue >= 2.5) { score = 2; mvrvStatus = "⚠️ Caro"; }
+                    else if (mvrvValue >= 1.8) { score = 3; mvrvStatus = "⚠️ Moderadamente caro"; }
+                    else if (mvrvValue >= 1.2) { score = 4; mvrvStatus = "➡️ Ligeramente caro"; }
+                    else if (mvrvValue >= 0.9) { score = 5; mvrvStatus = "➡️ Zona Neutral"; }
+                    else if (mvrvValue >= 0.7) { score = 6; mvrvStatus = "📉 Ligeramente barato"; }
+                    else if (mvrvValue >= 0.5) { score = 7; mvrvStatus = "📉 Barato"; }
+                    else if (mvrvValue >= 0.3) { score = 8; mvrvStatus = "🟢 Muy barato"; }
+                    else if (mvrvValue > 0.0) { score = 9; mvrvStatus = "🟢 Infravalorado"; }
+                    else { score = 10; mvrvStatus = "🟢 Suelo extremo (Capitulación)"; }
+                    
+                    const desc = `MVRV: ${mvrvValue.toFixed(2)} | ${mvrvStatus}`;
+                    return { score: score, desc: desc, available: true };
+                } else {
+                    throw new Error('Invalid data structure from CoinMetrics');
+                }
+            } catch (error) {
+                console.warn('CoinMetrics MVRV failed, falling back to CoinGecko:', error);
+                // Fallback a la función antigua de CoinGecko
+                try {
+                    const [priceRes, coinRes] = await Promise.all([
+                        fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'),
+                        fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin')
+                    ]);
+                    const priceData = await priceRes.json();
+                    const coinData = await coinRes.json();
+                    const marketCap = coinData.market_data.market_cap.usd;
+                    const supply = coinData.market_data.circulating_supply;
+                    const histRes = await fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365', 20000);
+                    const histData = await histRes.json();
+                    const prices = histData.prices.map(p => p[1]);
+                    const avgPrice = prices.reduce((a,b)=>a+b,0)/prices.length;
+                    const realizedCap = avgPrice * supply;
+                    const mvrv = marketCap / realizedCap;
+                    let score = mvrv >= 3.5 ? 1 : mvrv <= 0.8 ? 9 : Math.round(5 - (mvrv - 1.5) * 2);
+                    score = Math.max(0, Math.min(10, score));
+                    return { score, desc: `MVRV: ${mvrv.toFixed(2)} (CoinGecko)`, available: true };
+                } catch(e) {
+                    console.error('Fallback MVRV also failed:', e);
+                    return { score: 5, desc: 'Calculando...', available: false };
+                }
+            }
+        }
+        
         async function updateIndicatorF() {
             try {
                 const res = await fetchWithTimeout('https://api.alternative.me/fng/?limit=10');
@@ -887,28 +598,6 @@
                 state.f.desc = `FG: ${Math.round(sma7)} (SMA7)`;
                 state.f.available = true;
             } catch (e) { console.warn('F&G error:', e); state.f.available = false; }
-        }
-        
-        async function getMVRVScore() {
-            try {
-                const [priceRes, coinRes] = await Promise.all([
-                    fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'),
-                    fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin')
-                ]);
-                const priceData = await priceRes.json();
-                const coinData = await coinRes.json();
-                const marketCap = coinData.market_data.market_cap.usd;
-                const supply = coinData.market_data.circulating_supply;
-                const histRes = await fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365', 20000);
-                const histData = await histRes.json();
-                const prices = histData.prices.map(p => p[1]);
-                const avgPrice = prices.reduce((a,b)=>a+b,0)/prices.length;
-                const realizedCap = avgPrice * supply;
-                const mvrv = marketCap / realizedCap;
-                let score = mvrv >= 3.5 ? 1 : mvrv <= 0.8 ? 9 : Math.round(5 - (mvrv - 1.5) * 2);
-                score = Math.max(0, Math.min(10, score));
-                return { score, desc: `MVRV: ${mvrv.toFixed(2)}`, available: true };
-            } catch(e) { console.warn('MVRV error:', e); return { score: 5, desc: 'Calculando...', available: false }; }
         }
         
         async function updateStablecoinDominance() {
@@ -956,7 +645,7 @@
             state.s.available = true;
         }
         
-        // ================= FUNCIONES TÉCNICAS =================
+        // ================= FUNCIONES TÉCNICAS (KLINES) =================
         const klinesProvidersDaily = [
             { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=400', parser: d => d.map(x => parseFloat(x[4])) },
             { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=D&limit=400', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
@@ -1187,7 +876,7 @@
                 const siteUrl = 'https://zoki666.github.io/Indice-BTC-Live/';
                 const shareText = `📊 BTC-Live Index: ${indexValue}/100 - ${emojiLabel}\n\n🔗 ${siteUrl}`;
 
-                // Móvil: Web Share API — abre el selector nativo (WhatsApp, Twitter, etc.) con imagen lista
+                // Móvil: Web Share API — selector nativo con imagen
                 if (navigator.share && navigator.canShare) {
                     const file = new File([blob], `btc-index-${indexValue}.png`, { type: 'image/png' });
                     if (navigator.canShare({ files: [file] })) {
@@ -1196,14 +885,11 @@
                             btn.innerHTML = originalContent;
                             btn.style.opacity = '1';
                             return;
-                        } catch(e) {
-                            // Usuario canceló o falló — caemos al flujo desktop
-                        }
+                        } catch(e) { /* fallback a escritorio */ }
                     }
                 }
 
-                // Desktop: la imagen NO se puede adjuntar a twitter/intent por diseño de X.
-                // Lo mejor posible: copiar imagen al portapapeles + abrir tweet directamente.
+                // Desktop
                 let copiedToClipboard = false;
                 if (navigator.clipboard && window.ClipboardItem) {
                     try {
@@ -1215,7 +901,6 @@
                 const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
                 window.open(tweetUrl, '_blank', 'width=550,height=500');
 
-                // Toast informativo según si se pudo copiar al clipboard
                 const toast = document.createElement('div');
                 toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(20,22,30,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 20px;font-size:12px;color:#fff;z-index:400;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);max-width:300px;line-height:1.5;animation:fadeInScale 0.2s ease;';
                 toast.innerHTML = copiedToClipboard
@@ -1223,7 +908,6 @@
                     : (isEs ? '⬇️ Imagen guardada en Descargas.<br>Adjúntala al tweet manualmente.' : '⬇️ Image saved to Downloads.<br>Attach it to the tweet manually.');
                 document.body.appendChild(toast);
 
-                // Si no se copió al clipboard, descargar la imagen
                 if (!copiedToClipboard) {
                     const link = document.createElement('a');
                     link.download = `btc-index-${indexValue}.png`;
@@ -1235,10 +919,8 @@
                 setTimeout(() => toast.remove(), 4000);
 
             } catch (error) {
-                console.warn('Share error:', error);
                 shareTextOnly();
             }
-
             btn.innerHTML = originalContent;
             btn.style.opacity = '1';
         }
