@@ -233,6 +233,7 @@
             border-radius: 3px;
             box-shadow: 0 0 8px rgba(0,0,0,0.4);
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
             z-index: 2;
         }
         .progress-labels { 
@@ -335,6 +336,33 @@
         .component-card.unavailable .comp-score { 
             color: var(--text-muted) !important; 
         }
+        .component-card.unavailable {
+            cursor: pointer;
+            position: relative;
+        }
+        .component-card.unavailable::after {
+            content: '↻';
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+        .component-card.retrying {
+            opacity: 0.4;
+            filter: grayscale(0.8);
+            pointer-events: none;
+        }
+        .component-card.retrying::after {
+            content: '⏳';
+            position: absolute;
+            bottom: 6px;
+            right: 8px;
+            font-size: 11px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .card-header-row { 
             display: flex; 
             justify-content: space-between; 
@@ -1019,6 +1047,47 @@
             updateTimestamp();
             if (els.loadingMsg) els.loadingMsg.innerText = '';
         }
+
+        // Mapa de cada indicador a su función de actualización
+        const indicatorFetchMap = {
+            c: async () => { await updateIndicatorsFromKlinesDaily(); },
+            r: async () => { await updateIndicatorsFromKlinesDaily(); },
+            v: async () => { await updateIndicatorsFromKlinesDaily(); },
+            e: async () => { await updateEMA200Weekly(); },
+            f: async () => { await updateIndicatorF(); },
+            m: async () => { const mvrv = await getMVRVScore(); state.m.score = mvrv.score; state.m.desc = mvrv.desc; state.m.available = mvrv.available; },
+            s: async () => { await updateStablecoinDominance(); }
+        };
+
+        async function retryIndicator(id) {
+            const cardEl = els['card' + id.toUpperCase()];
+            if (!cardEl || !cardEl.classList.contains('unavailable')) return;
+            cardEl.classList.remove('unavailable');
+            cardEl.classList.add('retrying');
+            const descEl = els['desc' + id.toUpperCase()];
+            if (descEl) descEl.innerText = t('loadingCard');
+            try {
+                await indicatorFetchMap[id]();
+            } catch(e) {
+                console.warn('Retry error for', id, e);
+            }
+            cardEl.classList.remove('retrying');
+            updateDashboard();
+        }
+
+        // Añadir listener de click a todas las tarjetas de indicadores para retry
+        indicators.forEach(id => {
+            const cardEl = document.querySelector(`.component-card[data-indicator="${id}"]`);
+            if (cardEl) {
+                cardEl.addEventListener('click', function(e) {
+                    // Solo actuar si está unavailable y no se ha pulsado el botón de ayuda
+                    if (e.target.classList.contains('help-btn') || e.target.closest('.help-btn')) return;
+                    if (cardEl.classList.contains('unavailable')) {
+                        retryIndicator(id);
+                    }
+                });
+            }
+        });
         
         async function fetchBTCPrice() {
             try { 
@@ -1071,20 +1140,52 @@
             btn.style.opacity = '0.7';
             try {
                 const html2canvas = await loadHtml2Canvas();
-                const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: null, logging: false, useCORS: true });
+                const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: '#0d0e12', logging: false, useCORS: true });
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
                 const indexValue = window._btcIndexValue || 0;
                 let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
-                const tweetText = encodeURIComponent(`📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n🔗 https://zoki666.github.io/Indice-BTC-Live/`);
-                window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank', 'width=550,height=420');
+                const siteUrl = 'https://zoki666.github.io/Indice-BTC-Live/';
+                const tweetText = encodeURIComponent(`\uD83D\uDCCA BTC-Live Index: ${indexValue}/100 - ${emoji}\n\n\uD83D\uDD17 ${siteUrl}`);
+                // Download image
                 const link = document.createElement('a');
                 link.download = `btc-index-${indexValue}.png`;
-                link.href = URL.createObjectURL(blob);
+                const objectUrl = URL.createObjectURL(blob);
+                link.href = objectUrl;
                 link.click();
-                setTimeout(() => URL.revokeObjectURL(link.href), 100);
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+                // Show helper modal
+                showShareModal(indexValue, tweetText);
             } catch (error) { shareTextOnly(); }
             btn.innerHTML = originalContent;
             btn.style.opacity = '1';
+        }
+
+        function showShareModal(indexValue, tweetText) {
+            const existing = document.getElementById('share-helper-modal');
+            if (existing) existing.remove();
+            const isEs = currentLang === 'es';
+            const modal = document.createElement('div');
+            modal.id = 'share-helper-modal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;';
+            modal.innerHTML = '<div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:16px;max-width:360px;width:100%;padding:24px;text-align:center;box-shadow:var(--shadow);animation:fadeInScale 0.3s ease;">'
+                + '<div style="font-size:36px;margin-bottom:12px;">\uD83D\uDCF8</div>'
+                + '<div style="font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text);">' + (isEs ? 'Imagen descargada' : 'Image downloaded') + '</div>'
+                + '<div style="font-size:12px;color:var(--text-secondary);margin-bottom:20px;line-height:1.6;">'
+                + (isEs ? 'La imagen del índice se ha guardado en tu dispositivo.<br><strong style="color:var(--text)">Pulsa \u201CTweetear\u201D</strong> y adjúntala al tweet.' : 'The index image has been saved to your device.<br><strong style="color:var(--text)">Click \u201CTweet\u201D</strong> and attach it to the post.')
+                + '</div>'
+                + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
+                + '<button id="do-tweet-btn" style="background:#000;color:#fff;border:none;border-radius:20px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">'
+                + '\uD835\uDD4F ' + (isEs ? 'Tweetear' : 'Tweet') + '</button>'
+                + '<button id="close-share-modal-btn" style="background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border);border-radius:20px;padding:10px 18px;font-size:13px;cursor:pointer;">'
+                + (isEs ? 'Cerrar' : 'Close') + '</button>'
+                + '</div></div>';
+            modal.addEventListener('click', function(e) { if (e.target === modal) modal.remove(); });
+            document.body.appendChild(modal);
+            document.getElementById('do-tweet-btn').addEventListener('click', function() {
+                window.open('https://twitter.com/intent/tweet?text=' + tweetText, '_blank', 'width=550,height=420');
+                modal.remove();
+            });
+            document.getElementById('close-share-modal-btn').addEventListener('click', function() { modal.remove(); });
         }
         
         window.shareOnTwitterWithImage = shareOnTwitterWithImage;
