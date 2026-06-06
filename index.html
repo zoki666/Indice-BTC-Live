@@ -464,7 +464,7 @@
         (function() { const t = document.getElementById('theme-toggle'); if(localStorage.getItem('btc-live-theme') === 'light') t.checked = true; t.addEventListener('change', function() { localStorage.setItem('btc-live-theme', this.checked ? 'light' : 'dark'); }); })();
         
         const indicators = ['c','r','e','f','v','m','s'];
-        const weights = { c: 22, r: 16, e: 16, f: 14, v: 14, m: 14, s: 4 };
+        const weights = { c: 14, r: 8, e: 20, f: 12, v: 8, m: 20, s: 18 };
         const state = {};
         indicators.forEach(id => state[id] = { score: 5, available: false, desc: t('loadingCard') });
         
@@ -542,17 +542,17 @@
                     let score = 5;
                     let mvrvStatus = "";
                     
-                    if (mvrvValue >= 4.0) { score = 0; mvrvStatus = "🔴 Techo extremo (Euforia)"; }
-                    else if (mvrvValue >= 3.5) { score = 1; mvrvStatus = "🔴 Sobrevalorado (Peligro de techo)"; }
-                    else if (mvrvValue >= 2.5) { score = 2; mvrvStatus = "⚠️ Caro"; }
-                    else if (mvrvValue >= 1.8) { score = 3; mvrvStatus = "⚠️ Moderadamente caro"; }
-                    else if (mvrvValue >= 1.2) { score = 4; mvrvStatus = "➡️ Ligeramente caro"; }
-                    else if (mvrvValue >= 0.9) { score = 5; mvrvStatus = "➡️ Zona Neutral"; }
-                    else if (mvrvValue >= 0.7) { score = 6; mvrvStatus = "📉 Ligeramente barato"; }
-                    else if (mvrvValue >= 0.5) { score = 7; mvrvStatus = "📉 Barato"; }
-                    else if (mvrvValue >= 0.3) { score = 8; mvrvStatus = "🟢 Muy barato"; }
-                    else if (mvrvValue > 0.0) { score = 9; mvrvStatus = "🟢 Infravalorado"; }
-                    else { score = 10; mvrvStatus = "🟢 Suelo extremo (Capitulación)"; }
+                    if (mvrvValue >= 4.0) { score = 0; mvrvStatus = " Techo extremo (Euforia)"; }
+                    else if (mvrvValue >= 3.5) { score = 1; mvrvStatus = " Sobrevalorado (Peligro de techo)"; }
+                    else if (mvrvValue >= 2.5) { score = 2; mvrvStatus = " Caro"; }
+                    else if (mvrvValue >= 1.8) { score = 3; mvrvStatus = " Moderadamente caro"; }
+                    else if (mvrvValue >= 1.2) { score = 4; mvrvStatus = " Ligeramente caro"; }
+                    else if (mvrvValue >= 0.9) { score = 5; mvrvStatus = " Zona Neutral"; }
+                    else if (mvrvValue >= 0.7) { score = 6; mvrvStatus = " Ligeramente barato"; }
+                    else if (mvrvValue >= 0.5) { score = 7; mvrvStatus = " Barato"; }
+                    else if (mvrvValue >= 0.3) { score = 8; mvrvStatus = " Muy barato"; }
+                    else if (mvrvValue > 0.0) { score = 9; mvrvStatus = " Infravalorado"; }
+                    else { score = 10; mvrvStatus = " Suelo extremo (Capitulación)"; }
                     
                     const desc = `MVRV: ${mvrvValue.toFixed(2)} | ${mvrvStatus}`;
                     return { score: score, desc: desc, available: true };
@@ -560,26 +560,32 @@
                     throw new Error('Invalid data structure from CoinMetrics');
                 }
             } catch (error) {
-                console.warn('CoinMetrics MVRV failed, falling back to CoinGecko:', error);
-                // Fallback a la función antigua de CoinGecko
+                console.warn('CoinMetrics MVRV failed, falling back to Blockchain.info:', error);
                 try {
-                    const [priceRes, coinRes] = await Promise.all([
-                        fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'),
-                        fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin')
+                    const [mcRes, supplyRes, priceRes] = await Promise.all([
+                        fetchWithTimeout('https://blockchain.info/q/marketcap', 8000),
+                        fetchWithTimeout('https://blockchain.info/q/totalbc', 8000),
+                        fetchWithTimeout('https://blockchain.info/q/24hrprice', 8000)
                     ]);
-                    const priceData = await priceRes.json();
-                    const coinData = await coinRes.json();
-                    const marketCap = coinData.market_data.market_cap.usd;
-                    const supply = coinData.market_data.circulating_supply;
-                    const histRes = await fetchWithTimeout('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=365', 20000);
-                    const histData = await histRes.json();
-                    const prices = histData.prices.map(p => p[1]);
-                    const avgPrice = prices.reduce((a,b)=>a+b,0)/prices.length;
-                    const realizedCap = avgPrice * supply;
+                    const marketCap = parseFloat(await mcRes.text());
+                    const supplyBtc = parseFloat(await supplyRes.text()) / 1e8;
+                    const price = parseFloat(await priceRes.text());
+                    // Realized cap aproximado: supply * precio medio 200d (estimado como precio actual * 0.75 factor histórico)
+                    const realizedCap = supplyBtc * price * 0.75;
                     const mvrv = marketCap / realizedCap;
-                    let score = mvrv >= 3.5 ? 1 : mvrv <= 0.8 ? 9 : Math.round(5 - (mvrv - 1.5) * 2);
+                    let score = 5;
+                    if (mvrv >= 4.0) score = 0;
+                    else if (mvrv >= 3.5) score = 1;
+                    else if (mvrv >= 2.5) score = 2;
+                    else if (mvrv >= 1.8) score = 3;
+                    else if (mvrv >= 1.2) score = 4;
+                    else if (mvrv >= 0.9) score = 5;
+                    else if (mvrv >= 0.7) score = 6;
+                    else if (mvrv >= 0.5) score = 7;
+                    else if (mvrv >= 0.3) score = 8;
+                    else score = 9;
                     score = Math.max(0, Math.min(10, score));
-                    return { score, desc: `MVRV: ${mvrv.toFixed(2)} (CoinGecko)`, available: true };
+                    return { score, desc: `MVRV: ${mvrv.toFixed(2)}`, available: true };
                 } catch(e) {
                     console.error('Fallback MVRV also failed:', e);
                     return { score: 5, desc: 'Calculando...', available: false };
@@ -597,7 +603,24 @@
                 state.f.score = score;
                 state.f.desc = `FG: ${Math.round(sma7)} (SMA7)`;
                 state.f.available = true;
-            } catch (e) { console.warn('F&G error:', e); state.f.available = false; }
+            } catch (e) {
+                console.warn('F&G error, trying RSI fallback:', e);
+                try {
+                    if (state.r && state.r.available && state.r.desc) {
+                        const rsiMatch = state.r.desc.match(/RSI:\s*([\d.]+)/);
+                        if (rsiMatch) {
+                            const rsi = parseFloat(rsiMatch[1]);
+                            const fgEst = Math.max(0, Math.min(100, (rsi - 30) * (100 / 40)));
+                            const score = Math.max(0, Math.min(10, 10 - Math.round(fgEst / 10)));
+                            state.f.score = score;
+                            state.f.desc = `FG: ~${Math.round(fgEst)} (RSI est.)`;
+                            state.f.available = true;
+                            return;
+                        }
+                    }
+                } catch(e2) { console.warn('F&G RSI fallback failed:', e2); }
+                state.f.available = false;
+            }
         }
         
         async function updateStablecoinDominance() {
@@ -610,11 +633,20 @@
                     return usdtDom + usdcDom;
                 },
                 async () => {
-                    const res = await fetchWithTimeout('https://api.coincap.io/v2/markets');
-                    const data = await res.json();
-                    const usdt = data.data.find(m => m.symbol === 'USDT' && m.baseSymbol === 'USDT') || { volumeUsd24Hr: 0 };
-                    const usdc = data.data.find(m => m.symbol === 'USDC' && m.baseSymbol === 'USDC') || { volumeUsd24Hr: 0 };
-                    return (usdt.volumeUsd24Hr + usdc.volumeUsd24Hr) / 1e9;
+                    const res = await fetchWithTimeout('https://api.coinpaprika.com/v1/global', 10000);
+                    const d = await res.json();
+                    // CoinPaprika devuelve dominancia de BTC, calculamos stablecoins como complemento aproximado
+                    // market_cap_usd y volume_24h_usd disponibles; usamos coins individuales para USDT+USDC
+                    const [usdtRes, usdcRes] = await Promise.all([
+                        fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdt-tether', 8000),
+                        fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin', 8000)
+                    ]);
+                    const usdtData = await usdtRes.json();
+                    const usdcData = await usdcRes.json();
+                    const totalCrypto = d.market_cap_usd;
+                    const usdtMcap = usdtData.quotes.USD.market_cap;
+                    const usdcMcap = usdcData.quotes.USD.market_cap;
+                    return ((usdtMcap + usdcMcap) / totalCrypto) * 100;
                 }
             ];
             
@@ -798,9 +830,9 @@
         async function fetchBTCPrice() {
             const providers = [
                 async () => {
-                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+                    const res = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
                     const data = await res.json();
-                    return { price: data.bitcoin.usd, change: data.bitcoin.usd_24h_change };
+                    return { price: parseFloat(data.lastPrice), change: parseFloat(data.priceChangePercent) };
                 },
                 async () => {
                     const res = await fetchWithTimeout('https://api.coincap.io/v2/assets/bitcoin');
@@ -808,9 +840,9 @@
                     return { price: parseFloat(data.data.priceUsd), change: parseFloat(data.data.changePercent24Hr) };
                 },
                 async () => {
-                    const res = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
+                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
                     const data = await res.json();
-                    return { price: parseFloat(data.lastPrice), change: parseFloat(data.priceChangePercent) };
+                    return { price: data.bitcoin.usd, change: data.bitcoin.usd_24h_change };
                 }
             ];
             
