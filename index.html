@@ -544,7 +544,7 @@
         }
         function closeHelp() { document.getElementById('help-modal').style.display = 'none'; }
         
-        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/8'; el.style.color = count === 8 ? '#00c087' : count >= 7 ? '#ff9800' : '#e53935'; } }
+        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/8'; el.style.color = count === 8 ? '#00c087' : count >= 6 ? '#ff9800' : '#e53935'; } }
         
         let nextUpdateTime = Date.now() + 900000;
         setInterval(() => {
@@ -651,28 +651,30 @@
             const dxy = DXY_CONSTANT * Math.pow(rates.EUR, 0.576) * Math.pow(rates.JPY, 0.136) * Math.pow(rates.GBP, 0.119) * Math.pow(rates.CAD, 0.091) * Math.pow(rates.SEK, 0.042) * Math.pow(rates.CHF, 0.036);
             const dxyRounded = parseFloat(dxy.toFixed(2));
             let score = 5, label = '';
-            // DXY alto = dólar fuerte = suelo BTC (score alto). DXY bajo = dólar débil = techo BTC (score bajo).
+            // DXY alto = dólar fuerte = flight to safety = BTC en suelo = score ALTO
+            // DXY bajo = dólar débil = risk-on = BTC en techo = score BAJO
             if      (dxy >= 115) { score = 10; label = 'USD extremo (suelo BTC)'; }
-            else if (dxy >= 110) { score = 9; label = 'USD muy fuerte'; }
-            else if (dxy >= 106) { score = 8; label = 'USD fuerte'; }
-            else if (dxy >= 103) { score = 7; label = 'USD mod. fuerte'; }
-            else if (dxy >= 100) { score = 6; label = 'USD ligeramente fuerte'; }
-            else if (dxy >= 97)  { score = 5; label = 'Zona neutral'; }
-            else if (dxy >= 94)  { score = 4; label = 'USD débil'; }
-            else if (dxy >= 90)  { score = 3; label = 'USD mod. débil'; }
-            else if (dxy >= 86)  { score = 2; label = 'USD muy débil'; }
-            else if (dxy >= 82)  { score = 1; label = 'USD extremadamente débil'; }
-            else                 { score = 0; label = 'USD mínimos (techo BTC)'; }
+            else if (dxy >= 110) { score = 9;  label = 'USD muy fuerte'; }
+            else if (dxy >= 106) { score = 8;  label = 'USD fuerte'; }
+            else if (dxy >= 103) { score = 7;  label = 'USD mod. fuerte'; }
+            else if (dxy >= 100) { score = 6;  label = 'USD liger. fuerte'; }
+            else if (dxy >= 97)  { score = 5;  label = 'Zona neutral'; }
+            else if (dxy >= 94)  { score = 4;  label = 'USD débil'; }
+            else if (dxy >= 90)  { score = 3;  label = 'USD mod. débil'; }
+            else if (dxy >= 86)  { score = 2;  label = 'USD muy débil'; }
+            else if (dxy >= 82)  { score = 1;  label = 'USD extremad. débil'; }
+            else                 { score = 0;  label = 'USD mínimos (techo BTC)'; }
             return { score, desc: `DXY: ${dxyRounded} | ${label}`, available: true };
         }
         
         async function getFundingRateScore() {
             try {
-                const res = await fetchWithTimeout('https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=1');
+                const res = await fetchWithTimeout('https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=3');
                 const data = await res.json();
-                const rate = parseFloat(data[0].fundingRate) * 100;
+                if (!data || !data.length) throw new Error('No funding data');
+                const rate = data.map(d => parseFloat(d.fundingRate) * 100).reduce((a,b) => a+b, 0) / data.length;
                 let score = 5;
-                let desc = `Funding: ${rate.toFixed(4)}%`;
+                let desc = `Funding: ${rate.toFixed(4)}% (avg 24h)`;
                 if (rate <= -0.10)      { score = 10; desc += ' SHORTS EXTREMOS (SUELO)'; }
                 else if (rate <= -0.05) { score = 9;  desc += ' Shorts elevados'; }
                 else if (rate <= -0.03) { score = 8;  desc += ' Shorts moderados'; }
@@ -694,26 +696,37 @@
             try {
                 const today = new Date();
                 const end = today.toISOString().slice(0,10).replace(/-/g,'');
-                const start = new Date(today.getFullYear(), 0, 1).toISOString().slice(0,10).replace(/-/g,'');
+                // Ventana fija 365 días atrás (evita el bug de tener pocos días en enero)
+                const start = new Date(today - 365 * 86400000).toISOString().slice(0,10).replace(/-/g,'');
                 const url = `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents/Bitcoin/daily/${start}/${end}`;
                 const res = await fetchWithTimeout(url, 10000);
                 const data = await res.json();
                 if (!data.items || data.items.length < 30) throw new Error('Not enough wiki data');
-                const views = data.items.slice(-90).map(i => i.views);
-                const recentAvg = views.slice(-7).reduce((a,b)=>a+b,0)/7;
-                const max90d = Math.max(...views);
-                const pctOfMax = (recentAvg / max90d) * 100;
-                // Mapeo directo: 0% -> score 10, 100% -> score 0
-                let score = Math.round(10 - (pctOfMax / 10));
-                score = Math.max(0, Math.min(10, score));
-                let desc = `Wiki: ${Math.round(pctOfMax)}% del máx 90d`;
-                if (pctOfMax >= 90)      { desc += ' Euforia atención'; }
-                else if (pctOfMax >= 75) { desc += ' Interés alto'; }
-                else if (pctOfMax >= 60) { desc += ' Interés moderado'; }
-                else if (pctOfMax >= 45) { desc += ' Interés normal'; }
-                else if (pctOfMax >= 30) { desc += ' Bajo interés'; }
-                else if (pctOfMax >= 15) { desc += ' Muy bajo interés'; }
-                else                     { desc += ' Desinterés (SUELO)'; }
+                const views = data.items.map(i => i.views);
+                // Percentil del promedio reciente (7d) sobre todo el año → más robusto que vs max 90d
+                const recentAvg = views.slice(-7).reduce((a,b) => a+b, 0) / 7;
+                const sorted = [...views].sort((a,b) => a - b);
+                const pctRank = sorted.filter(v => v <= recentAvg).length / sorted.length * 100;
+                // Alto percentil = mucho interés = euforia = techo (score bajo)
+                // Bajo percentil = poco interés = desinterés = suelo (score alto)
+                let score;
+                if      (pctRank >= 90) score = 0;
+                else if (pctRank >= 78) score = 1;
+                else if (pctRank >= 65) score = 2;
+                else if (pctRank >= 55) score = 3;
+                else if (pctRank >= 45) score = 4;
+                else if (pctRank >= 35) score = 5;
+                else if (pctRank >= 25) score = 6;
+                else if (pctRank >= 15) score = 7;
+                else if (pctRank >= 7)  score = 8;
+                else if (pctRank >= 3)  score = 9;
+                else                    score = 10;
+                let desc = `Wiki: p${Math.round(pctRank)} (7d avg: ${Math.round(recentAvg/1000)}k/día)`;
+                if      (pctRank >= 90) desc += ' Euforia extrema';
+                else if (pctRank >= 65) desc += ' Interés alto';
+                else if (pctRank >= 35) desc += ' Neutral';
+                else if (pctRank >= 15) desc += ' Bajo interés';
+                else                    desc += ' Desinterés (SUELO)';
                 return { score, desc, available: true };
             } catch (e) {
                 console.warn('Wiki error:', e);
@@ -773,16 +786,17 @@
             if (totalDom === null) throw new Error('All stablecoin providers failed');
             let score = 5;
             let desc = `${totalDom.toFixed(1)}% (USDT+USDC)`;
-            if (totalDom >= 12) { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
-            else if (totalDom >= 10) { score = 9; desc += ' MUCHO MIEDO'; }
-            else if (totalDom >= 8.5) { score = 8; desc += ' MIEDO MODERADO'; }
-            else if (totalDom >= 7) { score = 7; desc += ' TENDENCIA A MIEDO'; }
-            else if (totalDom >= 6) { score = 6; desc += ' LIGERO MIEDO'; }
-            else if (totalDom >= 5) { score = 5; desc += ' NEUTRAL'; }
-            else if (totalDom >= 4) { score = 4; desc += ' LIGERA EUFORIA'; }
-            else if (totalDom >= 3) { score = 3; desc += ' EUFORIA MODERADA'; }
-            else if (totalDom >= 2) { score = 2; desc += ' EUFORIA ALTA'; }
-            else { score = 1; desc += ' EUFORIA EXTREMA (TECHO)'; }
+            if      (totalDom >= 10)  { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
+            else if (totalDom >= 8.5) { score = 9;  desc += ' MUCHO MIEDO'; }
+            else if (totalDom >= 7.5) { score = 8;  desc += ' MIEDO MODERADO'; }
+            else if (totalDom >= 6.5) { score = 7;  desc += ' TENDENCIA A MIEDO'; }
+            else if (totalDom >= 5.5) { score = 6;  desc += ' LIGERO MIEDO'; }
+            else if (totalDom >= 4.5) { score = 5;  desc += ' NEUTRAL'; }
+            else if (totalDom >= 3.8) { score = 4;  desc += ' LIGERA EUFORIA'; }
+            else if (totalDom >= 3.2) { score = 3;  desc += ' EUFORIA MODERADA'; }
+            else if (totalDom >= 2.5) { score = 2;  desc += ' EUFORIA ALTA'; }
+            else if (totalDom >= 1.5) { score = 1;  desc += ' EUFORIA EXTREMA'; }
+            else                      { score = 0;  desc += ' EUFORIA MÁXIMA (TECHO)'; }
             state.s.score = score;
             state.s.desc = desc;
             state.s.available = true;
@@ -824,23 +838,23 @@
                 const sma350x2 = sma350 * 2;
                 const gap = (sma350x2 - sma111) / sma350x2;
                 let piScore;
-                if (gap <= 0) piScore = 0;
+                if (gap <= 0)        piScore = 0;  // cruce = techo absoluto
                 else if (gap < 0.05) piScore = 1;
-                else if (gap < 0.15) piScore = 2;
-                else if (gap < 0.25) piScore = 3;
-                else if (gap < 0.40) piScore = 4;
-                else if (gap < 0.55) piScore = 5;
-                else if (gap < 0.70) piScore = 6;
-                else if (gap < 0.90) piScore = 7;
-                else if (gap < 1.20) piScore = 8;
-                else if (gap < 1.60) piScore = 9;
-                else piScore = 10;
+                else if (gap < 0.12) piScore = 2;
+                else if (gap < 0.20) piScore = 3;
+                else if (gap < 0.30) piScore = 4;
+                else if (gap < 0.42) piScore = 5;
+                else if (gap < 0.55) piScore = 6;
+                else if (gap < 0.68) piScore = 7;
+                else if (gap < 0.82) piScore = 8;
+                else if (gap < 0.95) piScore = 9;
+                else                 piScore = 10; // gap>=0.95 = suelo profundo histórico
                 state.c.score = Math.max(0, Math.min(10, piScore));
                 state.c.desc = `SMA111: $${(sma111/1000).toFixed(1)}k | SMA350×2: $${(sma350x2/1000).toFixed(1)}k`;
                 state.c.available = true;
                 
                 const rsi = calcRSI(closes);
-                state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi-20)/6)));
+                state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi - 20) * (10 / 80))));
                 state.r.desc = `RSI: ${rsi.toFixed(1)}`;
                 state.r.available = true;
             } catch (error) {

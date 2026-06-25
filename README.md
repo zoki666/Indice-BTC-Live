@@ -32,17 +32,17 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 | **R** | RSI 14 diario | 10% | 0 = RSI > 80 (sobrecompra). 10 = RSI < 20 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
 | **E** | EMA 200 semanal | 18% | 0 = precio > 2x EMA (extremo). 10 = precio < 0.5x EMA (extremo). | Velas semanales: Binance → Bybit → KuCoin → Kraken |
 | **F** | Fear & Greed (SMA7) | 14% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
-| **N** | Funding Rate | 8% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures |
-| **W** | Wiki Pageviews | 4% | 0 = visitas > 90% del máximo 90d (atención extrema, techo). 10 = visitas < 5% del máximo (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
+| **N** | Funding Rate (avg 24h) | 8% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures (últimas 3 velas de 8h) |
+| **W** | Wiki Pageviews (percentil 365d) | 4% | 0 = percentil >90% (atención extrema, techo). 10 = percentil <3% (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
 | **X** | DXY (Índice del Dólar) | 6% | 0 = DXY < 82 (dólar muy débil, techo). 10 = DXY > 115 (dólar muy fuerte, suelo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
-| **S** | Stablecoin Dominance | 24% | 0 = dominancia < 3% (euforia). 10 = dominancia > 12% (miedo extremo). | CoinGecko (principal) → CoinPaprika (respaldo) |
+| **S** | Stablecoin Dominance | 24% | 0 = dominancia < 1.5% (euforia máxima). 10 = dominancia > 10% (miedo extremo). | CoinGecko (principal) → CoinPaprika (respaldo) |
 | 💰 | Precio BTC | (informativo) | — | Binance → CoinCap → CoinGecko (cada minuto) |
 
 **Criterios de ponderación:**
-- Mayor peso a indicadores con mejor historial predictivo comprobado en suelos reales (Stablecoin Dominance, EMA 200 semanal, Pi Cycle)
-- Peso moderado a indicadores de sentimiento (Fear & Greed, RSI) como confirmación
-- Peso ligero a indicadores intradía (Funding Rate) e interés minorista (Wiki Pageviews) para detectar extremos sin dominar el índice
-- Incorporación del DXY como variable macro independiente (fórmula geométrica oficial del ICE USDX)
+- Mayor peso a indicadores con mejor historial predictivo comprobado en suelos reales (Stablecoin Dominance 24%, EMA 200 semanal 18%, Pi Cycle 16%)
+- Peso moderado a indicadores de sentimiento (Fear & Greed 14%, RSI 10%) como confirmación
+- Peso ligero a indicadores intradía (Funding Rate 8%) e interés minorista (Wiki Pageviews 4%) para detectar extremos sin dominar el índice
+- Incorporación del DXY (6%) como variable macro independiente (fórmula geométrica oficial del ICE USDX)
 - BTC Dominance eliminado del índice por correlación inversa poco fiable en escenarios de crashes sistémicos
 
 ---
