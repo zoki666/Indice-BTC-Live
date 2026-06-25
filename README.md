@@ -4,7 +4,7 @@
 
 Índice BTC-Live publicado en Github Pages: https://zoki666.github.io/Indice-BTC-Live/
 
-El Índice BTC-Live combina **9 indicadores clave** (técnicos, on-chain, sentimiento, interés minorista y macro) en una puntuación única de 0 a 100.  
+El Índice BTC-Live combina **8 indicadores clave** (técnicos, on-chain, sentimiento, interés minorista y macro) en una puntuación única de 0 a 100.  
 Cada indicador se mide de 0 a 10 con la misma lógica:
 
 - **10 = suelo del mercado → oportunidad de compra**
@@ -28,22 +28,22 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 
 | Letra | Indicador | Peso | Lógica de puntuación (0=Techo, 10=Suelo) | Proveedores / Cálculo |
 |-------|-----------|------|-------------------------------------------|------------------------|
-| **C** | Pi Cycle Top | 14% | 0 = precio cerca/cruce SMA350×2 (techo). 10 = precio muy por debajo (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
-| **R** | RSI 14 diario | 8% | 0 = RSI > 80 (sobrecompra). 10 = RSI < 20 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
+| **C** | Pi Cycle Top | 16% | 0 = precio cerca/cruce SMA350×2 (techo). 10 = precio muy por debajo (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
+| **R** | RSI 14 diario | 10% | 0 = RSI > 80 (sobrecompra). 10 = RSI < 20 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
 | **E** | EMA 200 semanal | 18% | 0 = precio > 2x EMA (extremo). 10 = precio < 0.5x EMA (extremo). | Velas semanales: Binance → Bybit → KuCoin → Kraken |
-| **F** | Fear & Greed (SMA7) | 10% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
-| **N** | Funding Rate (avg 24h) | 6% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures (últimas 3 velas de 8h) |
-| **W** | Wiki Pageviews (percentil 365d) | 5% | 0 = percentil >90% (atención extrema, techo). 10 = percentil <3% (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
-| **X** | DXY (Índice del Dólar) | 9% | 0 = DXY > 115 (dólar extremo). 10 = DXY < 82 (dólar mínimo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
-| **S** | Stablecoin Dominance | 15% | 0 = dominancia < 1.5% (euforia). 10 = dominancia > 10% (miedo extremo). | CoinGecko (principal) → CoinPaprika (respaldo) |
-| **D** | BTC Dominance | 15% | 0 = BTC.D < 40% (altseason/techo). 10 = BTC.D > 70% (capitulación/suelo). | CoinGecko (principal) → CoinPaprika → CoinCap (respaldo) |
+| **F** | Fear & Greed (SMA7) | 14% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
+| **N** | Funding Rate | 8% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures |
+| **W** | Wiki Pageviews | 4% | 0 = visitas > 90% del máximo 90d (atención extrema, techo). 10 = visitas < 5% del máximo (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
+| **X** | DXY (Índice del Dólar) | 6% | 0 = DXY < 82 (dólar muy débil, techo). 10 = DXY > 115 (dólar muy fuerte, suelo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
+| **S** | Stablecoin Dominance | 24% | 0 = dominancia < 3% (euforia). 10 = dominancia > 12% (miedo extremo). | CoinGecko (principal) → CoinPaprika (respaldo) |
 | 💰 | Precio BTC | (informativo) | — | Binance → CoinCap → CoinGecko (cada minuto) |
 
 **Criterios de ponderación:**
-- Mayor peso a indicadores con mejor historial predictivo comprobado (EMA 200 semanal, Stablecoin Dom, BTC Dominance, Pi Cycle)
+- Mayor peso a indicadores con mejor historial predictivo comprobado en suelos reales (Stablecoin Dominance, EMA 200 semanal, Pi Cycle)
 - Peso moderado a indicadores de sentimiento (Fear & Greed, RSI) como confirmación
 - Peso ligero a indicadores intradía (Funding Rate) e interés minorista (Wiki Pageviews) para detectar extremos sin dominar el índice
 - Incorporación del DXY como variable macro independiente (fórmula geométrica oficial del ICE USDX)
+- BTC Dominance eliminado del índice por correlación inversa poco fiable en escenarios de crashes sistémicos
 
 ---
 
@@ -58,7 +58,6 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 | W (Wiki Pageviews) | **1 vez al día** (datos diarios de Wikipedia, actualización con 1-2 días de retraso) |
 | X (DXY) | **1 vez al día** (las APIs de divisas gratuitas actualizan tras cierre de mercados) |
 | S (Stablecoin Dom) | **Cada pocos minutos** (cambios en market cap en vivo) |
-| D (BTC Dominance) | **Cada pocos minutos** (igual que S) |
 | Precio BTC | **Cada minuto** (consulta a exchanges) |
 | Índice completo | **Recálculo cada 15 minutos** (con reintentos automáticos y respaldos si algún proveedor falla) |
 
