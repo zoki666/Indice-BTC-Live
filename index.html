@@ -9,8 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="BTC-Live">
     <link rel="manifest" href="manifest.json">
     <meta property="og:title" content="BTC-Live Index - Suelos y techos de Bitcoin">
-    <meta property="og:description" content="Índice macro en tiempo real basado en 8 indicadores. Compra en verde (>75), vende en rojo (<25).">
-    <meta property="og:image" content="https://i.imgur.com/btc-index-preview.png">
+    <meta property="og:description" content="Índice macro en tiempo real basado en 9 indicadores. Compra en verde (>75), vende en rojo (<25).">
     <meta name="twitter:card" content="summary_large_image">
     <style>
         :root {
@@ -137,7 +136,8 @@
         .letter-r { color: #ff9800; }
         .letter-e { color: #03a9f4; }
         .letter-f { color: #2196f3; }
-        .letter-v { color: #ff5252; }
+        .letter-n { color: #ff9800; }
+        .letter-w { color: #4caf50; }
         .letter-x { color: #5c6bc0; }
         .letter-s { color: #e91e63; }
         .letter-d { color: #00bcd4; }
@@ -145,9 +145,6 @@
         .trend-up { color: #00c087; }
         .trend-down { color: #e53935; }
         .trend-flat { color: #ff9800; }
-        .sparkline-wrapper { width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
-        .sparkline-label { font-size: 9px; color: var(--text-muted); text-align: center; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
-        #sparkline-canvas { width: 100%; height: 48px; display: block; }
         .flash-update { animation: flashGlow 0.6s ease; }
         @keyframes flashGlow { 0% { text-shadow: 0 0 30px currentColor; } 50% { text-shadow: 0 0 60px currentColor, 0 0 80px currentColor; } 100% { text-shadow: 0 0 30px currentColor; } }
         .comp-name { font-size: 8px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; white-space: normal; line-height: 1.2; }
@@ -244,7 +241,7 @@
                         <div class="mini-card">
                             <div class="mini-card-label" data-i18n="indicatorsLabel">Indicadores</div>
                             <div class="mini-card-value" id="active-indicators">-</div>
-                            <div class="mini-card-sub" data-i18n="ofAvailable">de 8 disponibles</div>
+                            <div class="mini-card-sub" data-i18n="ofAvailable">de 9 disponibles</div>
                         </div>
                         <div class="mini-card">
                             <div class="mini-card-label" data-i18n="nextUpdate">Próx. actualización</div>
@@ -296,13 +293,21 @@
                             <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-f"></div></div>
                             <div class="comp-desc" id="desc-f">Cargando...</div>
                         </div>
-                        <!-- V - Volatilidad -->
-                        <div class="component-card" data-indicator="v">
-                            <div class="card-header-row"><div class="comp-letter letter-v">V</div><button class="help-btn" onclick="openHelp('v')">?</button></div>
-                            <div class="comp-name" id="compNameV">Volatilidad</div>
-                            <div class="comp-score" id="score-v">-</div>
-                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-v"></div></div>
-                            <div class="comp-desc" id="desc-v">Cargando...</div>
+                        <!-- N - Funding Rate -->
+                        <div class="component-card" data-indicator="n">
+                            <div class="card-header-row"><div class="comp-letter letter-n">N</div><button class="help-btn" onclick="openHelp('n')">?</button></div>
+                            <div class="comp-name" id="compNameN">Funding Rate</div>
+                            <div class="comp-score" id="score-n">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-n"></div></div>
+                            <div class="comp-desc" id="desc-n">Cargando...</div>
+                        </div>
+                        <!-- W - Wikipedia Views -->
+                        <div class="component-card" data-indicator="w">
+                            <div class="card-header-row"><div class="comp-letter letter-w">W</div><button class="help-btn" onclick="openHelp('w')">?</button></div>
+                            <div class="comp-name" id="compNameW">Wiki Pageviews</div>
+                            <div class="comp-score" id="score-w">-</div>
+                            <div class="comp-bar-bg"><div class="comp-bar-fill" id="bar-w"></div></div>
+                            <div class="comp-desc" id="desc-w">Cargando...</div>
                         </div>
                         <!-- X - DXY -->
                         <div class="component-card" data-indicator="x">
@@ -357,7 +362,7 @@
                             <li id="ruleSell"><strong style="color:#e53935;">▼ Cuanto más bajo (0-25) → zona de VENTA.</strong><br>El mercado está caro, hay euforia, codicia o sobrevaloración. Es el momento de tomar ganancias o proteger el capital.</li>
                             <li id="ruleNeutral"><strong style="color:#ff9800;">● Zona media (26-74) → NEUTRAL.</strong><br>No hay señales extremas en ninguna dirección. Se puede mantener la estrategia actual sin cambios drásticos.</li>
                         </ul>
-                        <p style="margin-top:12px;font-size:13px;color:var(--text-muted);" id="indicatorsNote">💡 Cada indicador individual (C, R, E, F, V, X, S, D) sigue la lógica 0-10, y el índice final es un promedio ponderado.</p>
+                        <p style="margin-top:12px;font-size:13px;color:var(--text-muted);" id="indicatorsNote">💡 Cada indicador individual (C, R, E, F, N, W, X, S, D) sigue la lógica 0-10, y el índice final es un promedio ponderado.</p>
                     </div>
                     <div style="background:var(--bg-card);border-left:4px solid #00c087;padding:18px;border-radius:8px;"><h4 style="color:#00c087;margin-bottom:10px;font-size:15px;" id="accumTitle">🟢 Zona de Acumulación DCA (Índice ≥ 75)</h4><p style="color:var(--text);margin-bottom:10px;" id="accumDesc"><strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación.</p><ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;"><li id="accumLi1">✔️ Programa compras automáticas periódicas (DCA).</li><li id="accumLi2">✔️ Aumenta ligeramente el tamaño de compra si el índice supera 85-90.</li><li id="accumLi3">✔️ Ignora el ruido mediático: las noticias serán negativas.</li><li id="accumLi4">✔️ Piensa a 6-18 meses vista.</li></ul></div>
                     <div style="background:var(--bg-card);border-left:4px solid #e53935;padding:18px;border-radius:8px;"><h4 style="color:#e53935;margin-bottom:10px;font-size:15px;" id="sellTitle">🔴 Zona de Distribución / Venta (Índice ≤ 25)</h4><p style="color:var(--text);margin-bottom:10px;" id="sellDesc"><strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.</p><ul style="padding-left:20px;display:flex;flex-direction:column;gap:4px;"><li id="sellLi1">⚠️ Deja de comprar inmediatamente.</li><li id="sellLi2">💰 Vende un 25-50% de tu posición.</li><li id="sellLi3">🛑 Sube tus stop-loss.</li><li id="sellLi4">🧊 Guarda liquidez para la próxima zona de acumulación.</li></ul></div>
@@ -383,34 +388,34 @@
             es: {
                 title: "BTC-Live Index", mainTitle: "📊 Índice BTC-Live", loading: "Calculando...", noData: "Sin datos",
                 strongBuy: "Acumulación Fuerte (DCA)", neutral: "Neutral", sell: "Distribución / Riesgo (Vender)",
-                indicatorsTitle: "🧩 Componentes de análisis", indicatorsLabel: "Indicadores", ofAvailable: "de 8 disponibles",
+                indicatorsTitle: "🧩 Componentes de análisis", indicatorsLabel: "Indicadores", ofAvailable: "de 9 disponibles",
                 nextUpdate: "Próx. actualización", minutes: "minutos", reflection: "💭 Reflexión", updated: "Actualizado",
                 waiting: "Esperando datos...", sync: "Sincronizando datos...", partialWarning: "⚠ Puntuación provisional (algunos indicadores no disponibles)",
                 donate: "Donar BTC", support: "Apoya el proyecto", onchain: "On-chain", lightning: "Lightning", scan: "Escanea con tu wallet",
                 guide: "💡 Guía de Estrategia Macro", interpretation: "Interpretación (0‑10)", unavailable: "No disponible", loadingCard: "Cargando...",
                 techo: "Techo", suelo: "Suelo", neutralLabel: "Neutral", btcPriceTitle: "💰 Precio Bitcoin", btcPriceShort: "PRECIO BTC",
-                sparklineLabel: "Historial del índice",
                 alertBtn: "🔔 Alertas", alertOn: "🔔 Alertas activadas", alertOff: "🔕 Alertas desactivadas",
                 alertNotifTitle: "BTC-Live Index 🚨", alertBuy: "Zona de COMPRA: índice ≥ 80", alertSell: "Zona de VENTA: índice ≤ 20",
                 howToReadTitle: "🧭 Cómo leer este índice", howToReadDesc: "El Índice BTC-Live va de <strong style=\"color:#e53935;\">0 (techo de mercado)</strong> a <strong style=\"color:#00c087;\">100 (suelo de mercado)</strong>. La regla es simple:",
                 ruleBuy: "<strong style=\"color:#00c087;\">▲ Cuanto más alto (75-100) → zona de COMPRA.</strong><br>El mercado está barato, hay miedo, capitulación o infravaloración. Es el momento de acumular BTC con visión a largo plazo.",
                 ruleSell: "<strong style=\"color:#e53935;\">▼ Cuanto más bajo (0-25) → zona de VENTA.</strong><br>El mercado está caro, hay euforia, codicia o sobrevaloración. Es el momento de tomar ganancias o proteger el capital.",
                 ruleNeutral: "<strong style=\"color:#ff9800;\">● Zona media (26-74) → NEUTRAL.</strong><br>No hay señales extremas en ninguna dirección. Se puede mantener la estrategia actual sin cambios drásticos.",
-                indicatorsNote: "💡 Cada indicador individual (C, R, E, F, V, X, S, D) sigue la lógica 0-10, y el índice final es un promedio ponderado.",
+                indicatorsNote: "💡 Cada indicador individual (C, R, E, F, N, W, X, S, D) sigue la lógica 0-10, y el índice final es un promedio ponderado.",
                 accumTitle: "🟢 Zona de Acumulación DCA (Índice ≥ 75)", accumDesc: "<strong>Es el momento idóneo para comprar.</strong> El mercado está en una fase de miedo, infravaloración o capitulación.",
                 accumLi1: "✔️ Programa compras automáticas periódicas (DCA).", accumLi2: "✔️ Aumenta ligeramente el tamaño de compra si el índice supera 85-90.", accumLi3: "✔️ Ignora el ruido mediático: las noticias serán negativas.", accumLi4: "✔️ Piensa a 6-18 meses vista.",
                 sellTitle: "🔴 Zona de Distribución / Venta (Índice ≤ 25)", sellDesc: "<strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.",
                 sellLi1: "⚠️ Deja de comprar inmediatamente.", sellLi2: "💰 Vende un 25-50% de tu posición.", sellLi3: "🛑 Sube tus stop-loss.", sellLi4: "🧊 Guarda liquidez para la próxima zona de acumulación.",
                 disclaimer: "⚠️ <strong>Descargo de responsabilidad:</strong> Este índice es una herramienta educativa basada en datos históricos y no constituye asesoramiento financiero.",
-                compNameC: "Pi Cycle Top", compNameR: "RSI 14 Diario", compNameE: "EMA 200 Semanal", compNameF: "Fear & Greed", compNameV: "Volatilidad", compNameX: "DXY (Índice Dólar)", compNameS: "Stablecoin Dom", compNameD: "BTC Dominance",
-                helpC_title: "C - Pi Cycle Top", helpC_desc: "Compara precio vs SMA(111) y SMA(350)×2. Históricamente el cruce de ambas medias señala techos de ciclo.", helpC_strat: "0 = precio cerca o por encima del cruce (techo).\n10 = precio muy por debajo (suelo).",
+                compNameC: "Tope Ciclo Pi", compNameR: "RSI 14 Diario", compNameE: "EMA 200 Semanal", compNameF: "Miedo y codicia", compNameN: "Tasa financiación", compNameW: "Visitas Wiki", compNameX: "DXY (Índice Dólar)", compNameS: "Dominancia Stablecoin", compNameD: "Dominancia BTC",
+                helpC_title: "C - Tope Ciclo Pi", helpC_desc: "Compara precio vs SMA(111) y SMA(350)×2. Históricamente el cruce de ambas medias señala techos de ciclo.", helpC_strat: "0 = precio cerca o por encima del cruce (techo).\n10 = precio muy por debajo (suelo).",
                 helpR_title: "R - RSI 14 Diario", helpR_desc: "Índice de Fuerza Relativa de 14 días. Sobre 70 = sobrecompra, bajo 30 = sobreventa.", helpR_strat: "0 = RSI > 80 (techo).\n10 = RSI < 20 (suelo).",
                 helpE_title: "E - EMA 200 Semanal", helpE_desc: "Distancia del precio a la media móvil exponencial de 200 semanas. Señal de largo plazo.", helpE_strat: "0 = precio > 2x EMA (techo).\n10 = precio < 0.5x EMA (suelo).",
-                helpF_title: "F - Fear & Greed", helpF_desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", helpF_strat: "0 = codicia extrema (vender).\n10 = miedo extremo (comprar).",
-                helpV_title: "V - Volatilidad (percentil)", helpV_desc: "Volatilidad histórica a 30 días en percentil sobre el último año. Alta volatilidad sostenida indica pánico (suelos); baja volatilidad prolongada indica complacencia (techos).", helpV_strat: "0 = volatilidad en percentil bajo (complacencia/techo).\n10 = volatilidad en percentil alto (pánico/suelo).",
-                helpX_title: "X - DXY (Índice Dólar)", helpX_desc: "Índice del dólar contra cesta de divisas (EUR, JPY, GBP, CAD, SEK, CHF). DXY alto = dólar fuerte = presión bajista para BTC. DXY débil suele preceder rallies de BTC.", helpX_strat: "0 = DXY > 108 (dólar muy fuerte, riesgo para BTC).\n10 = DXY < 95 (dólar débil, favorable para BTC).",
-                helpS_title: "S - Stablecoin Dominance", helpS_desc: "Porcentaje de capitalización combinado de USDT y USDC. Alto = miedo extremo (suelo). Bajo = euforia (techo).", helpS_strat: "0 = dominancia < 3% (techo).\n10 = dominancia > 12% (suelo).",
-                helpD_title: "D - BTC Dominance", helpD_desc: "Porcentaje del market cap de Bitcoin sobre el total cripto. Dominancia muy alta + caída indica rotación a stables (techo). Dominancia en rebote desde mínimos extremos indica suelo.", helpD_strat: "0 = BTC.D < 40% y bajando (euforia altcoins/techo).\n10 = BTC.D > 60% y subiendo (capitulación/suelo).",
+                helpF_title: "F - Miedo y codicia", helpF_desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", helpF_strat: "0 = codicia extrema (vender).\n10 = miedo extremo (comprar).",
+                helpN_title: "N - Tasa financiación", helpN_desc: "Tasa de financiación promedio de las últimas 24h (3 velas) de futuros perpetuos de Binance. Negativa = shorts pagan a longs (miedo/pánico). Positiva alta = longs pagan a shorts (euforia).", helpN_strat: "0 = funding > +0.15% (euforia extrema, techo).\n10 = funding < -0.10% (pánico extremo, suelo).",
+                helpW_title: "W - Visitas Wikipedia", helpW_desc: "Visitas diarias al artículo 'Bitcoin' en Wikipedia, medidas como percentil sobre los últimos 365 días. Picos de atención coinciden con techos (euforia). Valles profundos coinciden con suelos (desinterés).", helpW_strat: "0 = visitas en percentil >90% del año (atención extrema, techo).\n10 = visitas en percentil <3% del año (desinterés extremo, suelo).",
+                helpX_title: "X - DXY (Índice Dólar)", helpX_desc: "Índice del dólar contra cesta de divisas (EUR, JPY, GBP, CAD, SEK, CHF). DXY alto = dólar fuerte = presión BAJISTA sobre BTC (techo). DXY bajo = dólar débil = viento de cola alcista para BTC (suelo).", helpX_strat: "0 = DXY > 115 (dólar extremadamente fuerte, máximo riesgo para BTC → techo).\n10 = DXY < 82 (dólar en mínimos históricos, muy favorable para BTC → suelo).",
+                helpS_title: "S - Dominancia Stablecoin", helpS_desc: "Porcentaje de capitalización combinado de USDT y USDC. Alto = miedo extremo (suelo). Bajo = euforia (techo).", helpS_strat: "0 = dominancia < 3% (techo).\n10 = dominancia > 12% (suelo).",
+                helpD_title: "D - Dominancia BTC", helpD_desc: "Porcentaje del market cap de Bitcoin sobre el total cripto. Dominancia muy alta + caída indica rotación a stables (techo). Dominancia en rebote desde mínimos extremos indica suelo.", helpD_strat: "0 = BTC.D < 40% y bajando (euforia altcoins/techo).\n10 = BTC.D > 60% y subiendo (capitulación/suelo).",
                 quotes: [
                     { text: '"Sé codicioso cuando otros tengan miedo."', author: 'Warren Buffett' },
                     { text: '"El precio es lo que pagas, el valor es lo que obtienes."', author: 'Warren Buffett' },
@@ -422,32 +427,32 @@
             en: {
                 title: "BTC-Live Index", mainTitle: "📊 BTC-Live Index", loading: "Calculating...", noData: "No data",
                 strongBuy: "Strong Accumulation (DCA)", neutral: "Neutral", sell: "Distribution / Risk (Sell)",
-                indicatorsTitle: "🧩 Analysis Components", indicatorsLabel: "Indicators", ofAvailable: "of 8 available",
+                indicatorsTitle: "🧩 Analysis Components", indicatorsLabel: "Indicators", ofAvailable: "of 9 available",
                 nextUpdate: "Next update", minutes: "minutes", reflection: "💭 Reflection", updated: "Updated",
                 waiting: "Waiting for data...", sync: "Syncing market data...", partialWarning: "⚠ Provisional score",
                 donate: "Donate BTC", support: "Support the project", onchain: "On-chain", lightning: "Lightning", scan: "Scan with your wallet",
                 guide: "💡 Macro Strategy Guide", interpretation: "Interpretation (0‑10)", unavailable: "Unavailable", loadingCard: "Loading...",
                 techo: "Top", suelo: "Bottom", neutralLabel: "Neutral", btcPriceTitle: "💰 Bitcoin Price", btcPriceShort: "BTC PRICE",
-                sparklineLabel: "Index history",
                 alertBtn: "🔔 Alerts", alertOn: "🔔 Alerts on", alertOff: "🔕 Alerts off",
                 alertNotifTitle: "BTC-Live Index 🚨", alertBuy: "BUY zone: index ≥ 80", alertSell: "SELL zone: index ≤ 20",
                 howToReadTitle: "🧭 How to read this index", howToReadDesc: "The BTC-Live Index goes from <strong style=\"color:#e53935;\">0 (market top)</strong> to <strong style=\"color:#00c087;\">100 (market bottom)</strong>.",
                 ruleBuy: "<strong style=\"color:#00c087;\">▲ Higher (75-100) → BUY zone.</strong><br>The market is cheap, fear, capitulation. Time to accumulate BTC.",
                 ruleSell: "<strong style=\"color:#e53935;\">▼ Lower (0-25) → SELL zone.</strong><br>The market is expensive, euphoria, greed. Time to take profits.",
                 ruleNeutral: "<strong style=\"color:#ff9800;\">● Middle zone (26-74) → NEUTRAL.</strong><br>No extreme signals. Maintain current strategy.",
-                indicatorsNote: "💡 Each indicator (C, R, E, F, V, X, S, D) follows 0-10 logic, final index weighted average.",
+                indicatorsNote: "💡 Each indicator (C, R, E, F, N, W, X, S, D) follows 0-10 logic, final index weighted average.",
                 accumTitle: "🟢 DCA Accumulation Zone (Index ≥ 75)", accumDesc: "<strong>Ideal time to buy.</strong> Market fear, undervaluation or capitulation.",
                 accumLi1: "✔️ Schedule periodic automatic purchases (DCA).", accumLi2: "✔️ Slightly increase purchase size if index exceeds 85-90.", accumLi3: "✔️ Ignore media noise: news will be negative.", accumLi4: "✔️ Think 6-18 months ahead.",
                 sellTitle: "🔴 Distribution / Selling Zone (Index ≤ 25)", sellDesc: "<strong>Time to secure profits.</strong> Market euphoria, greed or overvaluation.",
                 sellLi1: "⚠️ Stop buying immediately.", sellLi2: "💰 Sell 25-50% of your position.", sellLi3: "🛑 Raise your stop-losses.", sellLi4: "🧊 Keep liquidity for the next accumulation zone.",
                 disclaimer: "⚠️ <strong>Disclaimer:</strong> This index is an educational tool based on historical data and does not constitute financial advice.",
-                compNameC: "Pi Cycle Top", compNameR: "RSI 14 Daily", compNameE: "EMA 200 Weekly", compNameF: "Fear & Greed", compNameV: "Volatility", compNameX: "DXY (USD Index)", compNameS: "Stablecoin Dom", compNameD: "BTC Dominance",
+                compNameC: "Pi Cycle Top", compNameR: "RSI 14 Daily", compNameE: "EMA 200 Weekly", compNameF: "Fear & Greed", compNameN: "Funding Rate", compNameW: "Wiki Pageviews", compNameX: "DXY (USD Index)", compNameS: "Stablecoin Dom", compNameD: "BTC Dominance",
                 helpC_title: "C - Pi Cycle Top", helpC_desc: "Compares price vs SMA(111) and SMA(350)×2. Historically their crossover marks cycle tops.", helpC_strat: "0 = near or above cross (top).\n10 = well below cross (bottom).",
                 helpR_title: "R - RSI 14 Daily", helpR_desc: "Relative Strength Index over 14 days.", helpR_strat: "0 = RSI > 80 (top).\n10 = RSI < 20 (bottom).",
                 helpE_title: "E - EMA 200 Weekly", helpE_desc: "Price distance to 200-week exponential moving average.", helpE_strat: "0 = price > 2x EMA (top).\n10 = price < 0.5x EMA (bottom).",
                 helpF_title: "F - Fear & Greed", helpF_desc: "Market sentiment. Low = extreme fear (opportunity), high = extreme greed (risk).", helpF_strat: "0 = extreme greed (sell).\n10 = extreme fear (buy).",
-                helpV_title: "V - Volatility (percentile)", helpV_desc: "30-day historical volatility as a percentile over the past year. High sustained volatility = panic (bottoms); low prolonged volatility = complacency (tops).", helpV_strat: "0 = volatility in low percentile (complacency/top).\n10 = volatility in high percentile (panic/bottom).",
-                helpX_title: "X - DXY (USD Index)", helpX_desc: "US Dollar Index against a basket of currencies (EUR, JPY, GBP, CAD, SEK, CHF). High DXY = strong dollar = bearish pressure on BTC. Weak DXY often precedes BTC rallies.", helpX_strat: "0 = DXY > 108 (strong dollar, risk for BTC).\n10 = DXY < 95 (weak dollar, favorable for BTC).",
+                helpN_title: "N - Funding Rate", helpN_desc: "24h average funding rate (3 readings) of Binance perpetual futures. Negative = shorts pay longs (fear/panic). High positive = longs pay shorts (euphoria).", helpN_strat: "0 = funding > +0.15% (extreme euphoria, top).\n10 = funding < -0.10% (extreme panic, bottom).",
+                helpW_title: "W - Wikipedia Pageviews", helpW_desc: "Daily views of the 'Bitcoin' Wikipedia article as a percentile over the last 365 days. Attention spikes coincide with tops (euphoria). Deep valleys coincide with bottoms (disinterest).", helpW_strat: "0 = views in >90th percentile of the year (extreme attention, top).\n10 = views in <3rd percentile of the year (extreme disinterest, bottom).",
+                helpX_title: "X - DXY (USD Index)", helpX_desc: "US Dollar Index against a basket of currencies (EUR, JPY, GBP, CAD, SEK, CHF). High DXY = strong dollar = BEARISH pressure on BTC (top). Low DXY = weak dollar = tailwind for BTC (bottom).", helpX_strat: "0 = DXY > 115 (extremely strong dollar, maximum risk for BTC → top).\n10 = DXY < 82 (dollar at historical lows, very favorable for BTC → bottom).",
                 helpS_title: "S - Stablecoin Dominance", helpS_desc: "Combined USDT+USDC market cap percentage. High = extreme fear (bottom).", helpS_strat: "0 = dominance < 3% (top).\n10 = dominance > 12% (bottom).",
                 helpD_title: "D - BTC Dominance", helpD_desc: "Bitcoin's share of total crypto market cap. Very high dominance + drop signals rotation to stables (top). Dominance rebounding from extreme lows signals bottom.", helpD_strat: "0 = BTC.D < 40% and falling (altcoin euphoria/top).\n10 = BTC.D > 60% and rising (capitulation/bottom).",
                 quotes: [
@@ -470,6 +475,9 @@
             document.documentElement.lang = currentLang;
             updateAllTexts();
             updateAlertBtn();
+            if (els.timestamp.innerText && !els.timestamp.innerText.includes('Esperando') && !els.timestamp.innerText.includes('Waiting')) {
+                updateTimestamp();
+            }
             rotateQuote(true);
         }
         
@@ -482,7 +490,7 @@
             document.querySelectorAll('.label-techo, .label-neutral, .label-suelo').forEach(el => { const key = el.getAttribute('data-i18n'); if (key) el.innerText = t(key); });
             const htmlIds = ['howToReadTitle','howToReadDesc','ruleBuy','ruleSell','ruleNeutral','indicatorsNote','accumTitle','accumDesc','accumLi1','accumLi2','accumLi3','accumLi4','sellTitle','sellDesc','sellLi1','sellLi2','sellLi3','sellLi4','disclaimer'];
             htmlIds.forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = t(id); });
-            const comps = ['c','r','e','f','v','x','s','d'];
+            const comps = ['c','r','e','f','n','w','x','s','d'];
             comps.forEach(l => { const el = document.getElementById(`compName${l.toUpperCase()}`); if(el) el.innerText = t(`compName${l.toUpperCase()}`); });
             document.title = t('title');
             document.getElementById('minutes-label') && (document.getElementById('minutes-label').innerText = t('minutes'));
@@ -504,9 +512,10 @@
         
         (function() { const t = document.getElementById('theme-toggle'); if(localStorage.getItem('btc-live-theme') === 'light') t.checked = true; t.addEventListener('change', function() { localStorage.setItem('btc-live-theme', this.checked ? 'light' : 'dark'); }); })();
         
-        const indicators = ['c','r','e','f','v','x','s','d'];
-        // Redistribución de pesos
-        const weights = { c: 16, r: 5, e: 24, f: 7, v: 4, x: 10, s: 17, d: 17 };
+        const indicators = ['c','r','e','f','n','w','x','s','d'];
+        // Pesos recalibrados v2 (suma 100):
+        // C:14  R:8  E:18  F:10  N:6  W:5  X:9  S:15  D:15
+        const weights = { c: 14, r: 8, e: 18, f: 10, n: 6, w: 5, x: 9, s: 15, d: 15 };
         const state = {};
         indicators.forEach(id => state[id] = { score: 5, available: false, desc: t('loadingCard') });
         
@@ -545,7 +554,7 @@
         }
         function closeHelp() { document.getElementById('help-modal').style.display = 'none'; }
         
-        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/8'; el.style.color = count === 8 ? '#00c087' : count >= 6 ? '#ff9800' : '#e53935'; } }
+        function updateActiveIndicators() { const count = indicators.filter(id => state[id].available).length; const el = document.getElementById('active-indicators'); if(el) { el.innerText = count + '/9'; el.style.color = count === 9 ? '#00c087' : count >= 7 ? '#ff9800' : '#e53935'; } }
         
         let nextUpdateTime = Date.now() + 900000;
         setInterval(() => {
@@ -623,73 +632,117 @@
         }
         
         async function getDXYScore() {
-            // Fórmula oficial ICE USDX (geométrica ponderada)
-            // DXY = 50.14348112 × EURUSD^(-0.576) × USDJPY^(0.136) × GBPUSD^(-0.119) × USDCAD^(0.091) × USDSEK^(0.042) × USDCHF^(0.036)
-            // Con tasas base=USD de la API (rates.EUR=EUR/USD, rates.JPY=JPY/USD, etc.):
-            // EURUSD^(-0.576) = rates.EUR^(+0.576) | USDJPY^(0.136) = rates.JPY^(+0.136)
-            // GBPUSD^(-0.119) = rates.GBP^(+0.119) | USDCAD^(0.091) = rates.CAD^(+0.091)
-            // USDSEK^(0.042) = rates.SEK^(+0.042) | USDCHF^(0.036) = rates.CHF^(+0.036)
             const DXY_CONSTANT = 50.14348112;
-
             const fxProviders = [
                 async () => {
-                    // Frankfurter: BCE data, muy fiable, sin clave
                     const res = await fetchWithTimeout('https://api.frankfurter.app/latest?from=USD&to=EUR,JPY,GBP,CAD,SEK,CHF', 8000);
                     const data = await res.json();
                     if (!data.rates || !data.rates.EUR) throw new Error('frankfurter: no rates');
                     return data.rates;
                 },
                 async () => {
-                    // ExchangeRate.fun: gratuita, sin clave
                     const res = await fetchWithTimeout('https://api.exchangerate.fun/latest?base=USD', 8000);
                     const data = await res.json();
                     if (!data.rates || !data.rates.EUR) throw new Error('exchangerate.fun: no rates');
                     return data.rates;
                 },
                 async () => {
-                    // Open.er-api.com: gratuita, sin clave, actualización diaria
                     const res = await fetchWithTimeout('https://open.er-api.com/v6/latest/USD', 8000);
                     const data = await res.json();
                     if (!data.rates || !data.rates.EUR) throw new Error('open.er-api: no rates');
                     return data.rates;
                 }
             ];
-
             let rates = null;
             for (const prov of fxProviders) {
-                try {
-                    rates = await prov();
-                    if (rates && rates.EUR && rates.JPY && rates.GBP) break;
-                } catch(e) { continue; }
+                try { rates = await prov(); if (rates && rates.EUR && rates.JPY && rates.GBP) break; } catch(e) { continue; }
             }
             if (!rates) return { score: 5, desc: 'Sin datos FX', available: false };
-
-            // Fórmula: todas las potencias son positivas porque las tasas base=USD ya son invertidas para EUR/GBP
-            const dxy = DXY_CONSTANT *
-                Math.pow(rates.EUR, 0.576) *
-                Math.pow(rates.JPY, 0.136) *
-                Math.pow(rates.GBP, 0.119) *
-                Math.pow(rates.CAD, 0.091) *
-                Math.pow(rates.SEK, 0.042) *
-                Math.pow(rates.CHF, 0.036);
-
+            const dxy = DXY_CONSTANT * Math.pow(rates.EUR, 0.576) * Math.pow(rates.JPY, 0.136) * Math.pow(rates.GBP, 0.119) * Math.pow(rates.CAD, 0.091) * Math.pow(rates.SEK, 0.042) * Math.pow(rates.CHF, 0.036);
             const dxyRounded = parseFloat(dxy.toFixed(2));
-            let score = 5;
-            let label = '';
-            // DXY histórico: ~70 suelo (2008/2021), ~115 techo (2022/2001), neutro ~100
-            if      (dxy >= 115) { score = 10; label = 'USD extremo (suelo BTC)'; }
-            else if (dxy >= 110) { score = 9; label = 'USD muy fuerte'; }
-            else if (dxy >= 106) { score = 8; label = 'USD fuerte'; }
-            else if (dxy >= 103) { score = 7; label = 'USD mod. fuerte'; }
-            else if (dxy >= 100) { score = 6; label = 'USD ligeramente fuerte'; }
+            let score = 5, label = '';
+            // DXY alto = dólar fuerte = presión bajista BTC = score BAJO (techo)
+            // DXY bajo = dólar débil = viento de cola BTC = score ALTO (suelo)
+            if      (dxy >= 115) { score = 0; label = 'USD extremo (riesgo BTC)'; }
+            else if (dxy >= 110) { score = 1; label = 'USD muy fuerte'; }
+            else if (dxy >= 106) { score = 2; label = 'USD fuerte'; }
+            else if (dxy >= 103) { score = 3; label = 'USD mod. fuerte'; }
+            else if (dxy >= 100) { score = 4; label = 'USD liger. fuerte'; }
             else if (dxy >= 97)  { score = 5; label = 'Zona neutral'; }
-            else if (dxy >= 94)  { score = 4; label = 'USD débil'; }
-            else if (dxy >= 90)  { score = 3; label = 'USD mod. débil'; }
-            else if (dxy >= 86)  { score = 2; label = 'USD muy débil'; }
-            else if (dxy >= 82)  { score = 1; label = 'USD extremadamente débil'; }
-            else                 { score = 0; label = 'USD mínimos (techo BTC)'; }
-
+            else if (dxy >= 94)  { score = 6; label = 'USD débil (↑ BTC)'; }
+            else if (dxy >= 90)  { score = 7; label = 'USD mod. débil'; }
+            else if (dxy >= 86)  { score = 8; label = 'USD muy débil'; }
+            else if (dxy >= 82)  { score = 9; label = 'USD extremad. débil'; }
+            else                 { score = 10; label = 'USD mínimos (muy ↑ BTC)'; }
             return { score, desc: `DXY: ${dxyRounded} | ${label}`, available: true };
+        }
+        
+        async function getFundingRateScore() {
+            try {
+                // Promedio de las últimas 3 velas de funding (≈24h) para reducir ruido
+                const res = await fetchWithTimeout('https://fapi.binance.com/fapi/v1/fundingRate?symbol=BTCUSDT&limit=3');
+                const data = await res.json();
+                if (!data || !data.length) throw new Error('No funding data');
+                const rate = data.map(d => parseFloat(d.fundingRate) * 100).reduce((a,b) => a+b, 0) / data.length;
+                let score = 5;
+                let desc = `Funding: ${rate.toFixed(4)}% (avg 24h)`;
+                if (rate <= -0.10)      { score = 10; desc += ' SHORTS EXTREMOS (SUELO)'; }
+                else if (rate <= -0.05) { score = 9;  desc += ' Shorts elevados'; }
+                else if (rate <= -0.03) { score = 8;  desc += ' Shorts moderados'; }
+                else if (rate <= -0.01) { score = 7;  desc += ' Ligero sesgo short'; }
+                else if (rate <= 0.01)  { score = 6;  desc += ' Neutral/short ligero'; }
+                else if (rate <= 0.03)  { score = 5;  desc += ' Neutral'; }
+                else if (rate <= 0.05)  { score = 4;  desc += ' Ligero sesgo long'; }
+                else if (rate <= 0.08)  { score = 3;  desc += ' Longs elevados'; }
+                else if (rate <= 0.10)  { score = 2;  desc += ' Longs muy elevados'; }
+                else if (rate <= 0.15)  { score = 1;  desc += ' EUFORIA LONG'; }
+                else                    { score = 0;  desc += ' EUFORIA EXTREMA (TECHO)'; }
+                return { score, desc, available: true };
+            } catch (e) {
+                return { score: 5, desc: 'Sin datos Funding', available: false };
+            }
+        }
+        
+        async function getWikiViewsScore() {
+            try {
+                const today = new Date();
+                const end = today.toISOString().slice(0,10).replace(/-/g,'');
+                // Ventana fija 365 días atrás (evita el bug de tener solo días en enero)
+                const startDate = new Date(today - 365 * 86400000);
+                const start = startDate.toISOString().slice(0,10).replace(/-/g,'');
+                const url = `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/all-agents/Bitcoin/daily/${start}/${end}`;
+                const res = await fetchWithTimeout(url, 10000);
+                const data = await res.json();
+                if (!data.items || data.items.length < 30) throw new Error('Not enough wiki data');
+                const views = data.items.map(i => i.views);
+                // Promedio reciente (7d) vs percentil histórico del año (más robusto que vs max 90d)
+                const recentAvg = views.slice(-7).reduce((a,b) => a+b, 0) / 7;
+                const sorted = [...views].sort((a,b) => a-b);
+                const pctRank = sorted.filter(v => v <= recentAvg).length / sorted.length * 100;
+                let score = 5;
+                let desc = `Wiki: p${Math.round(pctRank)} (7d avg: ${Math.round(recentAvg/1000)}k/día)`;
+                // Alto percentil = mucho interés = euforia = techo (score bajo)
+                // Bajo percentil = poco interés = desinterés = suelo (score alto)
+                if      (pctRank >= 90) { score = 0; desc += ' Euforia extrema'; }
+                else if (pctRank >= 78) { score = 1; desc += ' Interés muy alto'; }
+                else if (pctRank >= 65) { score = 2; desc += ' Interés alto'; }
+                else if (pctRank >= 55) { score = 3; desc += ' Interés moderado-alto'; }
+                else if (pctRank >= 45) { score = 4; desc += ' Interés moderado'; }
+                else if (pctRank >= 35) { score = 5; desc += ' Neutral'; }
+                else if (pctRank >= 25) { score = 6; desc += ' Bajo interés'; }
+                else if (pctRank >= 15) { score = 7; desc += ' Interés reducido'; }
+                else if (pctRank >= 7)  { score = 8; desc += ' Muy bajo interés'; }
+                else if (pctRank >= 3)  { score = 9; desc += ' Desinterés profundo'; }
+                else                    { score = 10; desc += ' Desinterés extremo (SUELO)'; }
+                return { score, desc, available: true };
+            } catch (e) {
+                console.warn('Wiki error:', e);
+                if (state.f && state.f.available) {
+                    const fallbackScore = Math.max(0, Math.min(10, 10 - state.f.score));
+                    return { score: fallbackScore, desc: 'Est. por F&G (fallback)', available: true };
+                }
+                return { score: 5, desc: 'Sin datos Wiki', available: false };
+            }
         }
         
         async function updateIndicatorF() {
@@ -703,21 +756,19 @@
                 state.f.desc = `FG: ${Math.round(sma7)} (SMA7)`;
                 state.f.available = true;
             } catch (e) {
-                console.warn('F&G error, trying RSI fallback:', e);
-                try {
-                    if (state.r && state.r.available && state.r.desc) {
-                        const rsiMatch = state.r.desc.match(/RSI:\s*([\d.]+)/);
-                        if (rsiMatch) {
-                            const rsi = parseFloat(rsiMatch[1]);
-                            const fgEst = Math.max(0, Math.min(100, (rsi - 30) * (100 / 40)));
-                            const score = Math.max(0, Math.min(10, 10 - Math.round(fgEst / 10)));
-                            state.f.score = score;
-                            state.f.desc = `FG: ~${Math.round(fgEst)} (RSI est.)`;
-                            state.f.available = true;
-                            return;
-                        }
+                console.warn('F&G error:', e);
+                if (state.r && state.r.available && state.r.desc) {
+                    const rsiMatch = state.r.desc.match(/RSI:\s*([\d.]+)/);
+                    if (rsiMatch) {
+                        const rsi = parseFloat(rsiMatch[1]);
+                        const fgEst = Math.max(0, Math.min(100, (rsi - 30) * (100 / 40)));
+                        const score = Math.max(0, Math.min(10, 10 - Math.round(fgEst / 10)));
+                        state.f.score = score;
+                        state.f.desc = `FG: ~${Math.round(fgEst)} (RSI est.)`;
+                        state.f.available = true;
+                        return;
                     }
-                } catch(e2) { console.warn('F&G RSI fallback failed:', e2); }
+                }
                 state.f.available = false;
             }
         }
@@ -727,48 +778,33 @@
                 async () => {
                     const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/global');
                     const d = await res.json();
-                    let usdtDom = d.data.market_cap_percentage.usdt || 0;
-                    let usdcDom = d.data.market_cap_percentage.usdc || 0;
-                    return usdtDom + usdcDom;
+                    return (d.data.market_cap_percentage.usdt || 0) + (d.data.market_cap_percentage.usdc || 0);
                 },
                 async () => {
                     const res = await fetchWithTimeout('https://api.coinpaprika.com/v1/global', 10000);
                     const d = await res.json();
-                    const [usdtRes, usdcRes] = await Promise.all([
-                        fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdt-tether', 8000),
-                        fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin', 8000)
-                    ]);
-                    const usdtData = await usdtRes.json();
-                    const usdcData = await usdcRes.json();
-                    const totalCrypto = d.market_cap_usd;
-                    const usdtMcap = usdtData.quotes.USD.market_cap;
-                    const usdcMcap = usdcData.quotes.USD.market_cap;
-                    return ((usdtMcap + usdcMcap) / totalCrypto) * 100;
+                    const [uR, cR] = await Promise.all([fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdt-tether', 8000), fetchWithTimeout('https://api.coinpaprika.com/v1/tickers/usdc-usd-coin', 8000)]);
+                    const uD = await uR.json(), cD = await cR.json();
+                    return ((uD.quotes.USD.market_cap + cD.quotes.USD.market_cap) / d.market_cap_usd) * 100;
                 }
             ];
-            
             let totalDom = null;
-            for (const prov of providers) {
-                try {
-                    totalDom = await prov();
-                    if (totalDom > 0) break;
-                } catch(e) { continue; }
-            }
+            for (const prov of providers) { try { totalDom = await prov(); if (totalDom > 0) break; } catch(e) { continue; } }
             if (totalDom === null) throw new Error('All stablecoin providers failed');
-            
+            // Thresholds ajustados al ciclo 2024-2026: rango típico 4-8%
             let score = 5;
             let desc = `${totalDom.toFixed(1)}% (USDT+USDC)`;
-            if (totalDom >= 12) { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
-            else if (totalDom >= 10) { score = 9; desc += ' MUCHO MIEDO'; }
-            else if (totalDom >= 8.5) { score = 8; desc += ' MIEDO MODERADO'; }
-            else if (totalDom >= 7) { score = 7; desc += ' TENDENCIA A MIEDO'; }
-            else if (totalDom >= 6) { score = 6; desc += ' LIGERO MIEDO'; }
-            else if (totalDom >= 5) { score = 5; desc += ' NEUTRAL'; }
-            else if (totalDom >= 4) { score = 4; desc += ' LIGERA EUFORIA'; }
-            else if (totalDom >= 3) { score = 3; desc += ' EUFORIA MODERADA'; }
-            else if (totalDom >= 2) { score = 2; desc += ' EUFORIA ALTA'; }
-            else { score = 1; desc += ' EUFORIA EXTREMA (TECHO)'; }
-            
+            if      (totalDom >= 10)  { score = 10; desc += ' MIEDO EXTREMO (SUELO)'; }
+            else if (totalDom >= 8.5) { score = 9;  desc += ' MUCHO MIEDO'; }
+            else if (totalDom >= 7.5) { score = 8;  desc += ' MIEDO MODERADO'; }
+            else if (totalDom >= 6.5) { score = 7;  desc += ' TENDENCIA A MIEDO'; }
+            else if (totalDom >= 5.5) { score = 6;  desc += ' LIGERO MIEDO'; }
+            else if (totalDom >= 4.5) { score = 5;  desc += ' NEUTRAL'; }
+            else if (totalDom >= 3.8) { score = 4;  desc += ' LIGERA EUFORIA'; }
+            else if (totalDom >= 3.2) { score = 3;  desc += ' EUFORIA MODERADA'; }
+            else if (totalDom >= 2.5) { score = 2;  desc += ' EUFORIA ALTA'; }
+            else if (totalDom >= 1.5) { score = 1;  desc += ' EUFORIA EXTREMA'; }
+            else                      { score = 0;  desc += ' EUFORIA MÁXIMA (TECHO)'; }
             state.s.score = score;
             state.s.desc = desc;
             state.s.available = true;
@@ -787,46 +823,19 @@
             { url: 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=10080&since=' + (Math.floor(Date.now()/1000) - 200*7*86400), parser: d => { const key = Object.keys(d.result).find(k => k !== 'last'); return d.result[key].map(x => parseFloat(x[4])); } }
         ];
         
-        async function fetchKlinesWithFallback(providers) { 
-            for (const p of providers) { 
-                try { 
-                    const r = await fetchWithTimeout(p.url, 15000); 
-                    if (!r.ok) continue; 
-                    return p.parser(await r.json()); 
-                } catch(e) { continue; } 
-            } 
-            throw new Error('All providers failed'); 
+        async function fetchKlinesWithFallback(providers) { for (const p of providers) { try { const r = await fetchWithTimeout(p.url, 15000); if (!r.ok) continue; return p.parser(await r.json()); } catch(e) { continue; } } throw new Error('All providers failed'); }
+        
+        function calcRSI(c, p = 14) {
+            if (c.length < p + 1) return 50;
+            let g = 0, l = 0;
+            for (let i = 1; i <= p; i++) { const d = c[c.length - p - 1 + i] - c[c.length - p - 2 + i]; if (d > 0) g += d; else l -= d; }
+            let avgG = g / p, avgL = l / p;
+            for (let i = c.length - p; i < c.length; i++) { const d = c[i] - c[i - 1]; avgG = (avgG * (p - 1) + (d > 0 ? d : 0)) / p; avgL = (avgL * (p - 1) + (d < 0 ? -d : 0)) / p; }
+            if (avgL === 0) return 100;
+            return 100 - 100 / (1 + avgG / avgL);
         }
         
-        function calcRSI(c, p=14) {
-            if (c.length < p+1) return 50;
-            let g=0, l=0;
-            for (let i=c.length-p; i<c.length; i++) {
-                let d = c[i] - c[i-1];
-                if (d >= 0) g += d;
-                else l -= d;
-            }
-            let ag = g/p, al = l/p;
-            if (al === 0) return 100;
-            return 100 - (100/(1+ag/al));
-        }
-        
-        function calcEMA(d, p) {
-            if (d.length < p) return d[d.length-1];
-            let k = 2/(p+1);
-            let e = d.slice(0,p).reduce((a,b)=>a+b,0)/p;
-            for (let i=p; i<d.length; i++) e = d[i]*k + e*(1-k);
-            return e;
-        }
-        
-        function calcVolatility(c, p=30) {
-            if (c.length < p) return 0;
-            let r = [];
-            for (let i=c.length-p+1; i<c.length; i++) r.push(Math.log(c[i]/c[i-1]));
-            let m = r.reduce((a,b)=>a+b,0)/r.length;
-            let v = r.reduce((a,b)=>a+(b-m)**2,0)/(r.length-1);
-            return Math.sqrt(v * 365) * 100;
-        }
+        function calcEMA(d, p) { if (d.length < p) return d[d.length-1]; let k = 2/(p+1), e = d.slice(0,p).reduce((a,b)=>a+b,0)/p; for (let i=p; i<d.length; i++) e = d[i]*k + e*(1-k); return e; }
         
         async function updateIndicatorsFromKlinesDaily() {
             try {
@@ -853,26 +862,14 @@
                 state.c.available = true;
                 
                 const rsi = calcRSI(closes);
-                state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi-20)/6)));
+                // RSI 20→100 mapeado linealmente a score 10→0
+                state.r.score = Math.max(0, Math.min(10, Math.round(10 - (rsi - 20) * (10 / 80))));
                 state.r.desc = `RSI: ${rsi.toFixed(1)}`;
                 state.r.available = true;
-                
-                const vol30 = calcVolatility(closes, 30);
-                const volHistory = [];
-                const histStart = Math.max(31, closes.length - 365);
-                for (let i = histStart; i < closes.length - 1; i++) {
-                    volHistory.push(calcVolatility(closes.slice(0, i+1), 30));
-                }
-                volHistory.sort((a,b) => a - b);
-                const pctRank = volHistory.length > 0 ? volHistory.filter(v => v <= vol30).length / volHistory.length : 0.5;
-                state.v.score = Math.max(0, Math.min(10, Math.round(pctRank * 10)));
-                state.v.desc = `Vol 30d: ${vol30.toFixed(0)}% (p${Math.round(pctRank*100)})`;
-                state.v.available = true;
             } catch (error) {
                 console.warn('Error en indicadores diarios:', error);
                 state.c.available = false;
                 state.r.available = false;
-                state.v.available = false;
             }
         }
         
@@ -886,39 +883,21 @@
                 state.e.score = Math.max(0, Math.min(10, score));
                 state.e.desc = `Dist. EMA: ${((dr-1)*100).toFixed(0)}%`;
                 state.e.available = true;
-            } catch (error) {
-                console.warn('Error en EMA 200 semanal:', error);
-                state.e.available = false;
-            }
+            } catch (error) { console.warn('Error en EMA 200 semanal:', error); state.e.available = false; }
         }
         
         async function updateBTCDominance() {
             const providers = [
-                async () => {
-                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/global');
-                    const d = await res.json();
-                    return d.data.market_cap_percentage.btc;
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://api.coinpaprika.com/v1/global', 10000);
-                    const d = await res.json();
-                    if (d.bitcoin_dominance_percentage) return d.bitcoin_dominance_percentage;
-                    throw new Error('No BTC dominance in coinpaprika response');
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://api.coincap.io/v2/assets/bitcoin');
-                    const d = await res.json();
-                    throw new Error('coincap no dominance');
-                }
+                async () => { const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/global'); const d = await res.json(); return d.data.market_cap_percentage.btc; },
+                async () => { const res = await fetchWithTimeout('https://api.coinpaprika.com/v1/global', 10000); const d = await res.json(); if (d.bitcoin_dominance_percentage) return d.bitcoin_dominance_percentage; throw new Error('No dominance'); },
+                async () => { const res = await fetchWithTimeout('https://api.coincap.io/v2/assets?limit=20', 10000); const d = await res.json(); const btc = d.data.find(a => a.id === 'bitcoin'); if (!btc) throw new Error('No BTC in coincap'); return parseFloat(btc.marketCapUsd) / d.data.reduce((s,a) => s + parseFloat(a.marketCapUsd), 0) * 100; }
             ];
             let btcDom = null;
-            for (const prov of providers) {
-                try { btcDom = await prov(); if (btcDom > 0) break; } catch(e) { continue; }
-            }
+            for (const prov of providers) { try { btcDom = await prov(); if (btcDom > 0) break; } catch(e) { continue; } }
             if (btcDom === null) throw new Error('All BTC.D providers failed');
-
             let score;
-            if (btcDom >= 65) score = 9;
+            if      (btcDom >= 70) score = 10;
+            else if (btcDom >= 65) score = 9;
             else if (btcDom >= 60) score = 8;
             else if (btcDom >= 55) score = 7;
             else if (btcDom >= 52) score = 6;
@@ -926,11 +905,9 @@
             else if (btcDom >= 46) score = 4;
             else if (btcDom >= 43) score = 3;
             else if (btcDom >= 40) score = 2;
-            else score = 1;
-
+            else                   score = 1;
             state.d.score = Math.max(0, Math.min(10, score));
-            const trend = btcDom >= 50 ? '↑ dominancia alta' : '↓ altseason risk';
-            state.d.desc = `BTC.D: ${btcDom.toFixed(1)}% | ${trend}`;
+            state.d.desc = `BTC.D: ${btcDom.toFixed(1)}% | ${btcDom >= 52 ? '↑ dominancia alta' : '↓ altseason risk'}`;
             state.d.available = true;
         }
 
@@ -939,56 +916,37 @@
 
         function initNotifications() {
             const btn = document.getElementById('alert-toggle-btn');
-            if (!btn) return;
-            if (!('Notification' in window)) { btn.style.display = 'none'; return; }
+            if (!btn || !('Notification' in window)) { if(btn) btn.style.display = 'none'; return; }
             alertsEnabled = localStorage.getItem('btc-live-alerts') === 'on';
             updateAlertBtn();
             btn.addEventListener('click', async () => {
-                if (!alertsEnabled) {
-                    const perm = await Notification.requestPermission();
-                    if (perm === 'granted') {
-                        alertsEnabled = true;
-                        localStorage.setItem('btc-live-alerts', 'on');
-                    }
-                } else {
-                    alertsEnabled = false;
-                    localStorage.setItem('btc-live-alerts', 'off');
-                }
+                if (!alertsEnabled) { const perm = await Notification.requestPermission(); if (perm === 'granted') { alertsEnabled = true; localStorage.setItem('btc-live-alerts', 'on'); } }
+                else { alertsEnabled = false; localStorage.setItem('btc-live-alerts', 'off'); }
                 updateAlertBtn();
             });
         }
-
-        function updateAlertBtn() {
-            const btn = document.getElementById('alert-toggle-btn');
-            if (!btn) return;
-            btn.innerText = alertsEnabled ? t('alertOn') : t('alertOff');
-            btn.style.opacity = alertsEnabled ? '1' : '0.6';
-        }
-
+        function updateAlertBtn() { const btn = document.getElementById('alert-toggle-btn'); if(btn) { btn.innerText = alertsEnabled ? t('alertOn') : t('alertOff'); btn.style.opacity = alertsEnabled ? '1' : '0.6'; } }
         function checkAlertThresholds(value) {
             if (!alertsEnabled || Notification.permission !== 'granted') return;
             if (lastAlertValue === value) return;
             let body = null;
             if (value >= 80 && (lastAlertValue === null || lastAlertValue < 80)) body = t('alertBuy');
             if (value <= 20 && (lastAlertValue === null || lastAlertValue > 20)) body = t('alertSell');
-            if (body) {
-                try { new Notification(t('alertNotifTitle'), { body, icon: 'https://zoki666.github.io/Indice-BTC-Live/icon.png' }); } catch(e) {}
-            }
+            if (body) { try { new Notification(t('alertNotifTitle'), { body, icon: 'https://zoki666.github.io/Indice-BTC-Live/icon.png' }); } catch(e) {} }
             lastAlertValue = value;
         }
 
         async function fetchAllData() {
             if (els.loadingMsg) els.loadingMsg.innerText = t('sync');
-            indicators.forEach(id => {
-                if(state[id] && state[id].available) state[id].prevScore = state[id].score;
-            });
+            indicators.forEach(id => { if(state[id] && state[id].available) state[id].prevScore = state[id].score; });
             indicators.forEach(id => { if(state[id]) state[id].available = false; else state[id] = { score: 5, available: false, desc: t('loadingCard') }; });
             nextUpdateTime = Date.now() + 900000;
-            
             await Promise.allSettled([
                 updateIndicatorsFromKlinesDaily(),
                 updateEMA200Weekly(),
                 updateIndicatorF(),
+                (async () => { try { const n = await getFundingRateScore(); state.n.score = n.score; state.n.desc = n.desc; state.n.available = n.available; } catch(e) { console.warn('Funding error:', e); state.n.available = false; } })(),
+                (async () => { try { const w = await getWikiViewsScore(); state.w.score = w.score; state.w.desc = w.desc; state.w.available = w.available; } catch(e) { console.warn('Wiki error:', e); state.w.available = false; } })(),
                 (async () => { try { const dxy = await getDXYScore(); state.x.score = dxy.score; state.x.desc = dxy.desc; state.x.available = dxy.available; } catch(e) { console.warn('DXY error:', e); state.x.available = false; } })(),
                 (async () => { try { await updateStablecoinDominance(); } catch(e) { console.warn('Stablecoin error:', e); state.s.available = false; } })(),
                 (async () => { try { await updateBTCDominance(); } catch(e) { console.warn('BTC.D error:', e); state.d.available = false; } })()
@@ -1001,9 +959,10 @@
         const indicatorFetchMap = {
             c: async () => { await updateIndicatorsFromKlinesDaily(); },
             r: async () => { await updateIndicatorsFromKlinesDaily(); },
-            v: async () => { await updateIndicatorsFromKlinesDaily(); },
             e: async () => { await updateEMA200Weekly(); },
             f: async () => { await updateIndicatorF(); },
+            n: async () => { const n = await getFundingRateScore(); state.n.score = n.score; state.n.desc = n.desc; state.n.available = n.available; },
+            w: async () => { const w = await getWikiViewsScore(); state.w.score = w.score; state.w.desc = w.desc; state.w.available = w.available; },
             x: async () => { const dxy = await getDXYScore(); state.x.score = dxy.score; state.x.desc = dxy.desc; state.x.available = dxy.available; },
             s: async () => { await updateStablecoinDominance(); },
             d: async () => { await updateBTCDominance(); }
@@ -1012,63 +971,35 @@
         async function retryIndicator(id) {
             const cardEl = els['card' + id.toUpperCase()];
             if (!cardEl || !cardEl.classList.contains('unavailable')) return;
-            cardEl.classList.remove('unavailable');
-            cardEl.classList.add('retrying');
+            cardEl.classList.remove('unavailable'); cardEl.classList.add('retrying');
             const descEl = els['desc' + id.toUpperCase()];
             if (descEl) descEl.innerText = t('loadingCard');
-            try {
-                await indicatorFetchMap[id]();
-            } catch(e) {
-                console.warn('Retry error for', id, e);
-            }
+            try { await indicatorFetchMap[id](); } catch(e) { console.warn('Retry error for', id, e); }
             cardEl.classList.remove('retrying');
             updateDashboard();
         }
         
         indicators.forEach(id => {
             const cardEl = document.querySelector(`.component-card[data-indicator="${id}"]`);
-            if (cardEl) {
-                cardEl.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('help-btn') || e.target.closest('.help-btn')) return;
-                    if (cardEl.classList.contains('unavailable')) {
-                        retryIndicator(id);
-                    }
-                });
-            }
+            if (cardEl) cardEl.addEventListener('click', function(e) { if (e.target.classList.contains('help-btn') || e.target.closest('.help-btn')) return; if (cardEl.classList.contains('unavailable')) retryIndicator(id); });
         });
         
         async function fetchBTCPrice() {
             const providers = [
-                async () => {
-                    const res = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
-                    const data = await res.json();
-                    return { price: parseFloat(data.lastPrice), change: parseFloat(data.priceChangePercent) };
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://api.coincap.io/v2/assets/bitcoin');
-                    const data = await res.json();
-                    return { price: parseFloat(data.data.priceUsd), change: parseFloat(data.data.changePercent24Hr) };
-                },
-                async () => {
-                    const res = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
-                    const data = await res.json();
-                    return { price: data.bitcoin.usd, change: data.bitcoin.usd_24h_change };
-                }
+                async () => { const r = await fetchWithTimeout('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'); const d = await r.json(); return { price: parseFloat(d.lastPrice), change: parseFloat(d.priceChangePercent) }; },
+                async () => { const r = await fetchWithTimeout('https://api.coincap.io/v2/assets/bitcoin'); const d = await r.json(); return { price: parseFloat(d.data.priceUsd), change: parseFloat(d.data.changePercent24Hr) }; },
+                async () => { const r = await fetchWithTimeout('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true'); const d = await r.json(); return { price: d.bitcoin.usd, change: d.bitcoin.usd_24h_change }; }
             ];
-            
             for (const prov of providers) {
                 try {
                     const result = await prov();
-                    const priceFormatted = '$' + result.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                    const changeFormatted = result.change.toFixed(2) + '%';
-                    const changeSymbol = result.change >= 0 ? '▲ ' : '▼ ';
-                    document.getElementById('btc-price-card').innerText = priceFormatted;
-                    document.getElementById('btc-change-card').innerHTML = changeSymbol + changeFormatted;
+                    document.getElementById('btc-price-card').innerText = '$' + result.price.toLocaleString('en-US', { maximumFractionDigits: 0 });
+                    const cf = result.change.toFixed(2) + '%';
+                    document.getElementById('btc-change-card').innerHTML = (result.change >= 0 ? '▲ ' : '▼ ') + cf;
                     document.getElementById('btc-change-card').style.color = result.change >= 0 ? '#00c087' : '#e53935';
                     return;
                 } catch(e) { continue; }
             }
-            console.warn('All price providers failed');
             document.getElementById('btc-price-card').innerText = '--';
             document.getElementById('btc-change-card').innerHTML = '--';
         }
@@ -1080,89 +1011,46 @@
                 if (window.html2canvas) { resolve(window.html2canvas); return; }
                 const cdnList = ['https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'];
                 let current = 0;
-                function tryLoad() {
-                    if (current >= cdnList.length) { reject(new Error('No se pudo cargar html2canvas')); return; }
-                    const script = document.createElement('script');
-                    script.src = cdnList[current];
-                    script.onload = () => resolve(window.html2canvas);
-                    script.onerror = () => { current++; tryLoad(); };
-                    document.head.appendChild(script);
-                }
+                function tryLoad() { if (current >= cdnList.length) { reject(new Error('html2canvas fail')); return; } const s = document.createElement('script'); s.src = cdnList[current]; s.onload = () => resolve(window.html2canvas); s.onerror = () => { current++; tryLoad(); }; document.head.appendChild(s); }
                 tryLoad();
             });
         }
         
         function shareTextOnly() {
-            const indexValue = window._btcIndexValue || 0;
-            const statusText = window._btcIndexStatus || t('neutral');
-            let emoji = indexValue >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
-            const text = `📊 BTC-Live Index: ${indexValue}/100 - ${emoji}\n${statusText}.\n${currentLang === 'es' ? '¿Suelo o techo? Macro visión en tiempo real.' : 'Bottom or top? Real-time macro view.'}`;
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`, '_blank', 'width=550,height=420');
+            const v = window._btcIndexValue || 0;
+            const s = window._btcIndexStatus || t('neutral');
+            let e = v >= 75 ? (currentLang === 'es' ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : v <= 25 ? (currentLang === 'es' ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`📊 BTC-Live Index: ${v}/100 - ${e}\n${s}.`)}&url=${encodeURIComponent(window.location.href)}`, '_blank', 'width=550,height=420');
         }
         
         async function shareOnTwitterWithImage() {
             const element = document.getElementById('captura-content');
             if (!element) { shareTextOnly(); return; }
             const btn = document.querySelector('.share-x-btn');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '⏳';
-            btn.style.opacity = '0.7';
-
+            const orig = btn.innerHTML; btn.innerHTML = '⏳'; btn.style.opacity = '0.7';
             try {
                 const html2canvas = await loadHtml2Canvas();
                 const canvas = await html2canvas(element, { scale: 2.5, backgroundColor: '#0d0e12', logging: false, useCORS: true });
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
-                const indexValue = window._btcIndexValue || 0;
+                const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 1.0));
+                const v = window._btcIndexValue || 0;
                 const isEs = currentLang === 'es';
-                let emojiLabel = indexValue >= 75 ? (isEs ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : indexValue <= 25 ? (isEs ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
-                const siteUrl = 'https://zoki666.github.io/Indice-BTC-Live/';
-                const shareText = `📊 BTC-Live Index: ${indexValue}/100 - ${emojiLabel}\n\n🔗 ${siteUrl}`;
-
+                let e = v >= 75 ? (isEs ? '🟢 SUELO (COMPRAR)' : '🟢 BOTTOM (BUY)') : v <= 25 ? (isEs ? '🔴 TECHO (VENDER)' : '🔴 TOP (SELL)') : '🟠 NEUTRAL';
+                const shareText = `📊 BTC-Live Index: ${v}/100 - ${e}\n\n🔗 https://zoki666.github.io/Indice-BTC-Live/`;
                 if (navigator.share && navigator.canShare) {
-                    const file = new File([blob], `btc-index-${indexValue}.png`, { type: 'image/png' });
-                    if (navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({ files: [file], text: shareText });
-                            btn.innerHTML = originalContent;
-                            btn.style.opacity = '1';
-                            return;
-                        } catch(e) { /* fallback a escritorio */ }
-                    }
+                    const file = new File([blob], `btc-index-${v}.png`, { type: 'image/png' });
+                    if (navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], text: shareText }); btn.innerHTML = orig; btn.style.opacity = '1'; return; } catch(e) {} }
                 }
-
-                let copiedToClipboard = false;
-                if (navigator.clipboard && window.ClipboardItem) {
-                    try {
-                        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                        copiedToClipboard = true;
-                    } catch(e) { /* permisos denegados */ }
-                }
-
-                const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
-                window.open(tweetUrl, '_blank', 'width=550,height=500');
-
+                let copied = false;
+                if (navigator.clipboard && window.ClipboardItem) { try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); copied = true; } catch(e) {} }
+                window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText), '_blank', 'width=550,height=500');
                 const toast = document.createElement('div');
-                toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(20,22,30,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 20px;font-size:12px;color:#fff;z-index:400;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);max-width:300px;line-height:1.5;animation:fadeInScale 0.2s ease;';
-                toast.innerHTML = copiedToClipboard
-                    ? (isEs ? '🖼️ Imagen copiada al portapapeles.<br>Pégala en el tweet con <strong>Ctrl+V</strong>' : '🖼️ Image copied to clipboard.<br>Paste it in the tweet with <strong>Ctrl+V</strong>')
-                    : (isEs ? '⬇️ Imagen guardada en Descargas.<br>Adjúntala al tweet manualmente.' : '⬇️ Image saved to Downloads.<br>Attach it to the tweet manually.');
+                toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(20,22,30,0.97);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 20px;font-size:12px;color:#fff;z-index:400;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.5);max-width:300px;line-height:1.5;';
+                toast.innerHTML = copied ? (isEs ? '🖼️ Imagen copiada. Pégala en el tweet con Ctrl+V' : '🖼️ Image copied. Paste in tweet with Ctrl+V') : (isEs ? '⬇️ Imagen guardada. Adjúntala al tweet manualmente.' : '⬇️ Image saved. Attach to tweet manually.');
                 document.body.appendChild(toast);
-
-                if (!copiedToClipboard) {
-                    const link = document.createElement('a');
-                    link.download = `btc-index-${indexValue}.png`;
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
-                    setTimeout(() => URL.revokeObjectURL(link.href), 2000);
-                }
-
+                if (!copied) { const a = document.createElement('a'); a.download = `btc-index-${v}.png`; a.href = URL.createObjectURL(blob); a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
                 setTimeout(() => toast.remove(), 4000);
-
-            } catch (error) {
-                shareTextOnly();
-            }
-            btn.innerHTML = originalContent;
-            btn.style.opacity = '1';
+            } catch(e) { shareTextOnly(); }
+            btn.innerHTML = orig; btn.style.opacity = '1';
         }
         
         window.shareOnTwitterWithImage = shareOnTwitterWithImage;
