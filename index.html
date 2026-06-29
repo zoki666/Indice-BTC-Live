@@ -503,9 +503,8 @@
         (function() { const t = document.getElementById('theme-toggle'); if(localStorage.getItem('btc-live-theme') === 'light') t.checked = true; t.addEventListener('change', function() { localStorage.setItem('btc-live-theme', this.checked ? 'light' : 'dark'); }); })();
         
         const indicators = ['c','r','e','f','n','w','x','s'];
-        // Pesos v3 — sin BTC Dominance, suma 100:
-        // S:24, F:14, E:18, C:16, R:10, N:8, X:6, W:4
-        const weights = { c: 16, r: 10, e: 18, f: 14, n: 8, w: 4, x: 6, s: 24 };
+        // Pesos v4 — Suma 100:
+        const weights = { c: 15, r: 7, e: 22, f: 12, n: 7, w: 5, x: 12, s: 20 };
         const state = {};
         indicators.forEach(id => state[id] = { score: 5, available: false, desc: t('loadingCard') });
         
