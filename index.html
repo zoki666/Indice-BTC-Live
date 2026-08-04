@@ -808,10 +808,10 @@
             { url: 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=1440&since=' + (Math.floor(Date.now()/1000) - 400*86400), parser: d => { const key = Object.keys(d.result).find(k => k !== 'last'); return d.result[key].map(x => parseFloat(x[4])); } }
         ];
         const klinesProvidersWeekly = [
-            { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=200', parser: d => d.map(x => parseFloat(x[4])) },
-            { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=W&limit=200', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
-            { url: 'https://api.kucoin.com/api/v1/market/candles?type=1week&symbol=BTC-USDT&limit=200', parser: d => d.data.map(x => parseFloat(x[2])).reverse() },
-            { url: 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=10080&since=' + (Math.floor(Date.now()/1000) - 200*7*86400), parser: d => { const key = Object.keys(d.result).find(k => k !== 'last'); return d.result[key].map(x => parseFloat(x[4])); } }
+            { url: 'https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1w&limit=500', parser: d => d.map(x => parseFloat(x[4])) },
+            { url: 'https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=W&limit=500', parser: d => d.result.list.map(x => parseFloat(x[4])).reverse() },
+            { url: 'https://api.kucoin.com/api/v1/market/candles?type=1week&symbol=BTC-USDT&limit=500', parser: d => d.data.map(x => parseFloat(x[2])).reverse() },
+            { url: 'https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=10080&since=' + (Math.floor(Date.now()/1000) - 500*7*86400), parser: d => { const key = Object.keys(d.result).find(k => k !== 'last'); return d.result[key].map(x => parseFloat(x[4])); } }
         ];
         
         async function fetchKlinesWithFallback(providers) { for (const p of providers) { try { const r = await fetchWithTimeout(p.url, 15000); if (!r.ok) continue; return p.parser(await r.json()); } catch(e) { continue; } } throw new Error('All providers failed'); }
@@ -819,9 +819,9 @@
         function calcRSI(c, p = 14) {
             if (c.length < p + 1) return 50;
             let g = 0, l = 0;
-            for (let i = 1; i <= p; i++) { const d = c[c.length - p - 1 + i] - c[c.length - p - 2 + i]; if (d > 0) g += d; else l -= d; }
+            for (let i = 1; i <= p; i++) { const d = c[i] - c[i - 1]; if (d > 0) g += d; else l -= d; }
             let avgG = g / p, avgL = l / p;
-            for (let i = c.length - p; i < c.length; i++) { const d = c[i] - c[i - 1]; avgG = (avgG * (p - 1) + (d > 0 ? d : 0)) / p; avgL = (avgL * (p - 1) + (d < 0 ? -d : 0)) / p; }
+            for (let i = p + 1; i < c.length; i++) { const d = c[i] - c[i - 1]; avgG = (avgG * (p - 1) + (d > 0 ? d : 0)) / p; avgL = (avgL * (p - 1) + (d < 0 ? -d : 0)) / p; }
             if (avgL === 0) return 100;
             return 100 - 100 / (1 + avgG / avgL);
         }
