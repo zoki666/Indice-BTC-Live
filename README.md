@@ -4,7 +4,7 @@
 
 Índice BTC-Live publicado en Github Pages: https://zoki666.github.io/Indice-BTC-Live/
 
-El Índice BTC-Live combina **8 indicadores clave** (técnicos, on-chain, sentimiento, interés minorista y macro) en una puntuación única de 0 a 100.  
+El Índice BTC-Live combina **7 indicadores clave** (técnicos, sentimiento, interés minorista y macro) en una puntuación única de 0 a 100.  
 Cada indicador se mide de 0 a 10 con la misma lógica:
 
 - **10 = suelo del mercado → oportunidad de compra**
@@ -28,24 +28,23 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 
 | Letra | Indicador | Peso | Lógica de puntuación (0=Techo, 10=Suelo) | Proveedores / Cálculo |
 |-------|-----------|------|-------------------------------------------|------------------------|
-| **E** | EMA 200 semanal | 22% | 0 = precio > 2x EMA (extremo). 10 = precio < 0.5x EMA (extremo). | Velas semanales: Binance → Bybit → KuCoin → Kraken |
-| **S** | Stablecoin Dominance | 20% | 0 = dominancia < 1.5% (euforia máxima). 10 = dominancia > 10% (miedo extremo). | CoinGecko (principal) → CoinPaprika (respaldo) |
-| **C** | Pi Cycle Top | 15% | 0 = precio cerca/cruce SMA350×2 (techo). 10 = precio muy por debajo (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
-| **F** | Fear & Greed (SMA7) | 12% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
-| **X** | DXY (Índice del Dólar) | 12% | 0 = DXY < 82 (dólar muy débil, techo). 10 = DXY > 115 (dólar muy fuerte, suelo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
-| **R** | RSI 14 diario | 7% | 0 = RSI > 80 (sobrecompra). 10 = RSI < 20 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
-| **N** | Funding Rate | 7% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures (avg 24h, últimas 3 velas de 8h) |
-| **W** | Wiki Pageviews (percentil 365d) | 5% | 0 = percentil >90% (atención extrema, techo). 10 = percentil <3% (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
+| **X** | DXY (Índice del Dólar) | 26% | 0 = DXY < 82 (dólar muy débil, techo). 10 = DXY > 115 (dólar muy fuerte, suelo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
+| **E** | EMA 200 semanal | 24% | 0 = precio > 2x EMA (extremo). 10 = precio < 0.5x EMA (extremo). | Velas semanales: Binance → Bybit → KuCoin → Kraken |
+| **C** | Pi Cycle Top | 14% | 0 = precio cerca/cruce SMA350×2 (techo). 10 = precio muy por debajo (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
+| **F** | Fear & Greed (SMA7) | 14% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
+| **R** | RSI 14 diario | 8% | 0 = RSI ≥ 90 (sobrecompra). 10 = RSI ≤ 10 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
+| **N** | Funding Rate | 8% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures (avg 24h, últimas 3 velas de 8h) |
+| **W** | Wiki Pageviews (percentil 365d) | 6% | 0 = percentil ≥ 90 (atención extrema, techo). 10 = percentil ≤ 10 (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
 | 💰 | Precio BTC | (informativo) | — | Binance → CoinCap → CoinGecko (cada minuto) |
 
 **Criterios de ponderación (100%):**
-- Mayor peso a indicadores con mejor historial predictivo comprobado (EMA 200 semanal 22%, Stablecoin Dominance 20%, Pi Cycle 15%)
-- Peso equilibrado para el DXY (12%) como variable macro independiente, y para Fear & Greed (12%) como indicador de sentimiento consolidado
-- Peso moderado a RSI (7%) y Funding Rate (7%) como señales complementarias de extremos
-- Peso ligero a Wiki Pageviews (5%) como indicador testimonial de interés minorista
-- BTC Dominance eliminado por correlación inversa poco fiable en crashes sistémicos
-- Ningún indicador individual supera el 22%, evitando sobrerrepresentación de una sola señal
-- Balance por grupos funcionales: valoración de ciclo 49%, sentimiento 19%, on-chain 20%, interés minorista 12%
+- Mayor peso a los indicadores con mejor historial predictivo comprobado en suelos y techos reales (DXY 26%, EMA 200 semanal 24%)
+- Peso equilibrado para Pi Cycle (14%) y Fear & Greed (14%) como señales de ciclo y sentimiento
+- Peso moderado a RSI (8%) y Funding Rate (8%) como indicadores complementarios de extremos
+- Peso ligero a Wiki Pageviews (6%) como indicador testimonial de interés minorista
+- Stablecoin Dominance y BTC Dominance eliminados por falta de fuentes fiables sin registro y comportamiento errático en crashes sistémicos
+- Ningún indicador individual supera el 26%, evitando sobrerrepresentación de una sola señal
+- Balance por grupos funcionales: macro (DXY) 26%, valoración de ciclo (E+C) 38%, sentimiento (F+N) 22%, interés minorista (R+W) 14%
 
 ---
 
@@ -59,7 +58,6 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 | N (Funding Rate) | **Cada 8 horas** (liquidaciones de futuros perpetuos) |
 | W (Wiki Pageviews) | **1 vez al día** (datos diarios de Wikipedia, actualización con 1-2 días de retraso) |
 | X (DXY) | **1 vez al día** (las APIs de divisas gratuitas actualizan tras cierre de mercados) |
-| S (Stablecoin Dom) | **Cada pocos minutos** (cambios en market cap en vivo) |
 | Precio BTC | **Cada minuto** (consulta a exchanges) |
 | Índice completo | **Recálculo cada 15 minutos** (con reintentos automáticos y respaldos si algún proveedor falla) |
 
@@ -79,6 +77,7 @@ La web es una **Progressive Web App** instalable en Android, iOS y escritorio.
 3. Abre la URL `https://tuusuario.github.io/repositorio` en Chrome (móvil o escritorio).
 4. Aparecerá el aviso **"Añadir a pantalla de inicio"**.
 
+Gracias a estos pasos podemos usarlo como una web.
 ---
 
 ## 🌗 Tema oscuro / claro
@@ -101,7 +100,7 @@ Botón 𝕏 que genera una imagen del panel del índice y la comparte en X (Twit
 
 Si el índice te resulta útil, puedes apoyar el proyecto:
 
-- **On-chain:** `bc1qthc87aykdj2tjrxlqe7k9emz3txphrprm0scu6`
+- **On-chain:** `bc1qjh6txpqel5tanhd2y8ynyypl0rujalnn9j3fah`
 - **Lightning:** `ffg@cake.cash`
 
 El botón `₿` abre un modal con QR y direcciones copiables.
@@ -114,7 +113,7 @@ El botón `₿` abre un modal con QR y direcciones copiables.
 - JavaScript vanilla (fetch, async/await, cálculos de indicadores)
 - Sin frameworks ni dependencias externas
 - PWA con Service Worker para caché offline
-- APIs públicas sin clave (Binance, Bybit, KuCoin, Kraken, CoinGecko, CoinPaprika, Alternative.me, Wikipedia, Frankfurter, ExchangeRate.fun, Open Exchange Rates)
+- APIs públicas sin clave (Binance, Bybit, KuCoin, Kraken, Alternative.me, Wikipedia, Frankfurter, ExchangeRate.fun, Open Exchange Rates)
 
 ---
 
