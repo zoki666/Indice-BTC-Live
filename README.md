@@ -16,8 +16,32 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 
 ## 🧭 Interpretación rápida
 
-| Rango | Significado | Acción recomendada |
-|-------|-------------|-------------------|
+El índice detecta la **fase del mercado** (modo 🤖 Auto, por defecto) y ajusta los umbrales recomendados de compra y venta. También se puede forzar manualmente con el selector (📈 Alcista / ⚖️ Neutral / 📉 Bajista).
+
+| Fase del mercado | Zona de compra (DCA) | Zona neutral | Zona de venta |
+|------------------|----------------------|--------------|---------------|
+| ⚖️ **Neutral / sin definir** | ≥ 75 | 26 – 74 | ≤ 25 |
+| 📈 **Alcista** (compra en retrocesos) | ≥ 55 | 21 – 54 | ≤ 20 |
+| 📉 **Bajista** (vender en rebotes) | ≥ 75 (capitulación real) | 41 – 74 | ≤ 40 |
+
+### Detección automática de la fase
+
+Se analizan las últimas **200 velas diarias**, divididas en 4 bloques de 50 días. Para cada par de bloques consecutivos se compara el máximo y el mínimo: cuenta como *creciente* (↑) o *decreciente* (↓) solo si cambia más de un 5%, para ignorar el ruido. Con `score = ↑ − ↓` (de −6 a +6):
+
+- `score ≥ +3` → **alcista** (máximos y mínimos crecientes)
+- `score ≤ −3` → **bajista** (máximos y mínimos decrecientes)
+- en cualquier otro caso → **neutral** (hasta poder definirlo)
+
+Los parámetros (`REGIME_DETECT`) y los umbrales (`REGIMES`) están al principio del script de `index.html`. Son valores orientativos, pendientes de validar con un backtest histórico. La elección del modo se guarda en el navegador y las alertas usan los umbrales de la fase activa.
+
+---------------------|----------------------|--------------|------------------------------|
+| ⚖️ **Neutral** (por defecto) | ≥ 75 | 26 – 74 | ≤ 25 |
+| 📈 **Alcista** | ≥ 50 (compras en correcciones) | 26 – 49 | ≤ 25 |
+| 📉 **Bajista** | ≥ 75 (capitulación real) | 46 – 74 | ≤ 45 (aprovechar rebotes) |
+
+Los umbrales viven en la constante `REGIMES` de `index.html`. Son valores orientativos, pendientes de validar con un backtest histórico. La elección se guarda en el navegador y las alertas usan los umbrales de la lectura elegida.
+
+-------|-------------|-------------------|
 | **75 – 100** | Suelo / zona de acumulación | Compras DCA, aumentar exposición |
 | **26 – 74** | Neutral | Mantener posición, cautela |
 | **0 – 25** | Techo / zona de distribución | Vender parcialmente, proteger capital |
@@ -28,23 +52,22 @@ El índice final es un promedio ponderado optimizado para detectar **suelos y te
 
 | Letra | Indicador | Peso | Lógica de puntuación (0=Techo, 10=Suelo) | Proveedores / Cálculo |
 |-------|-----------|------|-------------------------------------------|------------------------|
-| **X** | DXY (Índice del Dólar) | 26% | 0 = DXY < 82 (dólar muy débil, techo). 10 = DXY > 115 (dólar muy fuerte, suelo). | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
-| **E** | EMA 200 semanal | 24% | 0 = precio > 2x EMA (extremo). 10 = precio < 0.5x EMA (extremo). | Velas semanales: Binance → Bybit → KuCoin → Kraken |
-| **C** | Pi Cycle Top | 14% | 0 = precio cerca/cruce SMA350×2 (techo). 10 = precio muy por debajo (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
-| **F** | Fear & Greed (SMA7) | 14% | 0 = codicia extrema (>80). 10 = miedo extremo (<20). | Alternative.me (principal) + RSI (respaldo) |
-| **R** | RSI 14 diario | 8% | 0 = RSI ≥ 90 (sobrecompra). 10 = RSI ≤ 10 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
-| **N** | Funding Rate | 8% | 0 = funding > +0.15% (euforia long). 10 = funding < -0.10% (pánico short). | Binance Futures (avg 24h, últimas 3 velas de 8h) |
-| **W** | Wiki Pageviews (percentil 365d) | 6% | 0 = percentil ≥ 90 (atención extrema, techo). 10 = percentil ≤ 10 (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
+| **X** | DXY (Índice del Dólar) | 10% | 0 = DXY ≤ 90 (dólar débil, techo). 10 = DXY ≥ 110 (dólar fuerte, suelo). Interpolación lineal. | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
+| **E** | EMA 200 semanal | 28% | 0 = precio ≥ 2.2× EMA (techo). 10 = precio ≤ 0.8× EMA (suelo). Escala logarítmica. | Velas semanales: Binance → Bybit → KuCoin → Kraken |
+| **C** | Pi Cycle Top | 16% | 0 = SMA111 a ≤ 25% de la SMA350×2 (techo). 10 = distancia ≥ 65% (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
+| **F** | Fear & Greed (SMA7) | 18% | 0 = SMA7 ≥ 80 (codicia extrema). 10 = SMA7 ≤ 20 (miedo extremo). | Alternative.me (principal) + RSI (respaldo) |
+| **R** | RSI 14 diario | 10% | 0 = RSI ≥ 80 (sobrecompra). 10 = RSI ≤ 25 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
+| **N** | Funding Rate | 10% | 0 = funding ≥ +0.05% (euforia long). 5 = +0.01% (nivel base). 10 = funding ≤ -0.03% (pánico short). | Binance Futures (avg 24h, últimas 3 velas de 8h) |
+| **W** | Wiki Pageviews (percentil 365d) | 8% | 0 = percentil ≥ 90 (atención extrema, techo). 10 = percentil ≤ 10 (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
 | 💰 | Precio BTC | (informativo) | — | Binance → CoinCap → CoinGecko (cada minuto) |
 
 **Criterios de ponderación (100%):**
-- Mayor peso a los indicadores con mejor historial predictivo comprobado en suelos y techos reales (DXY 26%, EMA 200 semanal 24%)
-- Peso equilibrado para Pi Cycle (14%) y Fear & Greed (14%) como señales de ciclo y sentimiento
-- Peso moderado a RSI (8%) y Funding Rate (8%) como indicadores complementarios de extremos
-- Peso ligero a Wiki Pageviews (6%) como indicador testimonial de interés minorista
-- Stablecoin Dominance y BTC Dominance eliminados por falta de fuentes fiables sin registro y comportamiento errático en crashes sistémicos
-- Ningún indicador individual supera el 26%, evitando sobrerrepresentación de una sola señal
-- Balance por grupos funcionales: macro (DXY) 26%, valoración de ciclo (E+C) 38%, sentimiento (F+N) 22%, interés minorista (R+W) 14%
+- Mayor peso a la valoración de ciclo (EMA 200 semanal 28%, Pi Cycle 16%) y al sentimiento (Fear & Greed 18%)
+- DXY baja al 10%: es una variable macro de movimiento lento que casi no depende del ciclo propio de BTC y comprimía el índice hacia el centro
+- RSI (10%) y Funding Rate (10%) como indicadores complementarios de extremos; Wiki Pageviews (8%) como indicador testimonial de interés minorista
+- Escalas calibradas con los extremos realmente observados en los ciclos de BTC (no con extremos teóricos), para que cada indicador use su rango completo 0-10
+- Ningún indicador individual supera el 28%
+- Balance por grupos funcionales: macro (DXY) 10%, valoración de ciclo (E+C) 44%, sentimiento (F+N) 28%, momentum e interés minorista (R+W) 18%
 
 ---
 
@@ -90,7 +113,7 @@ Alternancia entre español e inglés mediante botón flotante con bandera 🇪�
 
 ## 🔔 Alertas del navegador
 
-Botón en el panel izquierdo para activar notificaciones push automáticas cuando el índice entre en zona de compra (≥80) o venta (≤20). Requiere permiso del usuario.
+Botón en el panel izquierdo para activar notificaciones push automáticas cuando el índice entre en zona de compra o venta (según la lectura de mercado elegida). Requiere permiso del usuario.
 
 ## 📤 Compartir por X
 
