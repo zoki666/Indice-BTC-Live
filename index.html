@@ -65,6 +65,7 @@
         .theme-toggle-label::before { content: '🌙'; font-size: 18px; }
         #theme-toggle:checked ~ .theme-toggle-label::before { content: '☀️'; }
         .lang-toggle-label { position: fixed; top: 60px; right: 15px; z-index: 100; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-panel); backdrop-filter: var(--blur); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow); user-select: none; font-size: 18px; }
+        .help-toggle-label { position: fixed; top: 105px; right: 15px; z-index: 100; width: 36px; height: 36px; border-radius: 50%; background: var(--bg-panel); backdrop-filter: var(--blur); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow); user-select: none; font-size: 18px; text-decoration: none; color: var(--text); font-weight: bold; }
         .donate-btn-label { position: fixed; bottom: 20px; right: 20px; z-index: 100; width: 44px; height: 44px; border-radius: 50%; background: var(--accent-orange); color: #fff; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(255,152,0,0.4); transition: transform 0.2s, box-shadow 0.2s; user-select: none; }
         .donate-btn-label:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(255,152,0,0.6); }
         .share-x-btn { position: fixed; bottom: 20px; left: 20px; z-index: 100; width: 44px; height: 44px; border-radius: 50%; background: #000000; color: white; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s; user-select: none; border: none; }
@@ -179,6 +180,7 @@
     <input type="checkbox" id="donate-modal-toggle" hidden>
     <label for="theme-toggle" class="theme-toggle-label"></label>
     <label class="lang-toggle-label" onclick="switchLanguage()" id="lang-flag">🇪🇸</label>
+    <a class="help-toggle-label" id="help-btn" href="https://github.com/zoki666/Indice-BTC-Live/blob/main/README.md" target="_blank" rel="noopener noreferrer" title="Ayuda">?</a>
     <label for="donate-modal-toggle" class="donate-btn-label" title="Donar BTC">₿</label>
     <button class="share-x-btn" onclick="shareOnTwitterWithImage()">𝕏</button>
 
@@ -398,18 +400,18 @@
                 sellTitle: "🔴 Zona de Distribución / Venta (Índice ≤ {SELL})", sellDesc: "<strong>Es el momento de asegurar ganancias.</strong> El mercado está en una fase de euforia, codicia o sobrevaloración.",
                 sellLi1: "⚠️ Deja de comprar inmediatamente.", sellLi2: "💰 Vende tu posición de forma periódica; es hora de ir soltando BTC.", sellLi3: "🛑 Sube tus stop-loss.", sellLi4: "🧊 Guarda liquidez para la próxima zona de acumulación.",
                 disclaimer: "⚠️ <strong>Descargo de responsabilidad:</strong> Este índice es una herramienta educativa basada en datos históricos y no constituye asesoramiento financiero.",
-                regimeAuto: "🤖 Auto", regimeDetected: "Detectado", regimeManualNote: "Manual", regimeStruct: "Estructura 200d", regimeLabel: "Fase del mercado", regimeBull: "📈 Alcista", regimeNeutral: "⚖️ Neutral", regimeBear: "📉 Bajista", regimeZones: "Compra ≥ {BUY} · Venta ≤ {SELL}",
+                helpBtnTitle: "Ayuda: cómo funciona el índice (README)", regimeAuto: "🤖 Auto", regimeDetected: "Detectado", regimeManualNote: "Manual", regimeStruct: "Estructura 200d", regimeVsSma: "Precio vs SMA200d", regimeLabel: "Fase del mercado", regimeBull: "📈 Alcista", regimeNeutral: "⚖️ Neutral", regimeBear: "📉 Bajista", regimeZones: "Compra ≥ {BUY} · Venta ≤ {SELL}",
                 regimeGuideTitle: "🎚️ Umbrales según tu lectura del mercado",
-                regimeGuideDesc: "En modo <strong>Auto</strong> el índice detecta la fase del mercado mirando la estructura de los últimos 200 días: máximos y mínimos crecientes → alcista; decrecientes → bajista; sin estructura clara → neutral. También puedes forzar la fase manualmente. Los umbrales recomendados cambian así:",
+                regimeGuideDesc: "En modo <strong>Auto</strong> el índice detecta la fase del mercado combinando dos condiciones sobre los últimos 200 días: la estructura de máximos y mínimos (crecientes → alcista; decrecientes → bajista) y la posición del precio respecto a su media de 200 días (por encima para alcista, por debajo para bajista). Si no se cumplen ambas, la fase es neutral. También puedes forzarla manualmente. Los umbrales recomendados cambian así:",
                 regimeBullTxt: "<strong style=\"color:#00c087;\">📈 Alcista:</strong> las correcciones son poco profundas y el índice rara vez sube mucho. Compra en retrocesos con índice ≥ {BULL_BUY}; empieza a vender con índice ≤ {BULL_SELL}.",
-                regimeBearTxt: "<strong style=\"color:#e53935;\">📉 Bajista:</strong> el índice vive alto y los rebotes son cortos. Compra solo con índice ≥ {BEAR_BUY} (capitulación real); aprovecha los rebotes para vender con índice ≤ {BEAR_SELL}.",
+                regimeBearTxt: "<strong style=\"color:#e53935;\">📉 Bajista:</strong> el índice vive alto y los rebotes son cortos. Compra con índice ≥ {BEAR_BUY} (zona de capitulación); vender en un bajista es raro: espera a momentos más provechosos (índice ≤ {BEAR_SELL}).",
                 regimeNeutralTxt: "<strong style=\"color:#ff9800;\">⚖️ Neutral / sin definir:</strong> compra con índice ≥ {NEU_BUY}, vende con índice ≤ {NEU_SELL}.",
                 regimeCaveat: "⚠️ Valores orientativos, pendientes de validar con un backtest histórico.",
                 compNameC: "Pi Cycle Top", compNameR: "RSI 14 Diario", compNameE: "EMA 200 Semanal", compNameF: "Fear & Greed", compNameN: "Funding Rate", compNameW: "Wiki Pageviews", compNameX: "DXY (Índice Dólar)",
                 helpC_title: "C - Pi Cycle Top", helpC_desc: "Compara precio vs SMA(111) y SMA(350)×2. Históricamente el cruce de ambas medias señala techos de ciclo.", helpC_strat: "0 = SMA111 a ≤ 25% de la SMA350×2 (cerca del cruce: techo).\n10 = distancia ≥ 65% (precio muy por debajo: suelo).",
                 helpR_title: "R - RSI 14 Diario", helpR_desc: "Índice de Fuerza Relativa de 14 días. Sobre 70 = sobrecompra, bajo 30 = sobreventa.", helpR_strat: "0 = RSI ≥ 80 (techo).\n10 = RSI ≤ 25 (suelo).",
                 helpE_title: "E - EMA 200 Semanal", helpE_desc: "Distancia del precio a la media móvil exponencial de 200 semanas. Señal de largo plazo.", helpE_strat: "0 = precio ≥ 2.2x EMA (techo).\n10 = precio ≤ 0.8x EMA (suelo). Escala logarítmica.",
-                helpF_title: "F - Fear & Greed", helpF_desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", helpF_strat: "0 = media 7d ≥ 80 (codicia extrema, vender).\n10 = media 7d ≤ 20 (miedo extremo, comprar).",
+                helpF_title: "F - Fear & Greed", helpF_desc: "Mide el sentimiento del mercado. Valores bajos indican miedo extremo (oportunidad), valores altos indican codicia extrema (riesgo).", helpF_strat: "Valor usado: 50% dato de hoy + 50% media de 7 días.\n0 = valor ≥ 80 (codicia extrema, vender).\n10 = valor ≤ 20 (miedo extremo, comprar).",
                 helpN_title: "N - Funding Rate", helpN_desc: "Tasa de financiación de futuros perpetuos de BTC, obtenida de Binance (principal), Bybit u OKX (respaldo). Promedia las últimas 3 tasas (24h). Negativa = pánico short (suelo). Positiva alta = euforia long (techo).", helpN_strat: "0 = funding ≥ +0.05% (euforia long, techo).\n5 = +0.01% (nivel base, neutral).\n10 = funding ≤ -0.03% (pánico short, suelo).",
                 helpW_title: "W - Visitas Wikipedia", helpW_desc: "Visitas diarias al artículo 'Bitcoin' en Wikipedia, medidas como percentil del promedio de 7 días respecto al último año (365 días). Un percentil alto indica mucha atención (posible techo). Un percentil bajo indica desinterés (posible suelo).", helpW_strat: "0 = percentil ≥ 90 (atención extrema, techo).\n10 = percentil ≤ 10 (desinterés extremo, suelo).",
                 helpX_title: "X - DXY (Índice Dólar)", helpX_desc: "Índice del dólar contra cesta de divisas. DXY alto = dólar fuerte = suele coincidir con suelos de BTC. DXY bajo = dólar débil = suele coincidir con techos de BTC.", helpX_strat: "0 = DXY ≤ 90 (dólar débil, techo).\n10 = DXY ≥ 110 (dólar fuerte, suelo).",
@@ -442,18 +444,18 @@
                 sellTitle: "🔴 Distribution / Selling Zone (Index ≤ {SELL})", sellDesc: "<strong>Time to secure profits.</strong> Market euphoria, greed or overvaluation.",
                 sellLi1: "⚠️ Stop buying immediately.", sellLi2: "💰 Sell off your position periodically; it's time to start offloading BTC.", sellLi3: "🛑 Raise your stop-losses.", sellLi4: "🧊 Keep liquidity for the next accumulation zone.",
                 disclaimer: "⚠️ <strong>Disclaimer:</strong> This index is an educational tool based on historical data and does not constitute financial advice.",
-                regimeAuto: "🤖 Auto", regimeDetected: "Detected", regimeManualNote: "Manual", regimeStruct: "200d structure", regimeLabel: "Market phase", regimeBull: "📈 Bull", regimeNeutral: "⚖️ Neutral", regimeBear: "📉 Bear", regimeZones: "Buy ≥ {BUY} · Sell ≤ {SELL}",
+                helpBtnTitle: "Help: how the index works (README)", regimeAuto: "🤖 Auto", regimeDetected: "Detected", regimeManualNote: "Manual", regimeStruct: "200d structure", regimeVsSma: "Price vs SMA200d", regimeLabel: "Market phase", regimeBull: "📈 Bull", regimeNeutral: "⚖️ Neutral", regimeBear: "📉 Bear", regimeZones: "Buy ≥ {BUY} · Sell ≤ {SELL}",
                 regimeGuideTitle: "🎚️ Thresholds by market view",
-                regimeGuideDesc: "In <strong>Auto</strong> mode the index detects the market phase from the last 200 days of structure: rising highs and lows → bull; falling → bear; no clear structure → neutral. You can also force the phase manually. Recommended thresholds change accordingly:",
+                regimeGuideDesc: "In <strong>Auto</strong> mode the index detects the market phase by combining two conditions over the last 200 days: the high/low structure (rising → bull; falling → bear) and price relative to its 200-day average (above for bull, below for bear). If both are not met, the phase is neutral. You can also force it manually. Recommended thresholds change accordingly:",
                 regimeBullTxt: "<strong style=\"color:#00c087;\">📈 Bull:</strong> pullbacks are shallow and the index rarely climbs high. Buy dips with index ≥ {BULL_BUY}; start selling with index ≤ {BULL_SELL}.",
-                regimeBearTxt: "<strong style=\"color:#e53935;\">📉 Bear:</strong> the index lives high and rallies are short. Buy only with index ≥ {BEAR_BUY} (real capitulation); use rallies to sell with index ≤ {BEAR_SELL}.",
+                regimeBearTxt: "<strong style=\"color:#e53935;\">📉 Bear:</strong> the index lives high and rallies are short. Buy with index ≥ {BEAR_BUY} (capitulation zone); selling in a bear market is rare: wait for more profitable moments (index ≤ {BEAR_SELL}).",
                 regimeNeutralTxt: "<strong style=\"color:#ff9800;\">⚖️ Neutral / undefined:</strong> buy with index ≥ {NEU_BUY}, sell with index ≤ {NEU_SELL}.",
                 regimeCaveat: "⚠️ Indicative values, pending validation with a historical backtest.",
                 compNameC: "Pi Cycle Top", compNameR: "RSI 14 Daily", compNameE: "EMA 200 Weekly", compNameF: "Fear & Greed", compNameN: "Funding Rate", compNameW: "Wiki Pageviews", compNameX: "DXY (USD Index)",
                 helpC_title: "C - Pi Cycle Top", helpC_desc: "Compares price vs SMA(111) and SMA(350)×2. Historically their crossover marks cycle tops.", helpC_strat: "0 = SMA111 within 25% of SMA350×2 (near cross: top).\n10 = distance ≥ 65% (price far below: bottom).",
                 helpR_title: "R - RSI 14 Daily", helpR_desc: "Relative Strength Index over 14 days.", helpR_strat: "0 = RSI ≥ 80 (top).\n10 = RSI ≤ 25 (bottom).",
                 helpE_title: "E - EMA 200 Weekly", helpE_desc: "Price distance to 200-week exponential moving average.", helpE_strat: "0 = price ≥ 2.2x EMA (top).\n10 = price ≤ 0.8x EMA (bottom). Log scale.",
-                helpF_title: "F - Fear & Greed", helpF_desc: "Market sentiment. Low = extreme fear (opportunity), high = extreme greed (risk).", helpF_strat: "0 = 7d average ≥ 80 (extreme greed, sell).\n10 = 7d average ≤ 20 (extreme fear, buy).",
+                helpF_title: "F - Fear & Greed", helpF_desc: "Market sentiment. Low = extreme fear (opportunity), high = extreme greed (risk).", helpF_strat: "Value used: 50% today's reading + 50% 7-day average.\n0 = value ≥ 80 (extreme greed, sell).\n10 = value ≤ 20 (extreme fear, buy).",
                 helpN_title: "N - Funding Rate", helpN_desc: "BTC perpetual futures funding rate, sourced from Binance (primary), Bybit or OKX (fallback). Averages the last 3 rates (24h). Negative = short panic (bottom). High positive = long euphoria (top).", helpN_strat: "0 = funding ≥ +0.05% (long euphoria, top).\n5 = +0.01% (base level, neutral).\n10 = funding ≤ -0.03% (short panic, bottom).",
                 helpW_title: "W - Wikipedia Pageviews", helpW_desc: "Daily views of the 'Bitcoin' Wikipedia article, measured as a percentile of the 7-day average over the last year (365 days). A high percentile indicates high attention (possible top). A low percentile indicates disinterest (possible bottom).", helpW_strat: "0 = percentile ≥ 90 (extreme attention, top).\n10 = percentile ≤ 10 (extreme disinterest, bottom).",
                 helpX_title: "X - DXY (USD Index)", helpX_desc: "US Dollar Index against a basket of currencies. High DXY = strong dollar = often coincides with BTC bottoms. Low DXY = weak dollar = often coincides with BTC tops.", helpX_strat: "0 = DXY ≤ 90 (weak dollar, top).\n10 = DXY ≥ 110 (strong dollar, bottom).",
@@ -469,9 +471,9 @@
         
         let currentLang = localStorage.getItem('btc-live-lang') || 'es';
         const REGIMES = {
-            bull:    { buy: 55, sell: 20 },
+            bull:    { buy: 65, sell: 20 },
             neutral: { buy: 75, sell: 25 },
-            bear:    { buy: 75, sell: 40 }
+            bear:    { buy: 75, sell: 15 }
         };
         // Detección automática de la fase del mercado por estructura de máximos/mínimos.
         // Se divide la ventana en bloques; cada máximo/mínimo cuenta como creciente o decreciente
@@ -497,7 +499,10 @@
                 if (r > 1 + tol) up++; else if (r < 1 - tol) down++;
             }
             const score = up - down, m = REGIME_DETECT.minScore;
-            return { regime: score >= m ? 'bull' : score <= -m ? 'bear' : 'neutral', score, up, down };
+            // Confirmación con la SMA de 200 días: alcista exige precio por encima, bajista por debajo
+            const price = w[n - 1].c, sma = w.reduce((a, x) => a + x.c, 0) / n, above = price > sma, vsSma = (price / sma - 1) * 100;
+            const regime = (score >= m && above) ? 'bull' : (score <= -m && !above) ? 'bear' : 'neutral';
+            return { regime, score, up, down, above, vsSma };
         }
         function fillTokens(str) {
             if (typeof str !== 'string' || str.indexOf('{') === -1) return str;
@@ -565,6 +570,7 @@
         
         function regimeName(r) { return t('regime' + r.charAt(0).toUpperCase() + r.slice(1)); }
         function updateRegimeUI() {
+            const hb = document.getElementById('help-btn'); if (hb) hb.title = t('helpBtnTitle');
             ['auto','bull','neutral','bear'].forEach(r => {
                 const b = document.getElementById('regime-btn-' + r);
                 if (!b) return;
@@ -575,7 +581,7 @@
             const z = zones(), act = activeRegime();
             const det = document.getElementById('regime-detected');
             if (det) {
-                const st = detectInfo ? ` · ${t('regimeStruct')}: ${detectInfo.up}↑ ${detectInfo.down}↓` : '';
+                const st = detectInfo ? ` · ${t('regimeStruct')}: ${detectInfo.up}↑ ${detectInfo.down}↓ · ${t('regimeVsSma')}: ${detectInfo.vsSma >= 0 ? '+' : ''}${detectInfo.vsSma.toFixed(1)}%` : '';
                 det.innerText = regimeMode === 'auto'
                     ? `${t('regimeDetected')}: ${regimeName(detectedRegime)}${st}`
                     : `${t('regimeManualNote')} · ${t('regimeDetected')}: ${regimeName(detectedRegime)}${st}`;
@@ -826,9 +832,11 @@
                 const data = await res.json();
                 const values = data.data.map(d => parseInt(d.value));
                 let sma7 = values.slice(0,7).reduce((a,b)=>a+b,0)/7;
-                let score = Math.round(lin(sma7, 80, 20));
+                // Opción A: 50% dato de hoy + 50% SMA7 (reacciona antes a un crash sin perder suavizado)
+                const fg = 0.5 * values[0] + 0.5 * sma7;
+                let score = Math.round(lin(fg, 80, 20));
                 state.f.score = score;
-                state.f.desc = `FG: ${Math.round(sma7)} (SMA7)`;
+                state.f.desc = `FG: ${Math.round(fg)} (hoy ${values[0]} · SMA7 ${Math.round(sma7)})`;
                 state.f.available = true;
             } catch (e) {
                 console.warn('F&G error:', e);

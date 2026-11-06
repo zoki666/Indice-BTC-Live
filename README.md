@@ -21,15 +21,20 @@ El índice detecta la **fase del mercado** (modo 🤖 Auto, por defecto) y ajust
 | Fase del mercado | Zona de compra (DCA) | Zona neutral | Zona de venta |
 |------------------|----------------------|--------------|---------------|
 | ⚖️ **Neutral / sin definir** | ≥ 75 | 26 – 74 | ≤ 25 |
-| 📈 **Alcista** (compra en retrocesos) | ≥ 55 | 21 – 54 | ≤ 20 |
-| 📉 **Bajista** (vender en rebotes) | ≥ 75 (capitulación real) | 41 – 74 | ≤ 40 |
+| 📈 **Alcista** (compra en retrocesos) | ≥ 65 | 21 – 64 | ≤ 20 |
+| 📉 **Bajista** (vender es raro, esperar momentos más provechosos) | ≥ 75 (zona de capitulación) | 16 – 74 | ≤ 15 |
 
 ### Detección automática de la fase
 
-Se analizan las últimas **200 velas diarias**, divididas en 4 bloques de 50 días. Para cada par de bloques consecutivos se compara el máximo y el mínimo: cuenta como *creciente* (↑) o *decreciente* (↓) solo si cambia más de un 5%, para ignorar el ruido. Con `score = ↑ − ↓` (de −6 a +6):
+Se combinan dos condiciones sobre las últimas **200 velas diarias**:
 
-- `score ≥ +3` → **alcista** (máximos y mínimos crecientes)
-- `score ≤ −3` → **bajista** (máximos y mínimos decrecientes)
+1. **Estructura de máximos y mínimos.** La ventana se divide en 4 bloques de 50 días. Para cada par de bloques consecutivos se compara el máximo y el mínimo: cuenta como *creciente* (↑) o *decreciente* (↓) solo si cambia más de un 5%, para ignorar el ruido. Con `score = ↑ − ↓` (de −6 a +6).
+2. **Precio frente a la SMA de 200 días.**
+
+Resultado:
+
+- `score ≥ +3` **y** precio por encima de la SMA200 → **alcista**
+- `score ≤ −3` **y** precio por debajo de la SMA200 → **bajista**
 - en cualquier otro caso → **neutral** (hasta poder definirlo)
 
 Los parámetros (`REGIME_DETECT`) y los umbrales (`REGIMES`) están al principio del script de `index.html`. Son valores orientativos, pendientes de validar con un backtest histórico. La elección del modo se guarda en el navegador y las alertas usan los umbrales de la fase activa.
@@ -55,7 +60,7 @@ Los umbrales viven en la constante `REGIMES` de `index.html`. Son valores orient
 | **X** | DXY (Índice del Dólar) | 10% | 0 = DXY ≤ 90 (dólar débil, techo). 10 = DXY ≥ 110 (dólar fuerte, suelo). Interpolación lineal. | Fórmula geométrica ICE USDX: Frankfurter → Exchangerate.fun → Open.er-api |
 | **E** | EMA 200 semanal | 28% | 0 = precio ≥ 2.2× EMA (techo). 10 = precio ≤ 0.8× EMA (suelo). Escala logarítmica. | Velas semanales: Binance → Bybit → KuCoin → Kraken |
 | **C** | Pi Cycle Top | 16% | 0 = SMA111 a ≤ 25% de la SMA350×2 (techo). 10 = distancia ≥ 65% (suelo). | Velas diarias: Binance → Bybit → KuCoin → Kraken |
-| **F** | Fear & Greed (SMA7) | 18% | 0 = SMA7 ≥ 80 (codicia extrema). 10 = SMA7 ≤ 20 (miedo extremo). | Alternative.me (principal) + RSI (respaldo) |
+| **F** | Fear & Greed (hoy + SMA7) | 18% | Valor = 50% dato de hoy + 50% media de 7 días (reacciona antes a un crash). 0 = valor ≥ 80 (codicia extrema). 10 = valor ≤ 20 (miedo extremo). | Alternative.me (principal) + RSI (respaldo) |
 | **R** | RSI 14 diario | 10% | 0 = RSI ≥ 80 (sobrecompra). 10 = RSI ≤ 25 (sobreventa). | Velas diarias: Binance → Bybit → KuCoin → Kraken (suavizado Wilder) |
 | **N** | Funding Rate | 10% | 0 = funding ≥ +0.05% (euforia long). 5 = +0.01% (nivel base). 10 = funding ≤ -0.03% (pánico short). | Binance Futures (avg 24h, últimas 3 velas de 8h) |
 | **W** | Wiki Pageviews (percentil 365d) | 8% | 0 = percentil ≥ 90 (atención extrema, techo). 10 = percentil ≤ 10 (desinterés, suelo). | Wikipedia API (principal) + F&G (respaldo) |
@@ -106,6 +111,10 @@ Gracias a estos pasos podemos usarlo como una web.
 ## 🌗 Tema oscuro / claro
 
 Botón flotante 🌙/☀️ para cambiar entre tema oscuro (por defecto) y claro. Preferencia guardada automáticamente.
+
+## ❓ Ayuda
+
+Botón **?** (debajo del selector de idioma) que abre este README en una pestaña nueva de GitHub.
 
 ## 🌐 Idiomas
 
